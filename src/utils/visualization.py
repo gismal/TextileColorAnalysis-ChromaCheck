@@ -1,5 +1,18 @@
+import os
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import logging
 
-def save_segment_results_plot(segmentation_data, similarity_scores, test_image_path, reference_segmentation_data, best_matches, avg_colors_lab_dbn, method, output_dir=OUTPUT_DIR):
+from src.config import BASE_OUTPUT_DIR
+from src.utils.color_conversion import bgr_to_rgb
+from src.utils.image_utils import ciede2000_distance
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def save_segment_results_plot(segmentation_data, similarity_scores, test_image_path, reference_segmentation_data, best_matches, avg_colors_lab_dbn, method, output_dir=BASE_OUTPUT_DIR):
+    """Save segmentation results plot with comparison to reference."""
     for i, (test_segment_idx, ref_segment_idx) in enumerate(best_matches):
         if ref_segment_idx == -1:
             continue
@@ -50,13 +63,13 @@ def save_segment_results_plot(segmentation_data, similarity_scores, test_image_p
 
         plt.tight_layout()
         os.makedirs(output_dir, exist_ok=True)
-        plot_path = os.path.join(output_dir, f'{os.path.basename(test_image_path)}{method}_segment{test_segment_idx + 1}.png')
+        plot_path = os.path.join(output_dir, f'{os.path.basename(test_image_path)}_{method}_segment{test_segment_idx + 1}.png')
         plt.savefig(plot_path, dpi=300)
         logging.info(f"Segment results plot saved to {plot_path}")
         plt.close(fig)
 
-
-def save_reference_summary_plot(reference_kmeans_opt, reference_som_opt, original_image, output_dir=OUTPUT_DIR):
+def save_reference_summary_plot(reference_kmeans_opt, reference_som_opt, original_image, output_dir=BASE_OUTPUT_DIR):
+    """Save a summary plot for reference segmentation."""
     fig, axes = plt.subplots(2, len(reference_kmeans_opt['avg_colors']) + 1, figsize=(20, 12))
 
     for i, (color, color_lab, color_lab_dbn) in enumerate(zip(reference_kmeans_opt['avg_colors'], reference_kmeans_opt['avg_colors_lab'], reference_kmeans_opt['avg_colors_lab_dbn'])):
@@ -90,8 +103,8 @@ def save_reference_summary_plot(reference_kmeans_opt, reference_som_opt, origina
     logging.info(f"Reference summary plot saved to {plot_path}")
     plt.close(fig)
 
-
-def save_preprocessing_steps_plot(original_image, preprocessed_image, title_prefix='', output_dir=OUTPUT_DIR):
+def save_preprocessing_steps_plot(original_image, preprocessed_image, title_prefix='', output_dir=BASE_OUTPUT_DIR):
+    """Save plot comparing original and preprocessed images."""
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))
     axes[0].imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
     axes[0].set_title(f'{title_prefix} Original Image')
@@ -106,11 +119,8 @@ def save_preprocessing_steps_plot(original_image, preprocessed_image, title_pref
     logging.info(f"Preprocessing steps plot saved to {plot_path}")
     plt.close(fig)
 
-
-def bgr_to_rgb(color):
-    return color[::-1]
-
-def save_segmentation_summary_plot(segmentation_data, similarity_scores, method, output_dir=OUTPUT_DIR):
+def save_segmentation_summary_plot(segmentation_data, similarity_scores, method, output_dir=BASE_OUTPUT_DIR):
+    """Save a summary plot for segmentation results."""
     fig, axes = plt.subplots(1, len(segmentation_data['avg_colors']) + 1, figsize=(20, 6))
 
     for i, (color, color_lab, color_lab_dbn) in enumerate(zip(segmentation_data['avg_colors'], segmentation_data['avg_colors_lab'], segmentation_data['avg_colors_lab_dbn'])):
