@@ -11,7 +11,7 @@ import pstats
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from src.data.load_data import load_config, load_data, validate_config
+from src.data.load_data import load_config, validate_config, load_data
 from src.models.pso_dbn import DBN, pso_optimize
 from src.processing.image_processor import ImageProcessor
 from src.utils.image_utils import ciede2000_distance, save_delta_e_results, save_results, process_reference_image
@@ -48,17 +48,21 @@ def main(config_path='config.yaml'):
 
         # Load and prepare data
         rgb_data, lab_data = load_data(test_images)
+        print(f"rgb_data shape: {rgb_data.shape}")  # Debug print
+        print(f"lab_data shape: {lab_data.shape}")  # Debug print
         x_train, x_test, y_train, y_test = train_test_split(rgb_data, lab_data, test_size=0.2, random_state=42)
+        print(f"x_train shape: {x_train.shape}")  # Debug print
+        print(f"y_train shape: {y_train.shape}")  # Debug print
 
-        input_size = x_train.shape[1]
-        output_size = y_train.shape[1]
+        input_size = x_train.shape[1]  # Should be 30000
+        output_size = y_train.shape[1]  # Should be 30000
         hidden_layers = [128, 64, 32]
 
         # Initialize and train DBN
         dbn = DBN(input_size, hidden_layers, output_size)
         scaler_x = StandardScaler().fit(x_train)
-        scaler_y = MinMaxScaler(feature_range=(0, 100)).fit(y_train[:, 0].reshape(-1, 1))
-        scaler_y_ab = MinMaxScaler(feature_range=(-128, 127)).fit(y_train[:, 1:])
+        scaler_y = MinMaxScaler(feature_range=(0, 100)).fit(y_train[:, 0].reshape(-1, 1))  # Adjust for L channel
+        scaler_y_ab = MinMaxScaler(feature_range=(-128, 127)).fit(y_train[:, 1:])  # Adjust for a,b channels
         x_train_scaled = scaler_x.transform(x_train)
         y_train_scaled = np.hstack((scaler_y.transform(y_train[:, 0].reshape(-1, 1)), scaler_y_ab.transform(y_train[:, 1:])))
 
