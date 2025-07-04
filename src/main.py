@@ -7,10 +7,11 @@ import numpy as np
 import logging
 import cProfile
 import pstats
+
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from src.data import load_data
-from src.data.load_data import load_config, validate_config
+
+from src.data.load_data import load_config, load_data, validate_config
 from src.models.pso_dbn import DBN, pso_optimize
 from src.processing.image_processor import ImageProcessor
 from src.utils.image_utils import ciede2000_distance, save_delta_e_results, save_results, process_reference_image

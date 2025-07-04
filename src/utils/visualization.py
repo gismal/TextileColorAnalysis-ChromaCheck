@@ -6,7 +6,7 @@ import pandas as pd
 import logging
 
 from src.config import BASE_OUTPUT_DIR
-from src.utils.color_conversion import bgr_to_rgb
+from src.utils.color.color_conversion import bgr_to_rgb
 from src.utils.image_utils import ciede2000_distance
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
