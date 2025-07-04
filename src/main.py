@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 from src.data.load_data import load_config, validate_config, load_data
 from src.models.pso_dbn import DBN, pso_optimize
-from src.processing.image_processor import ImageProcessor
+from src.data.preprocess import ImagePreprocessor
 from src.utils.image_utils import ciede2000_distance, save_delta_e_results, save_results, process_reference_image
 from src.utils.visualization import save_reference_summary_plot
 
@@ -91,7 +91,7 @@ def main(config_path='config.yaml'):
         preprocessed_image_paths = []
         results = []
         for image_path in test_images:
-            processor = ImageProcessor(
+            processor = ImagePreprocessor(
                 image_path, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt,
                 dbn, (scaler_x, scaler_y, scaler_y_ab), predefined_k, [10, 15, 20], [5, 10, 20], OUTPUT_DIR
             )

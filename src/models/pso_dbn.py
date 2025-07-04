@@ -112,22 +112,40 @@ def convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_color
         scaler_x (StandardScaler): Scaler for RGB input.
         scaler_y (MinMaxScaler): Scaler for CIELAB L channel.
         scaler_y_ab (MinMaxScaler): Scaler for CIELAB a, b channels.
-        avg_colors (list): List of RGB colors.
+        avg_colors (numpy.ndarray): RGB color values (shape: (n_colors, 3) or (n, 30000)).
     
     Returns:
         list: CIELAB colors predicted by DBN.
     """
-    logging.info("Converting RGB colors to CIELAB using PSO-DBN")
+    logging.info(f"Converting {len(avg_colors)} RGB colors to CIELAB using PSO-DBN")
     avg_colors_lab_dbn = []
-    for color in avg_colors:
-        color_rgb = np.array(color).reshape(1, -1)
-        color_rgb_scaled = scaler_x.transform(color_rgb)
-        color_lab_dbn_scaled = dbn.predict(color_rgb_scaled)
-        L_predicted_scaled = color_lab_dbn_scaled[:, 0].reshape(-1, 1)
-        ab_predicted_scaled = color_lab_dbn_scaled[:, 1:]
-        L_predicted = scaler_y.inverse_transform(L_predicted_scaled)
-        ab_predicted = scaler_y_ab.inverse_transform(ab_predicted_scaled)
-        color_lab_dbn = np.hstack((L_predicted, ab_predicted))[0]
-        avg_colors_lab_dbn.append(tuple(color_lab_dbn))
+    
+    # Convert avg_colors to numpy array and ensure 2D shape
+    avg_colors_array = np.array(avg_colors)
+    if len(avg_colors_array.shape) == 1:
+        avg_colors_array = avg_colors_array.reshape(1, -1)
+    
+    # Handle different input shapes
+    if avg_colors_array.shape[1] == 3:  # Centroids or 3D RGB data
+        logging.info("Processing RGB centroids; skipping scaler_x transform")
+        color_rgb_scaled = avg_colors_array
+    else:  # Full pixel data (e.g., 30000 features)
+        logging.info("Processing full pixel data; applying scaler_x transform")
+        color_rgb_scaled = scaler_x.transform(avg_colors_array)
+    
+    # Predict using DBN
+    color_lab_dbn_scaled = dbn.predict(color_rgb_scaled)
+    
+    # Inverse transform to get original CIELAB scale
+    L_predicted_scaled = color_lab_dbn_scaled[:, [0]]
+    ab_predicted_scaled = color_lab_dbn_scaled[:, 1:]
+    L_predicted = scaler_y.inverse_transform(L_predicted_scaled)
+    ab_predicted = scaler_y_ab.inverse_transform(ab_predicted_scaled)
+    color_lab_dbn = np.hstack((L_predicted, ab_predicted))
+    
+    # Convert to list of tuples
+    for i in range(color_lab_dbn.shape[0]):
+        avg_colors_lab_dbn.append(tuple(color_lab_dbn[i]))
+    
     logging.info("Conversion using PSO-DBN completed")
     return avg_colors_lab_dbn
