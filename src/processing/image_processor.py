@@ -70,7 +70,7 @@ class ImageProcessor:
         else:
             raise ValueError(f"Unsupported segmentation method: {method}")
 
-        from src.utils.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
+        from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
         avg_colors_lab = convert_colors_to_cielab(avg_colors)
         avg_colors_lab_dbn = convert_colors_to_cielab_dbn(self.dbn, self.scaler_x, self.scaler_y, self.scaler_y_ab, avg_colors)
         segmentation_data = {

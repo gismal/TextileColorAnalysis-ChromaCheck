@@ -9,7 +9,7 @@ from sklearn.metrics import pairwise_distances_chunked
 from src.data import preprocess
 from src.models.pso_dbn import convert_colors_to_cielab_dbn
 from src.models.segmentation import k_mean_segmentation, optimal_clusters, som_segmentation
-from src.utils.color_conversion import convert_colors_to_cielab
+from src.utils.color.color_conversion import convert_colors_to_cielab
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
