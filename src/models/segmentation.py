@@ -266,3 +266,49 @@ def determine_optimal_clusters(image, max_clusters=10):
         'dbscan': best_dbscan_labels,
         'som': best_som_labels
     }
+
+# New Segmenter class
+class Segmenter:
+    def __init__(self, preprocessed_image, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt, dbn, scalers, predefined_k, k_values, som_values, output_dir):
+        """Initialize the segmenter for image segmentation and color conversion.
+        
+        Args:
+            preprocessed_image (numpy.ndarray): Preprocessed input image in BGR format.
+            target_colors (list): List of target CIELAB colors for comparison.
+            distance_threshold (float): Threshold for color distance comparison.
+            reference_kmeans_opt (dict): Reference segmentation data from K-means.
+            reference_som_opt (dict): Reference segmentation data from SOM.
+            dbn (object): Trained Deep Belief Network for RGB-to-CIELAB conversion.
+            scalers (tuple): Tuple of (scaler_x, scaler_y, scaler_y_ab) for data normalization.
+            predefined_k (int): Predefined number of clusters.
+            k_values (list): List of K-values for K-means clustering (e.g., [10, 15, 20]).
+            som_values (list): List of SOM grid sizes or parameters (e.g., [5, 10, 20]).
+            output_dir (str): Directory to save output files.
+        """
+        self.preprocessed_image = preprocessed_image
+        self.target_colors = target_colors
+        self.distance_threshold = distance_threshold
+        self.reference_kmeans_opt = reference_kmeans_opt
+        self.reference_som_opt = reference_som_opt
+        self.dbn = dbn
+        self.scalers = scalers  # Tuple of (scaler_x, scaler_y, scaler_y_ab)
+        self.predefined_k = predefined_k
+        self.k_values = k_values
+        self.som_values = som_values
+        self.output_dir = output_dir
+
+#şüphe
+    def process(self):
+        """Process the image with various segmentation methods.
+        
+        Returns:
+            tuple: Results including preprocessed path, segmentation data, similarity scores, and best matches.
+        """
+        # Example segmentation using existing functions
+        k_optimal = self.predefined_k  # Could use optimal_clusters for dynamic k
+        segmented_kmeans_opt, avg_colors_kmeans_opt, labels_kmeans_opt = k_mean_segmentation(self.preprocessed_image, k_optimal)
+        
+        # Placeholder for further processing (e.g., SOM, DBSCAN, color conversion)
+        # You can add calls to som_segmentation, dbscan_clustering, and convert_colors_to_cielab_dbn here
+        result = (self.preprocessed_image, segmented_kmeans_opt, avg_colors_kmeans_opt, labels_kmeans_opt)
+        return result
