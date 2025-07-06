@@ -1,3 +1,4 @@
+# src/segmentation_utils.py
 import logging
 import cv2
 import numpy as np
@@ -8,14 +9,7 @@ from minisom import MiniSom
 
 # Exception handler decorator
 def exception_handler(func):
-    """Decorator to handle exceptions in functions.
-    
-    Args:
-        func: Function to wrap.
-    
-    Returns:
-        wrapper: Function that catches and logs exceptions.
-    """
+    """Decorator to handle exceptions in functions."""
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -26,15 +20,7 @@ def exception_handler(func):
 
 @exception_handler
 def k_mean_segmentation(image, k):
-    """Segment image using K-means clustering.
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-        k (int): Number of clusters.
-    
-    Returns:
-        tuple: Segmented image, average colors, and labels.
-    """
+    """Segment image using K-means clustering."""
     logging.info(f"Starting K-means segmentation with {k} clusters")
     pixels = image.reshape(-1, 3).astype(np.float32)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
@@ -47,15 +33,7 @@ def k_mean_segmentation(image, k):
 
 @exception_handler
 def som_segmentation(image, k):
-    """Segment image using Self-Organizing Maps (SOM).
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-        k (int): Number of clusters.
-    
-    Returns:
-        tuple: Segmented image, average colors, and labels.
-    """
+    """Segment image using Self-Organizing Maps (SOM)."""
     logging.info(f"Starting SOM segmentation with {k} clusters")
     pixels = image.reshape(-1, 3).astype(np.float32) / 255.0
     som = MiniSom(x=1, y=k, input_len=3, sigma=0.5, learning_rate=0.25)
@@ -70,18 +48,7 @@ def som_segmentation(image, k):
     return segmented_image, avg_colors, labels
 
 def optimal_clusters(pixels, default_k, min_k=3, max_k=10, n_runs=10):
-    """Determine optimal number of clusters using multiple metrics.
-    
-    Args:
-        pixels (numpy.ndarray): Pixel data in RGB format.
-        default_k (int): Default number of clusters if optimization fails.
-        min_k (int): Minimum number of clusters.
-        max_k (int): Maximum number of clusters.
-        n_runs (int): Number of runs for averaging metrics.
-    
-    Returns:
-        int: Optimal number of clusters.
-    """
+    """Determine optimal number of clusters using multiple metrics."""
     unique_colors = np.unique(pixels, axis=0)
     dynamic_max_k = min(max_k, len(unique_colors))
 
@@ -119,7 +86,6 @@ def optimal_clusters(pixels, default_k, min_k=3, max_k=10, n_runs=10):
         optimal_k_db = davies_bouldin_scores.index(min(davies_bouldin_scores)) + min_k
         optimal_k_si = silhouette_scores.index(max(silhouette_scores)) + min_k
 
-        # Aggregate the three optimal k values
         aggregated_k = round((optimal_k_ch + optimal_k_db + optimal_k_si) / 3)
         aggregated_k = min(max(aggregated_k, min_k), dynamic_max_k)
 
@@ -135,44 +101,25 @@ def optimal_clusters(pixels, default_k, min_k=3, max_k=10, n_runs=10):
         return default_k
 
 def dbscan_clustering(pixels, eps, min_samples):
-    """Cluster pixels using DBSCAN.
-    
-    Args:
-        pixels (numpy.ndarray): Pixel data in RGB format.
-        eps (float): Maximum distance between two samples.
-        min_samples (int): Minimum number of samples in a cluster.
-    
-    Returns:
-        numpy.ndarray: Cluster labels.
-    """
+    """Cluster pixels using DBSCAN."""
     logging.info(f"Starting DBSCAN Clustering with eps={eps} and min_samples={min_samples}")
     try:
         db = DBSCAN(eps=eps, min_samples=min_samples).fit(pixels)
         labels = db.labels_
     except MemoryError as e:
         logging.error(f"MemoryError during DBSCAN clustering: {str(e)}")
-        labels = np.full(len(pixels), -1)  # Assign all points as noise in case of memory error
+        labels = np.full(len(pixels), -1)
     except Exception as e:
         logging.error(f"Error during DBSCAN clustering: {str(e)}")
-        labels = np.full(len(pixels), -1)  # Assign all points as noise in case of other errors
+        labels = np.full(len(pixels), -1)
 
     unique_labels = np.unique(labels)
-    n_clusters = len(unique_labels[unique_labels >= 0])  # Exclude noise if present.
-
+    n_clusters = len(unique_labels[unique_labels >= 0])
     logging.info(f"DBSCAN Clustering completed with {n_clusters} clusters")
     return labels
 
 def optimal_clusters_dbscan(pixels, eps_values, min_samples_values):
-    """Determine optimal DBSCAN parameters using silhouette score.
-    
-    Args:
-        pixels (numpy.ndarray): Pixel data in RGB format.
-        eps_values (list): List of epsilon values to test.
-        min_samples_values (list): List of min_samples values to test.
-    
-    Returns:
-        tuple: Best labels, best eps, best min_samples.
-    """
+    """Determine optimal DBSCAN parameters using silhouette score."""
     logging.info("Finding optimal DBSCAN parameters")
     best_eps = eps_values[0]
     best_min_samples = min_samples_values[0]
@@ -194,29 +141,13 @@ def optimal_clusters_dbscan(pixels, eps_values, min_samples_values):
     logging.info(f"Optimal DBSCAN parameters: eps={best_eps}, min_samples={best_min_samples}")
     return best_labels, best_eps, best_min_samples
 
-# Define optimal clustering functions
 def optimal_kmeans(image, max_clusters=10):
-    """Determine optimal number of clusters for K-means.
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-        max_clusters (int): Maximum number of clusters to consider.
-    
-    Returns:
-        int: Optimal number of clusters.
-    """
+    """Determine optimal number of clusters for K-means."""
     pixels = image.reshape(-1, 3).astype(np.float32)
     return optimal_clusters(pixels, default_k=3, max_k=max_clusters)
 
 def optimal_dbscan(image):
-    """Determine optimal DBSCAN clustering.
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-    
-    Returns:
-        numpy.ndarray: Optimal cluster labels.
-    """
+    """Determine optimal DBSCAN clustering."""
     pixels = image.reshape(-1, 3).astype(np.float32)
     eps_values = [10, 15, 20]
     min_samples_values = [5, 10, 20]
@@ -224,15 +155,7 @@ def optimal_dbscan(image):
     return labels
 
 def optimal_som(image, max_clusters=10):
-    """Determine optimal SOM clustering.
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-        max_clusters (int): Maximum number of clusters to consider.
-    
-    Returns:
-        numpy.ndarray: Optimal cluster labels.
-    """
+    """Determine optimal SOM clustering."""
     pixels = image.reshape(-1, 3).astype(np.float32) / 255.0
     n_clusters = optimal_clusters(pixels, default_k=3, max_k=max_clusters)
     som = MiniSom(x=1, y=n_clusters, input_len=3, sigma=0.5, learning_rate=0.5)
@@ -242,15 +165,7 @@ def optimal_som(image, max_clusters=10):
     return labels
 
 def determine_optimal_clusters(image, max_clusters=10):
-    """Determine optimal clusters using multiple methods.
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-        max_clusters (int): Maximum number of clusters to consider.
-    
-    Returns:
-        dict: Dictionary with optimal labels for K-means, DBSCAN, and SOM.
-    """
+    """Determine optimal clusters using multiple methods."""
     def safe_cluster(func, *args, **kwargs):
         try:
             return func(*args, **kwargs)
