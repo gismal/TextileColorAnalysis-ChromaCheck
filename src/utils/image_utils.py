@@ -6,7 +6,7 @@ import pandas as pd
 from skimage.color import deltaE_ciede2000
 from sklearn.metrics import pairwise_distances_chunked
 
-from src.data.preprocess import ImagePreprocessor
+from src.data.preprocess import Preprocessor
 from src.models.pso_dbn import convert_colors_to_cielab_dbn
 from src.models.segmentation import k_mean_segmentation, optimal_clusters, som_segmentation
 from src.utils.color.color_conversion import convert_colors_to_cielab
@@ -367,7 +367,7 @@ def process_reference_image(reference_image_path, dbn, scaler_x, scaler_y, scale
     logging.info(f"Processing reference image: {reference_image_path}")
     
     # Load and preprocess the image
-    preprocessor = ImagePreprocessor()
+    preprocessor = Preprocessor()
     preprocessed_image = load_and_preprocess_image(reference_image_path, preprocessor)
     if preprocessed_image is None:
         return None, None, None, None

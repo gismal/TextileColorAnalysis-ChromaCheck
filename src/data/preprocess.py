@@ -13,7 +13,7 @@ def exception_handler(func):
             return None
     return wrapper
 
-class ImagePreprocessor:
+class Preprocessor:
     def __init__(self, resize_factor=1.1, kernel_size=(3, 3), bilateral_d=9, bilateral_sigma_color=75, bilateral_sigma_space=75):
         """Initialize the preprocessor with configurable parameters."""
         self.resize_factor = resize_factor
@@ -55,7 +55,7 @@ class ImagePreprocessor:
 # Example usage (can be removed if not needed in the module)
 if __name__ == "__main__":
     # Test the class
-    preprocessor = ImagePreprocessor()
+    preprocessor = Preprocessor()
     test_img = np.zeros((100, 100, 3), dtype=np.uint8)
     processed_img = preprocessor.preprocess(test_img)
     print("Processed image shape:", processed_img.shape if processed_img is not None else "Failed")
