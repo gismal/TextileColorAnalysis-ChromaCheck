@@ -14,7 +14,7 @@ from skimage.color import deltaE_ciede2000
 from src.data.load_data import load_config, validate_config, load_data
 from src.models.pso_dbn import DBN, pso_optimize, convert_colors_to_cielab_dbn
 from src.data.preprocess import Preprocessor
-from src.models.segmentation import Segmenter  # Add this import
+from src.models.segmentation.segmentation import Segmenter 
 from src.utils.image_utils import ciede2000_distance, save_delta_e_results, save_results, process_reference_image
 from src.utils.visualization import save_reference_summary_plot
 
