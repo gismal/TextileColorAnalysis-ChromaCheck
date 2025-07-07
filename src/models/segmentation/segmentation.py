@@ -1,4 +1,3 @@
-# src/models/segmentation.py
 import logging
 import os
 import cv2
@@ -88,7 +87,7 @@ class Segmenter:
                     som_opt_results, som_predef_results) where each _results is a tuple
                     (segmented_image, similarities, best_matches).
         """
-        # Preprocessed path
+        # Preprocessed path (using output_dir for consistency)
         preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
         cv2.imwrite(preprocessed_path, self.preprocessed_image)
 
@@ -119,7 +118,7 @@ class Segmenter:
 
         return (
             preprocessed_path,
-            (kmeans_opt_results[0], sim_kmeans_opt, best_kmeans_opt),  # segmented_image, similarities, best_matches
+            (kmeans_opt_results[0], sim_kmeans_opt, best_kmeans_opt),
             (kmeans_predef_results[0], sim_kmeans_predef, best_kmeans_predef),
             (dbscan_results[0], sim_dbscan, best_dbscan),
             (som_opt_results[0], sim_som_opt, best_som_opt),

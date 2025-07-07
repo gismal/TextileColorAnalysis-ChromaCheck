@@ -2,10 +2,10 @@
 kmeans_clusters: 2
 predefined_k: 2
 distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/dataset/block/OK.jpg"
+reference_image_path: "C:/Users/LENOVO/Desktop/prints/dataset/block/reference.jpg"
 test_images:
-  - "C:/Users/LENOVO/Desktop/prints/dataset/block/1.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/block/2.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/block/3.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/block/4.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/block/5.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/dataset/block/block1.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/dataset/block/block2.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/dataset/block/block3.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/dataset/block/block4.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/dataset/block/block5.jpg"
