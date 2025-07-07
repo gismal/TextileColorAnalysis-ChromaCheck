@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import logging
-from src.models.segmentation import k_mean_segmentation, som_segmentation, optimal_clusters_dbscan
+from src.models.segmentation.segmentation import k_mean_segmentation, som_segmentation, optimal_clusters_dbscan
 from src.utils.image_utils import calculate_similarity, find_best_matches, downsample_image
 from src.utils.visualization import save_segment_results_plot
 from src.data import preprocess
