@@ -47,58 +47,37 @@ def som_segmentation(image, k):
     logging.info(f"SOM segmentation completed with {k} clusters")
     return segmented_image, avg_colors, labels
 
-def optimal_clusters(pixels, default_k, min_k=3, max_k=10, n_runs=10):
-    """Determine optimal number of clusters using multiple metrics."""
+def optimal_clusters(pixels, default_k, min_k=2, max_k=10, n_runs=3):
     unique_colors = np.unique(pixels, axis=0)
-    dynamic_max_k = min(max_k, len(unique_colors))
+    dynamic_max_k = min(max_k, max(min_k + 2, len(unique_colors) // 20))
+    logging.info(f"Unique colors: {len(unique_colors)}. Adjusted max_k: {dynamic_max_k}")
 
-    logging.info(f"Number of unique colors: {len(unique_colors)}. Adjusting max_k to: {dynamic_max_k}")
+    # Subsample if dataset is large
+    if len(pixels) > 10000:
+        logging.info("Subsampling pixels for efficiency")
+        pixels = pixels[np.random.choice(len(pixels), 10000, replace=False)]
 
-    calinski_harabasz_scores = []
-    davies_bouldin_scores = []
-    silhouette_scores = []
+    scores = {'silhouette': [], 'ch': []}
+    k_range = range(min_k, dynamic_max_k + 1)
 
-    logging.info("Calculating optimal number of clusters using multiple metrics")
+    for k in k_range:
+        logging.info(f"Testing k={k}")
+        kmeans = KMeans(n_clusters=k, n_init=n_runs, random_state=42).fit(pixels)
+        labels = kmeans.labels_
+        
+        # Compute metrics
+        scores['silhouette'].append(silhouette_score(pixels, labels))
+        scores['ch'].append(calinski_harabasz_score(pixels, labels))
+        logging.info(f"Metrics for k={k}: Silhouette={scores['silhouette'][-1]}, CH={scores['ch'][-1]}")
 
-    try:
-        def run_clustering(n_clusters):
-            calinski_harabasz_avg = 0
-            davies_bouldin_avg = 0
-            silhouette_avg = 0
-
-            for _ in range(n_runs):
-                kmeans = KMeans(n_clusters=n_clusters, random_state=np.random.randint(0, 10000))
-                labels = kmeans.fit_predict(pixels)
-                calinski_harabasz_avg += calinski_harabasz_score(pixels, labels) / n_runs
-                davies_bouldin_avg += davies_bouldin_score(pixels, labels) / n_runs
-                silhouette_avg += silhouette_score(pixels, labels) / n_runs
-
-            return calinski_harabasz_avg, davies_bouldin_avg, silhouette_avg
-
-        results = Parallel(n_jobs=-1)(delayed(run_clustering)(n_clusters) for n_clusters in range(min_k, dynamic_max_k + 1))
-
-        for ch_score, db_score, si_score in results:
-            calinski_harabasz_scores.append(ch_score)
-            davies_bouldin_scores.append(db_score)
-            silhouette_scores.append(si_score)
-
-        optimal_k_ch = calinski_harabasz_scores.index(max(calinski_harabasz_scores)) + min_k
-        optimal_k_db = davies_bouldin_scores.index(min(davies_bouldin_scores)) + min_k
-        optimal_k_si = silhouette_scores.index(max(silhouette_scores)) + min_k
-
-        aggregated_k = round((optimal_k_ch + optimal_k_db + optimal_k_si) / 3)
-        aggregated_k = min(max(aggregated_k, min_k), dynamic_max_k)
-
-        logging.info(f"Optimal number of clusters determined by Calinski-Harabasz: {optimal_k_ch}")
-        logging.info(f"Optimal number of clusters determined by Davies-Bouldin: {optimal_k_db}")
-        logging.info(f"Optimal number of clusters determined by Silhouette Score: {optimal_k_si}")
-        logging.info(f"Final aggregated optimal number of clusters: {aggregated_k}")
-
-        return aggregated_k
-
-    except Exception as e:
-        logging.error(f"Error in calculating optimal clusters: {str(e)}. Falling back to default k: {default_k}")
-        return default_k
+    # Consensus: Choose k with best average normalized score
+    norm_sil = (scores['silhouette'] - min(scores['silhouette'])) / (max(scores['silhouette']) - min(scores['silhouette']))
+    norm_ch = (scores['ch'] - min(scores['ch'])) / (max(scores['ch']) - min(scores['ch']))
+    avg_scores = (norm_sil + norm_ch) / 2
+    optimal_k = k_range[np.argmax(avg_scores)]
+    logging.info(f"Optimal k determined: {optimal_k}")
+    
+    return optimal_k
 
 def dbscan_clustering(pixels, eps, min_samples):
     """Cluster pixels using DBSCAN."""
