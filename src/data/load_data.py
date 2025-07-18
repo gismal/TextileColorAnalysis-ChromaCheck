@@ -1,5 +1,6 @@
 import logging
 import cv2
+import numpy as np
 import yaml
 from src.config import BASE_OUTPUT_DIR
 # Set up logging
@@ -68,3 +69,34 @@ def load_image(image_path):
       if image is None:
           print(f"Failed to load image: {image_path}")
       return image
+
+
+@exception_handler
+def load_data(image_paths):
+    """Load and convert image data to RGB and LAB color spaces.
+    Args:
+        image_paths (list): List of paths to test images.
+    Returns:
+        tuple: (rgb_data, lab_data) where each is a 2D array of flattened color values.
+    """
+    rgb_data = []
+    lab_data = []
+    logging.info(f"Processing {len(image_paths)} images")
+    for image_path in image_paths:
+        image = load_image(image_path)
+        if image is not None:
+            # Convert BGR (OpenCV) to RGB
+            rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            # Resize or flatten for consistency (e.g., to 100x100 pixels)
+            rgb = cv2.resize(rgb, (100, 100))
+            rgb_flat = rgb.reshape(-1).astype(np.float32) / 255.0
+            # Convert to LAB
+            lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB)
+            lab_flat = lab.reshape(-1).astype(np.float32)
+            rgb_data.append(rgb_flat)
+            lab_data.append(lab_flat)
+    # stack into 2D array: (n_samples, 30000)
+    rgb_array = np.array(rgb_data) if rgb_data else np.array([])
+    lab_array = np.array(lab_data) if lab_data else np.array([])
+    logging.info(f"rgb_data shape: {rgb_array.shape}, lab_data shape: {lab_array.shape}")
+    return rgb_array, lab_array

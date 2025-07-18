@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import logging
-from src.models.segmentation import k_mean_segmentation, som_segmentation, optimal_clusters_dbscan
+from src.models.segmentation.segmentation import k_mean_segmentation, som_segmentation, optimal_clusters_dbscan
 from src.utils.image_utils import calculate_similarity, find_best_matches, downsample_image
 from src.utils.visualization import save_segment_results_plot
 from src.data import preprocess
@@ -70,7 +70,7 @@ class ImageProcessor:
         else:
             raise ValueError(f"Unsupported segmentation method: {method}")
 
-        from src.utils.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
+        from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
         avg_colors_lab = convert_colors_to_cielab(avg_colors)
         avg_colors_lab_dbn = convert_colors_to_cielab_dbn(self.dbn, self.scaler_x, self.scaler_y, self.scaler_y_ab, avg_colors)
         segmentation_data = {

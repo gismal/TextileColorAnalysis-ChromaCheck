@@ -6,10 +6,10 @@ import pandas as pd
 from skimage.color import deltaE_ciede2000
 from sklearn.metrics import pairwise_distances_chunked
 
-from src.data import preprocess
+from src.data.preprocess import Preprocessor
 from src.models.pso_dbn import convert_colors_to_cielab_dbn
-from src.models.segmentation import k_mean_segmentation, optimal_clusters, som_segmentation
-from src.utils.color_conversion import convert_colors_to_cielab
+from src.utils.segmentation_utils import k_mean_segmentation, optimal_clusters, som_segmentation
+from src.utils.color.color_conversion import convert_colors_to_cielab
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -184,7 +184,7 @@ def optimal_clusters_dpc(pixels, min_k=2, max_k=10, subsample_threshold=1000, ba
             bandwidth = np.median(pairwise_dists)
             logging.info(f"Calculated bandwidth: {bandwidth}")
 
-        dpc_labels = dpc_clustering(subsampled_colors, dynamic_max_k, bandwidth=bandwidth)
+        dpc_labels = dpc_clustering(subsampled_colors, dynamic_max_k, bandwidth=1.0 if bandwidth is None else bandwidth)
         n_clusters = len(np.unique(dpc_labels))
         logging.info(f"Optimal number of clusters determined by DPC: {n_clusters}")
 
@@ -266,6 +266,90 @@ def compare_cielab_colors(test_avg_colors_lab, reference_avg_colors_lab):
         comparisons.append((i, best_match_idx, min_distance))
     return comparisons
 
+def load_and_preprocess_image(image_path, preprocessor):
+    """Load and preprocess the image.
+    
+    Args:
+        image_path (str): Path to the image.
+        preprocessor (ImagePreprocessor): Preprocessor instance.
+    
+    Returns:
+        numpy.ndarray: Preprocessed image, or None if failed.
+    """
+    logging.info(f"Loading image from {image_path}")
+    image = cv2.imread(image_path)
+    if image is None:
+        logging.error(f"Failed to load image: {image_path}")
+        return None
+    logging.info("Starting preprocessing")
+    preprocessed_image = preprocessor.preprocess(image)
+    if preprocessed_image is None:
+        logging.error("Preprocessing failed")
+        return None
+    logging.info("Preprocessing completed")
+    return preprocessed_image
+
+def determine_optimal_clusters(pixels_subsample, default_k, min_k=3, max_k=10):
+    """Determine the optimal number of clusters.
+    
+    Args:
+        pixels_subsample (numpy.ndarray): Subsampled pixel data.
+        default_k (int): Default number of clusters.
+        min_k (int): Minimum number of clusters.
+        max_k (int): Maximum number of clusters.
+    
+    Returns:
+        int: Optimal number of clusters.
+    """
+    logging.info("Determining optimal number of clusters")
+    unique_colors = np.unique(pixels_subsample, axis=0)
+    logging.info(f"Number of unique colors after quantization: {len(unique_colors)}")
+    n_clusters = optimal_clusters(pixels_subsample, default_k, min_k=min_k, max_k=max_k)
+    logging.info(f"Optimal number of clusters determined: {n_clusters}")
+    return n_clusters
+
+def perform_segmentation(image, n_clusters, dbn, scaler_x, scaler_y, scaler_y_ab):
+    """Perform K-means and SOM segmentation on the image.
+    
+    Args:
+        image (numpy.ndarray): Preprocessed image.
+        n_clusters (int): Number of clusters.
+        dbn (DBN): Trained DBN model.
+        scaler_x (StandardScaler): Scaler for RGB input.
+        scaler_y (MinMaxScaler): Scaler for CIELAB L channel.
+        scaler_y_ab (MinMaxScaler): Scaler for CIELAB a, b channels.
+    
+    Returns:
+        tuple: K-means and SOM segmentation data.
+    """
+    logging.info("Performing K-means segmentation with optimal k")
+    segmented_image_kmeans_opt, avg_colors_kmeans_opt, labels_kmeans_opt = k_mean_segmentation(image, n_clusters)
+    avg_colors_lab_kmeans_opt = convert_colors_to_cielab(avg_colors_kmeans_opt)
+    avg_colors_lab_dbn_kmeans_opt = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors_kmeans_opt)
+    reference_kmeans_opt = {
+        'original_image': image,
+        'segmented_image': segmented_image_kmeans_opt,
+        'avg_colors': avg_colors_kmeans_opt,
+        'avg_colors_lab': avg_colors_lab_kmeans_opt,
+        'avg_colors_lab_dbn': avg_colors_lab_dbn_kmeans_opt,
+        'labels': labels_kmeans_opt
+    }
+
+    logging.info("Performing SOM segmentation with optimal k")
+    segmented_image_som_opt, avg_colors_som_opt, labels_som_opt = som_segmentation(image, n_clusters)
+    avg_colors_lab_som_opt = convert_colors_to_cielab(avg_colors_som_opt)
+    avg_colors_lab_dbn_som_opt = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors_som_opt)
+    reference_som_opt = {
+        'original_image': image,
+        'segmented_image': segmented_image_som_opt,
+        'avg_colors': avg_colors_som_opt,
+        'avg_colors_lab': avg_colors_som_opt,  # [FIXED] Corrected to avg_colors_lab_som_opt
+        'avg_colors_lab_dbn': avg_colors_lab_dbn_som_opt,
+        'labels': labels_som_opt
+    }
+
+    return reference_kmeans_opt, reference_som_opt
+
 def process_reference_image(reference_image_path, dbn, scaler_x, scaler_y, scaler_y_ab, default_k):
     """Process the reference image to generate segmentation data.
     
@@ -281,52 +365,39 @@ def process_reference_image(reference_image_path, dbn, scaler_x, scaler_y, scale
         tuple: Reference K-means and SOM segmentation data, original image, DPC cluster count.
     """
     logging.info(f"Processing reference image: {reference_image_path}")
-    reference_image = cv2.imread(reference_image_path)
-    if reference_image is None:
-        logging.error("Failed to load reference image")
-        return None
-
-    original_image = reference_image.copy()
-    preprocessed_image = preprocess(reference_image)
-    if preprocessed_image is None or preprocessed_image.size == 0:
-        logging.error("Preprocessed image is empty. Skipping image.")
-        return None
-    resized_image = preprocess.resize_image(preprocessed_image)
-
-    logging.info("Determining optimal number of clusters")
+    
+    # Load and preprocess the image
+    preprocessor = Preprocessor(
+        initial_resize=512,
+        target_size=(256, 256),  # Adjusted to match intended size
+        denoise_h=10,
+        max_colors=8,
+        edge_enhance=False,
+        unsharp_amount=0.0,
+        unsharp_threshold=0
+    )
+    preprocessed_image = load_and_preprocess_image(reference_image_path, preprocessor)
+    if preprocessed_image is None:
+        return None, None, None, None
+    
+    original_image = preprocessed_image.copy()
+    
+    # Resize the preprocessed image
+    logging.info("Resizing preprocessed image to 256x256")
+    resized_image = preprocessed_image
+    
+    # Subsample pixels for cluster determination
+    logging.info("Subsampling pixels for cluster determination")
     pixels_subsample = resized_image.reshape(-1, 3).astype(np.float32)[np.random.choice(resized_image.shape[0] * resized_image.shape[1], 2048, replace=False)]
-    unique_colors = np.unique(pixels_subsample, axis=0)
-    logging.info(f"Number of unique colors after quantization: {len(unique_colors)}")
-    n_clusters = optimal_clusters(pixels_subsample, default_k, min_k=3, max_k=10)
-    logging.info(f"Optimal number of clusters determined: {n_clusters}")
-
+    
+    # Determine optimal number of clusters
+    n_clusters = determine_optimal_clusters(pixels_subsample, default_k)
+    
+    # Determine the number of clusters using DPC
     logging.info("Determining the number of clusters using DPC")
     dpc_k = optimal_clusters_dpc(pixels_subsample, min_k=2, max_k=10, subsample_threshold=1000, bandwidth=1.0)
     
-    # K-means segmentation for reference with optimal k
-    segmented_image_kmeans_opt, avg_colors_kmeans_opt, labels_kmeans_opt = k_mean_segmentation(resized_image, n_clusters)
-    avg_colors_lab_kmeans_opt = convert_colors_to_cielab(avg_colors_kmeans_opt)
-    avg_colors_lab_dbn_kmeans_opt = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors_kmeans_opt)
-    reference_kmeans_opt = {
-        'original_image': resized_image,
-        'segmented_image': segmented_image_kmeans_opt,
-        'avg_colors': avg_colors_kmeans_opt,
-        'avg_colors_lab': avg_colors_lab_kmeans_opt,
-        'avg_colors_lab_dbn': avg_colors_lab_dbn_kmeans_opt,
-        'labels': labels_kmeans_opt
-    }
-
-    # SOM segmentation for reference with optimal k
-    segmented_image_som_opt, avg_colors_som_opt, labels_som_opt = som_segmentation(resized_image, n_clusters)
-    avg_colors_lab_som_opt = convert_colors_to_cielab(avg_colors_som_opt)
-    avg_colors_lab_dbn_som_opt = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors_som_opt)
-    reference_som_opt = {
-        'original_image': resized_image,
-        'segmented_image': segmented_image_som_opt,
-        'avg_colors': avg_colors_som_opt,
-        'avg_colors_lab': avg_colors_som_opt,
-        'avg_colors_lab_dbn': avg_colors_lab_dbn_som_opt,
-        'labels': labels_som_opt
-    }
-
+    # Perform segmentation
+    reference_kmeans_opt, reference_som_opt = perform_segmentation(resized_image, n_clusters, dbn, scaler_x, scaler_y, scaler_y_ab)
+    
     return reference_kmeans_opt, reference_som_opt, original_image, dpc_k

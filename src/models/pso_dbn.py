@@ -8,12 +8,20 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # PSO-optimized DBN for RGB to CIELAB conversion
-# Based on [Paper Title], [Authors], [Year]
-# [Link to paper or DOI if available]
+# Based on "A precise method of color space conversion in the digital printing process based on PSO-DBN"
+# by Su et al., 2022, adapted for RGB-to-CIELAB
+# DOI: 10.1007/s00170-022-08729-7
 
 class DBN:
     """Deep Belief Network for RGB to CIELAB conversion."""
-    def __init__(self, input_size, hidden_layers, output_size):
+    def __init__(self, input_size=3, hidden_layers=[100, 50, 25], output_size=3):
+        """Initialize the DBN model.
+
+        Args:
+            input_size (int): Number of input features (3 for RGB). [UPDATED]
+            hidden_layers (list): List of hidden layer sizes (default: [100, 50, 25]). [UPDATED]
+            output_size (int): Number of output features (3 for CIELAB).
+        """
         logging.info("Initializing DBN model")
         self.model = Sequential()
         self.model.add(Dense(hidden_layers[0], input_dim=input_size, activation='relu'))
@@ -25,10 +33,10 @@ class DBN:
 
     def train(self, x_train, y_train, epochs=50, batch_size=32):
         """Train the DBN model.
-        
+
         Args:
-            x_train (numpy.ndarray): Input RGB data.
-            y_train (numpy.ndarray): Target CIELAB data.
+            x_train (numpy.ndarray): Input RGB data (shape: (n_samples, 3)).
+            y_train (numpy.ndarray): Target CIELAB data (shape: (n_samples, 3)).
             epochs (int): Number of training epochs.
             batch_size (int): Batch size for training.
         """
@@ -38,24 +46,24 @@ class DBN:
 
     def predict(self, x_test):
         """Predict CIELAB values for RGB input.
-        
+
         Args:
-            x_test (numpy.ndarray): Input RGB data.
-        
+            x_test (numpy.ndarray): Input RGB data (shape: (n_samples, 3)).
+
         Returns:
-            numpy.ndarray: Predicted CIELAB values.
+            numpy.ndarray: Predicted CIELAB values (shape: (n_samples, 3)).
         """
-        return self.model.predict(x_test)
+        return self.model.predict(x_test, verbose=0)
 
 def pso_optimize(dbn, x_train, y_train, bounds):
     """Optimize DBN weights using Particle Swarm Optimization.
-    
+
     Args:
         dbn (DBN): DBN model instance.
-        x_train (numpy.ndarray): Scaled RGB input data.
-        y_train (numpy.ndarray): Scaled CIELAB target data.
-        bounds (list): Bounds for PSO optimization.
-    
+        x_train (numpy.ndarray): Scaled RGB input data (shape: (n_samples, 3)).
+        y_train (numpy.ndarray): Scaled CIELAB target data (shape: (n_samples, 3)).
+        bounds (list): Bounds for PSO optimization (e.g., [(min, max), ...]).
+
     Returns:
         list: Optimized weights for the DBN.
     """
@@ -68,12 +76,12 @@ def pso_optimize(dbn, x_train, y_train, bounds):
             reshaped_weights.append(weights[start:start + size].reshape(shape))
             start += size
         dbn.model.set_weights(reshaped_weights)
-        predictions = dbn.model.predict(x_train)
+        predictions = dbn.model.predict(x_train, verbose=0)
         return np.mean((predictions - y_train) ** 2)
-    
+
     initial_weights = dbn.model.get_weights()
     flat_weights = np.hstack([w.flatten() for w in initial_weights])
-    
+
     flat_bounds = []
     epsilon = 1e-5
     for w in initial_weights:
@@ -83,17 +91,17 @@ def pso_optimize(dbn, x_train, y_train, bounds):
             min_val -= epsilon
             max_val += epsilon
         flat_bounds.extend([(min_val, max_val)] * w.size)
-    
+
     lb = [b[0] for b in flat_bounds]
     ub = [b[1] for b in flat_bounds]
 
     swarmsize = 5
     maxiter = 5
-    
+
     logging.info(f"Starting PSO optimization with swarmsize={swarmsize} and maxiter={maxiter}")
     optimized_weights, _ = pso(objective, lb=lb, ub=ub, swarmsize=swarmsize, maxiter=maxiter)
     logging.info("PSO optimization completed")
-    
+
     start = 0
     new_weights = []
     for w in initial_weights:
@@ -101,33 +109,41 @@ def pso_optimize(dbn, x_train, y_train, bounds):
         size = np.prod(shape)
         new_weights.append(optimized_weights[start:start + size].reshape(shape))
         start += size
-    
+
     return new_weights
 
 def convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors):
     """Convert RGB colors to CIELAB using PSO-optimized DBN.
-    
+
     Args:
         dbn (DBN): Trained DBN model.
-        scaler_x (StandardScaler): Scaler for RGB input.
+        scaler_x (StandardScaler): Scaler for RGB input (fitted on 3D data).
         scaler_y (MinMaxScaler): Scaler for CIELAB L channel.
         scaler_y_ab (MinMaxScaler): Scaler for CIELAB a, b channels.
-        avg_colors (list): List of RGB colors.
-    
+        avg_colors (numpy.ndarray): RGB color values (shape: (n_colors, 3)).
+
     Returns:
-        list: CIELAB colors predicted by DBN.
+        list: CIELAB colors predicted by DBN as list of tuples.
     """
-    logging.info("Converting RGB colors to CIELAB using PSO-DBN")
-    avg_colors_lab_dbn = []
-    for color in avg_colors:
-        color_rgb = np.array(color).reshape(1, -1)
-        color_rgb_scaled = scaler_x.transform(color_rgb)
-        color_lab_dbn_scaled = dbn.predict(color_rgb_scaled)
-        L_predicted_scaled = color_lab_dbn_scaled[:, 0].reshape(-1, 1)
-        ab_predicted_scaled = color_lab_dbn_scaled[:, 1:]
-        L_predicted = scaler_y.inverse_transform(L_predicted_scaled)
-        ab_predicted = scaler_y_ab.inverse_transform(ab_predicted_scaled)
-        color_lab_dbn = np.hstack((L_predicted, ab_predicted))[0]
-        avg_colors_lab_dbn.append(tuple(color_lab_dbn))
+    logging.info(f"Converting {len(avg_colors)} RGB colors to CIELAB using PSO-DBN")
+    avg_colors_array = np.array(avg_colors)
+    if len(avg_colors_array.shape) == 1:
+        avg_colors_array = avg_colors_array.reshape(1, -1)
+
+    # Apply scaling to RGB inputs
+    color_rgb_scaled = scaler_x.transform(avg_colors_array)  # [UPDATED] Expects 3 features
+
+    # Predict using DBN
+    color_lab_dbn_scaled = dbn.predict(color_rgb_scaled)
+
+    # Inverse transform to get original CIELAB scale
+    L_predicted_scaled = color_lab_dbn_scaled[:, [0]]
+    ab_predicted_scaled = color_lab_dbn_scaled[:, 1:]
+    L_predicted = scaler_y.inverse_transform(L_predicted_scaled)
+    ab_predicted = scaler_y_ab.inverse_transform(ab_predicted_scaled)
+    color_lab_dbn = np.hstack((L_predicted, ab_predicted))
+
+    # Convert to list of tuples
+    avg_colors_lab_dbn = [tuple(color) for color in color_lab_dbn]
     logging.info("Conversion using PSO-DBN completed")
     return avg_colors_lab_dbn
