@@ -1,6 +1,7 @@
 import logging
 import cv2
 import numpy as np
+from sklearn.cluster import KMeans
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -14,48 +15,75 @@ def exception_handler(func):
     return wrapper
 
 class Preprocessor:
-    def __init__(self, resize_factor=1.1, kernel_size=(3, 3), bilateral_d=9, bilateral_sigma_color=75, bilateral_sigma_space=75):
+    def __init__(self, initial_resize=512, target_size=(128, 128), denoise_h=10, max_colors=8, edge_enhance=False, unsharp_amount=0.0, unsharp_threshold=0):
         """Initialize the preprocessor with configurable parameters."""
-        self.resize_factor = resize_factor
-        self.kernel_size = kernel_size
-        self.bilateral_d = bilateral_d
-        self.bilateral_sigma_color = bilateral_sigma_color
-        self.bilateral_sigma_space = bilateral_sigma_space
+        self.initial_resize = initial_resize
+        self.target_size = target_size
+        self.denoise_h = denoise_h  # Parameter for non-local means denoising
+        self.max_colors = max_colors  # Maximum number of colors to allow
+        self.edge_enhance = edge_enhance
+        self.unsharp_amount = unsharp_amount  # Disabled by default
+        self.unsharp_threshold = unsharp_threshold
+
+    def estimate_n_colors(self, image):
+        """Estimate the number of colors based on unique pixel values."""
+        unique_colors = len(np.unique(image.reshape(-1, 3), axis=0))
+        # Set n_colors to 1.5x unique colors, capped at max_colors
+        n_colors = min(int(unique_colors * 1.5), self.max_colors)
+        logging.info(f"Estimated {unique_colors} unique colors, setting n_colors to {n_colors}")
+        return max(n_colors, 2)  # Ensure at least 2 colors
+
+    @exception_handler
+    def quantize_image(self, image):
+        """Quantize the image to a dynamically estimated number of colors using K-means."""
+        n_colors = self.estimate_n_colors(image)
+        pixels = image.reshape(-1, 3)  # Flatten to (n_pixels, 3) for clustering
+        if pixels.shape[0] > 10000:  # Subsample for efficiency
+            indices = np.random.choice(pixels.shape[0], 10000, replace=False)
+            pixels = pixels[indices]
+        kmeans = KMeans(n_clusters=n_colors, n_init=3, random_state=42).fit(pixels)
+        labels = kmeans.predict(image.reshape(-1, 3))
+        quantized = kmeans.cluster_centers_[labels].reshape(image.shape).astype(np.uint8)
+        logging.info(f"Quantized to {n_colors} colors, unique colors: {len(np.unique(quantized.reshape(-1, 3), axis=0))}")
+        return quantized
+
+    @exception_handler
+    def unsharp_mask(self, image):
+        """Apply unsharp masking to enhance image details (disabled by default)."""
+        if self.unsharp_amount > 0:
+            blurred = cv2.GaussianBlur(image, (5, 5), 1.0)
+            mask = cv2.subtract(image, blurred)
+            sharpened = cv2.addWeighted(image, 1.0 + self.unsharp_amount, mask, -self.unsharp_amount, 0)
+            if self.unsharp_threshold > 0:
+                low_contrast_mask = np.absolute(mask) < self.unsharp_threshold
+                np.copyto(sharpened, image, where=low_contrast_mask)
+            logging.info("Applied unsharp masking")
+            return sharpened
+        return image
 
     @exception_handler
     def preprocess(self, img):
-        """Preprocess the image with resizing, morphological opening, and bilateral filtering."""
+        """Preprocess the image with denoising, quantization, and resizing."""
         logging.info("Starting preprocessing")
-        # Resize
-        img = cv2.resize(img, None, fx=self.resize_factor, fy=self.resize_factor, interpolation=cv2.INTER_LINEAR)
-        # Morphological opening
-        kernel = np.ones(self.kernel_size, np.uint8)
-        img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-        # Bilateral filtering
-        img = cv2.bilateralFilter(img, self.bilateral_d, self.bilateral_sigma_color, self.bilateral_sigma_space)
+        
+        # Initial resize to reduce computation
+        scale_factor = self.initial_resize / min(img.shape[:2])
+        resized = cv2.resize(img, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
+        logging.info(f"Initial resize to approx {self.initial_resize}x{self.initial_resize}")
+
+        # Denoise with non-local means (replaces bilateral filter)
+        denoised = cv2.fastNlMeansDenoisingColored(resized, None, h=self.denoise_h, templateWindowSize=7, searchWindowSize=21)
+        logging.info(f"Applied non-local means denoising with h={self.denoise_h}")
+
+        # Apply unsharp masking (optional)
+        sharpened_image = self.unsharp_mask(denoised)
+        
+        # Quantize colors dynamically
+        quantized_image = self.quantize_image(sharpened_image)
+        
+        # Final resize to target size
+        final_image = cv2.resize(quantized_image, self.target_size, interpolation=cv2.INTER_AREA)
+        logging.info(f"Resized to {self.target_size[0]}x{self.target_size[1]}")
+
         logging.info("Preprocessing completed")
-        return img
-
-    @exception_handler
-    def unsharp_mask(self, image, amount=1.0, threshold=0):
-        """Apply unsharp masking to enhance image details."""
-        blurred = cv2.GaussianBlur(image, (5, 5), 1.0)  # Using default kernel_size=(5, 5), sigma=1.0
-        mask = cv2.subtract(image, blurred)
-        sharpened = cv2.addWeighted(image, 1.0 + amount, mask, -amount, 0)
-        if threshold > 0:
-            low_contrast_mask = np.absolute(mask) < threshold
-            np.copyto(sharpened, image, where=low_contrast_mask)
-        return sharpened
-
-    @exception_handler
-    def resize_image(self, img, size=(256, 256)):
-        """Resize the image to a specified size."""
-        return cv2.resize(img, size)
-
-# Example usage (can be removed if not needed in the module)
-if __name__ == "__main__":
-    # Test the class
-    preprocessor = Preprocessor()
-    test_img = np.zeros((100, 100, 3), dtype=np.uint8)
-    processed_img = preprocessor.preprocess(test_img)
-    print("Processed image shape:", processed_img.shape if processed_img is not None else "Failed")
+        return final_image
