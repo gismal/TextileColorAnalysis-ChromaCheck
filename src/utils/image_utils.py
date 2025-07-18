@@ -367,7 +367,15 @@ def process_reference_image(reference_image_path, dbn, scaler_x, scaler_y, scale
     logging.info(f"Processing reference image: {reference_image_path}")
     
     # Load and preprocess the image
-    preprocessor = Preprocessor()
+    preprocessor = Preprocessor(
+        initial_resize=512,
+        target_size=(256, 256),  # Adjusted to match intended size
+        denoise_h=10,
+        max_colors=8,
+        edge_enhance=False,
+        unsharp_amount=0.0,
+        unsharp_threshold=0
+    )
     preprocessed_image = load_and_preprocess_image(reference_image_path, preprocessor)
     if preprocessed_image is None:
         return None, None, None, None
@@ -376,7 +384,7 @@ def process_reference_image(reference_image_path, dbn, scaler_x, scaler_y, scale
     
     # Resize the preprocessed image
     logging.info("Resizing preprocessed image to 256x256")
-    resized_image = preprocessor.resize_image(preprocessed_image, size=(256, 256))  # [ADDED]
+    resized_image = preprocessed_image
     
     # Subsample pixels for cluster determination
     logging.info("Subsampling pixels for cluster determination")

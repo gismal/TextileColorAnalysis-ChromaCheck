@@ -30,11 +30,21 @@ class Segmenter:
         return similarities
 
     def find_best_matches(self, segmentation_result):
-        """Find the best matches between segmented colors and target colors."""
+        """Find the best matches between segmented colors and target colors.
+        Args:
+            segmentation_data (dict): Contains 'avg_colors_lab' for test image.
+        
+        Returns:
+            list: Tuple of (test_idx, ref_idx) pairs.
+        """
         segmented_colors = segmentation_result[1]  # avg_colors
         best_matches = []
+        # ### MODIFIED: Check if target_colors has no rows
+        if self.target_colors.shape[0] == 0:  # Use shape[0] to check number of colors
+            logging.error("Target colors array has no entries. Cannot find best matches.")
+            return []
         for i, color in enumerate(segmented_colors):
-            if not self.target_colors:  # Avoid division by zero or empty list
+            if np.all(np.array(color) <= np.array([5, 130, 130])):  # Ignore nearly black segments
                 best_matches.append((i, -1, float('inf')))
                 continue
             min_distance = float('inf')
@@ -44,6 +54,10 @@ class Segmenter:
                 if distance < min_distance:
                     min_distance = distance
                     best_target_idx = j
+         ### MODIFIED: Validate best_target_idx against target_colors length
+            if best_target_idx >= self.target_colors.shape[0]:
+                logging.warning(f"Invalid best_target_idx {best_target_idx} for {self.target_colors.shape[0]} target colors. Setting to -1.")
+                best_target_idx = -1
             best_matches.append((i, best_target_idx, min_distance))
         return best_matches
 

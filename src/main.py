@@ -50,15 +50,17 @@ def main(config_path='config.yaml'):
         k = config['kmeans_clusters']
         predefined_k = config['predefined_k']
 
-            # Load and prepare data for DBN training
+        # Load and prepare data for DBN training
         rgb_data, lab_data = load_data(test_images)
         print(f"rgb_data: {rgb_data}, shape: {rgb_data.shape if hasattr(rgb_data, 'shape') else 'None'}")
         print(f"lab_data: {lab_data}, shape: {lab_data.shape if hasattr(lab_data, 'shape') else 'None'}")
 
-        if not rgb_data or not lab_data or (not rgb_data.size and not lab_data.size):
-            logging.e
+        # ### MODIFIED: Fix array truth value check
+        if rgb_data.size == 0 or lab_data.size == 0:
+            logging.error("No valid data loaded from test_images. Check file paths.")
+            return
         
-            # Subsample 800 RGB-to-CIELAB pairs for training
+        # Subsample 800 RGB-to-CIELAB pairs for training
         n_samples = 800
         rgb_samples = []
         lab_samples = []
@@ -82,7 +84,7 @@ def main(config_path='config.yaml'):
         print(f"lab_samples shape: {lab_samples.shape}")
         
         # Train-test split
-        x_train, x_test, y_train, y_test = train_test_split(rgb_samples, lab_data, test_size=0.2, random_state=42)
+        x_train, x_test, y_train, y_test = train_test_split(rgb_samples, lab_samples, test_size=0.2, random_state=42)  # Fixed lab_data to lab_samples
 
         # Initialize DBN for RGB-to-CIELAB
         input_size = 3
@@ -129,11 +131,13 @@ def main(config_path='config.yaml'):
 
             # Preprocess the image
             preprocessor = Preprocessor(
-                resize_factor=1.1,
-                kernel_size=(3, 3),
-                bilateral_d=9,
-                bilateral_sigma_color=75,
-                bilateral_sigma_space=75
+                initial_resize=512,
+                target_size=(128, 128),
+                denoise_h=10,
+                max_colors=8,
+                edge_enhance=False,
+                unsharp_amount=0.0,
+                unsharp_threshold=0
             )
             preprocessed_image = preprocessor.preprocess(image)
 
@@ -175,17 +179,22 @@ def main(config_path='config.yaml'):
                 lab_traditional = [cv2.cvtColor(np.uint8([[color]]), cv2.COLOR_RGB2LAB)[0][0] for color in rgb_colors]
                 lab_dbn = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, rgb_colors)
                 
-                delta_e_traditional = np.mean([ciede2000_distance(lab_traditional[i], target_colors[best_kmeans_opt[i][1]]) 
-                                             for i in range(len(lab_traditional)) if best_kmeans_opt[i][1] != -1])
-                delta_e_dbn = np.mean([ciede2000_distance(lab_dbn[i], target_colors[best_kmeans_opt[i][1]]) 
-                                     for i in range(len(lab_dbn)) if best_kmeans_opt[i][1] != -1])
+                # ### MODIFIED: Handle invalid indices in Delta E calculation
+                delta_e_traditional = np.mean([ciede2000_distance(lab_traditional[i], target_colors[j])
+                                             for i in range(len(lab_traditional))
+                                             for j in best_kmeans_opt[i][1:]
+                                             if j != -1 and 0 <= j < len(target_colors)])
+                delta_e_dbn = np.mean([ciede2000_distance(lab_dbn[i], target_colors[j])
+                                      for i in range(len(lab_dbn))
+                                      for j in best_kmeans_opt[i][1:]
+                                      if j != -1 and 0 <= j < len(target_colors)])
                 
                 overall_delta_e[image_name] = {
                     'traditional': delta_e_traditional,
                     'pso_dbn': delta_e_dbn
                 }
                 save_output(dataset_name, "delta_e", f"{image_name}_delta_e.csv", overall_delta_e[image_name])
-
+        
         # Log and save overall Delta E results
         logging.info("Overall Delta E results:")
         for image_name, delta_e in overall_delta_e.items():
