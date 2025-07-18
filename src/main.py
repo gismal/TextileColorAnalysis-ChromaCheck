@@ -173,21 +173,34 @@ def main(config_path='config.yaml'):
                 save_output(dataset_name, "dbscan", f"{image_name}_segmented.png", seg_dbscan)
                 save_output(dataset_name, "som_optimal", f"{image_name}_segmented.png", seg_som_opt)
                 save_output(dataset_name, "som_predefined", f"{image_name}_segmented.png", seg_som_predef)
-
-                # Calculate and save Delta E
-                rgb_colors = seg_kmeans_opt['avg_colors_rgb'] if 'avg_colors_rgb' in seg_kmeans_opt else seg_kmeans_opt[1]
-                lab_traditional = [cv2.cvtColor(np.uint8([[color]]), cv2.COLOR_RGB2LAB)[0][0] for color in rgb_colors]
-                lab_dbn = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, rgb_colors)
                 
-                # ### MODIFIED: Handle invalid indices in Delta E calculation
-                delta_e_traditional = np.mean([ciede2000_distance(lab_traditional[i], target_colors[j])
-                                             for i in range(len(lab_traditional))
-                                             for j in best_kmeans_opt[i][1:]
-                                             if j != -1 and 0 <= j < len(target_colors)])
-                delta_e_dbn = np.mean([ciede2000_distance(lab_dbn[i], target_colors[j])
-                                      for i in range(len(lab_dbn))
-                                      for j in best_kmeans_opt[i][1:]
-                                      if j != -1 and 0 <= j < len(target_colors)])
+                delta_e_traditional = float('nan')
+                delta_e_dbn = float('nan')
+                # Calculate and save Delta E with error handling
+                try:
+                    rgb_colors = seg_kmeans_opt[1] if isinstance(seg_kmeans_opt[1], (list, np.ndarray)) else seg_kmeans_opt.get('avg_colors_rgb', [])
+                    if not rgb_colors:
+                        raise ValueError("No RGB colors available for Delta E calculation.")
+                    lab_traditional = [cv2.cvtColor(np.uint8([[color]]), cv2.COLOR_RGB2LAB)[0][0] for color in rgb_colors]
+                    lab_dbn = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, rgb_colors)
+                    
+                    # ### MODIFIED: Robust Delta E calculation with validation
+                    
+                    valid_pairs = []
+                    for i, (test_idx, ref_idx, _) in enumerate(best_kmeans_opt):
+                        if (0 <= test_idx < len(lab_traditional) and 
+                            ref_idx != -1 and 
+                            0 <= ref_idx < len(target_colors)):
+                            valid_pairs.append((lab_traditional[test_idx], target_colors[ref_idx]))
+                    if valid_pairs:
+                        delta_e_traditional = np.mean([ciede2000_distance(lab_t, lab_r) for lab_t, lab_r in valid_pairs])
+                        delta_e_dbn = np.mean([ciede2000_distance(lab_dbn[test_idx], target_colors[ref_idx]) 
+                                            for test_idx, ref_idx, _ in best_kmeans_opt 
+                                            if 0 <= test_idx < len(lab_dbn) and ref_idx != -1 and 0 <= ref_idx < len(target_colors)])
+                    else:
+                        logging.warning(f"No valid color pairs found for {image_name}. Delta E set to NaN.")
+                except Exception as e:
+                    logging.error(f"Error calculating Delta E for {image_name}: {str(e)}. Setting to NaN.")
                 
                 overall_delta_e[image_name] = {
                     'traditional': delta_e_traditional,

@@ -32,16 +32,18 @@ class Segmenter:
     def find_best_matches(self, segmentation_result):
         """Find the best matches between segmented colors and target colors.
         Args:
-            segmentation_data (dict): Contains 'avg_colors_lab' for test image.
+            segmentation_result: Tuple of (segmented_image, avg_colors, labels).
         
         Returns:
-            list: Tuple of (test_idx, ref_idx) pairs.
+            list: List of (test_idx, ref_idx, distance) tuples.
         """
         segmented_colors = segmentation_result[1]  # avg_colors
         best_matches = []
-        # ### MODIFIED: Check if target_colors has no rows
-        if self.target_colors.shape[0] == 0:  # Use shape[0] to check number of colors
+        if self.target_colors.shape[0] == 0:
             logging.error("Target colors array has no entries. Cannot find best matches.")
+            return []
+        if len(segmented_colors) != len(range(len(segmented_colors))):
+            logging.error("Mismatch between segmented colors and indices. Check segmentation result.")
             return []
         for i, color in enumerate(segmented_colors):
             if np.all(np.array(color) <= np.array([5, 130, 130])):  # Ignore nearly black segments
@@ -54,11 +56,11 @@ class Segmenter:
                 if distance < min_distance:
                     min_distance = distance
                     best_target_idx = j
-         ### MODIFIED: Validate best_target_idx against target_colors length
             if best_target_idx >= self.target_colors.shape[0]:
                 logging.warning(f"Invalid best_target_idx {best_target_idx} for {self.target_colors.shape[0]} target colors. Setting to -1.")
                 best_target_idx = -1
             best_matches.append((i, best_target_idx, min_distance))
+        logging.debug(f"Best matches: {best_matches}")  # Debug output
         return best_matches
 
     def run_kmeans_optimal(self):
@@ -75,7 +77,6 @@ class Segmenter:
         """Run DBSCAN with optimal parameters."""
         pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
         labels = optimal_dbscan(self.preprocessed_image)
-        # Convert DBSCAN labels to segmentation results
         unique_labels = np.unique(labels[labels >= 0])
         centers = np.array([np.mean(pixels[labels == label], axis=0) for label in unique_labels])
         centers = np.uint8(centers)
@@ -101,31 +102,25 @@ class Segmenter:
                     som_opt_results, som_predef_results) where each _results is a tuple
                     (segmented_image, similarities, best_matches).
         """
-        # Preprocessed path (using output_dir for consistency)
         preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
         cv2.imwrite(preprocessed_path, self.preprocessed_image)
 
-        # K-means with optimal clusters
         kmeans_opt_results = self.run_kmeans_optimal()
         sim_kmeans_opt = self.compute_similarity(kmeans_opt_results)
         best_kmeans_opt = self.find_best_matches(kmeans_opt_results)
 
-        # K-means with predefined clusters
         kmeans_predef_results = self.run_kmeans_predefined()
         sim_kmeans_predef = self.compute_similarity(kmeans_predef_results)
         best_kmeans_predef = self.find_best_matches(kmeans_predef_results)
 
-        # DBSCAN
         dbscan_results = self.run_dbscan()
         sim_dbscan = self.compute_similarity(dbscan_results)
         best_dbscan = self.find_best_matches(dbscan_results)
 
-        # SOM with optimal clusters
         som_opt_results = self.run_som_optimal()
         sim_som_opt = self.compute_similarity(som_opt_results)
         best_som_opt = self.find_best_matches(som_opt_results)
 
-        # SOM with predefined clusters
         som_predef_results = self.run_som_predefined()
         sim_som_predef = self.compute_similarity(som_predef_results)
         best_som_predef = self.find_best_matches(som_predef_results)
