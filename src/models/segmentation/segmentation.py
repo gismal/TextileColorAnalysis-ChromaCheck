@@ -2,11 +2,25 @@ import logging
 import os
 import cv2
 import numpy as np
+from abc import ABC, abstractmethod
+from sklearn.cluster import KMeans
 from src.utils.segmentation_utils import k_mean_segmentation, som_segmentation, optimal_clusters, dbscan_clustering, optimal_clusters_dbscan, optimal_kmeans, optimal_dbscan, optimal_som, determine_optimal_clusters
 from src.utils.image_utils import ciede2000_distance
 
+# Abstract base class for cluster determination strategies
+class ClusterStrategy(ABC):
+    @abstractmethod
+    def determine_k(self, pixels, default_k, min_k, max_k):
+        pass
+
+# Concrete strategy using the existing metric-based approach
+class MetricBasedStrategy(ClusterStrategy):
+    def determine_k(self, pixels, default_k, min_k=3, max_k=10):
+        logging.info(f"Determining optimal k for pixels with shape {pixels.shape}")
+        return optimal_clusters(pixels, default_k, min_k, max_k)
+
 class Segmenter:
-    def __init__(self, preprocessed_image, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt, dbn, scalers, predefined_k, k_values, som_values, output_dir):
+    def __init__(self, preprocessed_image, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt, dbn, scalers, predefined_k, k_values, som_values, output_dir, k_type='determined', cluster_strategy=None):
         """Initialize the segmenter for image segmentation and color conversion."""
         self.preprocessed_image = preprocessed_image
         self.target_colors = target_colors
@@ -19,6 +33,16 @@ class Segmenter:
         self.k_values = k_values
         self.som_values = som_values
         self.output_dir = output_dir
+        self.k_type = k_type  # 'determined' or 'predefined'
+        self.cluster_strategy = cluster_strategy or MetricBasedStrategy()
+
+    def quantize_image(self, n_colors=50):
+        """Quantize the image to reduce the number of unique colors."""
+        logging.info(f"Quantizing image with {len(np.unique(self.preprocessed_image.reshape(-1, 3), axis=0))} unique colors to {n_colors}")
+        pixels = self.preprocessed_image.reshape(-1, 3)
+        kmeans = KMeans(n_clusters=n_colors, n_init=3, random_state=42).fit(pixels)
+        quantized_pixels = kmeans.cluster_centers_[kmeans.predict(pixels)]
+        return quantized_pixels.reshape(self.preprocessed_image.shape).astype(np.uint8)
 
     def compute_similarity(self, segmentation_result):
         """Compute similarity scores between segmented colors and target colors."""
@@ -34,7 +58,7 @@ class Segmenter:
         segmented_colors = segmentation_result[1]  # avg_colors
         best_matches = []
         for i, color in enumerate(segmented_colors):
-            if not self.target_colors:  # Avoid division by zero or empty list
+            if self.target_colors.size == 0:  # Avoid division by zero or empty list
                 best_matches.append((i, -1, float('inf')))
                 continue
             min_distance = float('inf')
@@ -49,19 +73,27 @@ class Segmenter:
 
     def run_kmeans_optimal(self):
         """Run K-means with dynamically determined optimal clusters."""
-        pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
-        optimal_k = optimal_clusters(pixels, default_k=3, max_k=max(self.k_values))
+        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
+        logging.info(f"Running K-means with optimal k determination")
+        if self.k_type == 'determined':
+            optimal_k = self.cluster_strategy.determine_k(pixels, default_k=3, min_k=3, max_k=max(self.k_values))
+            logging.info(f"Optimal k determined: {optimal_k}")
+        else:
+            optimal_k = self.predefined_k
+            logging.info(f"Using predefined k: {optimal_k}")
         return k_mean_segmentation(self.preprocessed_image, optimal_k)
 
     def run_kmeans_predefined(self):
         """Run K-means with predefined number of clusters."""
+        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
+        logging.info(f"Running K-means with predefined k: {self.predefined_k}")
         return k_mean_segmentation(self.preprocessed_image, self.predefined_k)
 
     def run_dbscan(self):
         """Run DBSCAN with optimal parameters."""
-        pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
+        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
+        logging.info("Running DBSCAN with optimal parameters")
         labels = optimal_dbscan(self.preprocessed_image)
-        # Convert DBSCAN labels to segmentation results
         unique_labels = np.unique(labels[labels >= 0])
         centers = np.array([np.mean(pixels[labels == label], axis=0) for label in unique_labels])
         centers = np.uint8(centers)
@@ -71,12 +103,20 @@ class Segmenter:
 
     def run_som_optimal(self):
         """Run SOM with dynamically determined optimal clusters."""
-        pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32) / 255.0
-        optimal_k = optimal_clusters(pixels, default_k=3, max_k=max(self.som_values))
+        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32) / 255.0
+        logging.info(f"Running SOM with optimal k determination")
+        if self.k_type == 'determined':
+            optimal_k = self.cluster_strategy.determine_k(pixels, default_k=3, min_k=3, max_k=max(self.som_values))
+            logging.info(f"Optimal k determined: {optimal_k}")
+        else:
+            optimal_k = self.predefined_k
+            logging.info(f"Using predefined k: {optimal_k}")
         return som_segmentation(self.preprocessed_image, optimal_k)
 
     def run_som_predefined(self):
         """Run SOM with predefined number of clusters."""
+        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32) / 255.0
+        logging.info(f"Running SOM with predefined k: {self.predefined_k}")
         return som_segmentation(self.preprocessed_image, self.predefined_k)
 
     def process(self):
@@ -87,9 +127,11 @@ class Segmenter:
                     som_opt_results, som_predef_results) where each _results is a tuple
                     (segmented_image, similarities, best_matches).
         """
-        # Preprocessed path (using output_dir for consistency)
+        logging.info("Starting image segmentation process")
+        # Quantize image to reduce unique colors
+        quantized_image = self.quantize_image()
         preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
-        cv2.imwrite(preprocessed_path, self.preprocessed_image)
+        cv2.imwrite(preprocessed_path, quantized_image)
 
         # K-means with optimal clusters
         kmeans_opt_results = self.run_kmeans_optimal()
@@ -116,6 +158,7 @@ class Segmenter:
         sim_som_predef = self.compute_similarity(som_predef_results)
         best_som_predef = self.find_best_matches(som_predef_results)
 
+        logging.info("Segmentation process completed")
         return (
             preprocessed_path,
             (kmeans_opt_results[0], sim_kmeans_opt, best_kmeans_opt),
