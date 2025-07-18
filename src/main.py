@@ -42,7 +42,7 @@ def main(config_path='config.yaml'):
             return
 
         # Derive dataset name from config path
-        dataset_name = os.path.basename(os.path.dirname(config_path))  # e.g., 'configurations' from path
+        dataset_name = os.path.basename(os.path.dirname(config_path))
 
         reference_image_path = config['reference_image_path']
         test_images = config['test_images']
@@ -52,8 +52,8 @@ def main(config_path='config.yaml'):
 
         # Load and prepare data for DBN training
         rgb_data, lab_data = load_data(test_images)
-        print(f"rgb_data: {rgb_data}, shape: {rgb_data.shape if hasattr(rgb_data, 'shape') else 'None'}")
-        print(f"lab_data: {lab_data}, shape: {lab_data.shape if hasattr(lab_data, 'shape') else 'None'}")
+        logging.info(f"rgb_data shape: {rgb_data.shape if hasattr(rgb_data, 'shape') else 'None'}")
+        logging.info(f"lab_data shape: {lab_data.shape if hasattr(lab_data, 'shape') else 'None'}")
 
         # ### MODIFIED: Fix array truth value check
         if rgb_data.size == 0 or lab_data.size == 0:
@@ -65,12 +65,12 @@ def main(config_path='config.yaml'):
         rgb_samples = []
         lab_samples = []
         for img_rgb, img_lab in zip(rgb_data, lab_data):
-            print(f"Processing img_rgb shape: {img_rgb.shape}, img_lab shape: {img_lab.shape}")
+            logging.info(f"Processing img_rgb shape: {img_rgb.shape}, img_lab shape: {img_lab.shape}")
             n_per_image = n_samples // len(test_images)
-            if n_per_image > 0 and img_rgb.shape[0] >= n_per_image:
-                indices = np.random.choice(img_rgb.shape[0], n_per_image, replace=False)
-                rgb_samples.append(img_rgb[indices])
-                lab_samples.append(img_lab[indices])
+            if n_per_image > 0 and img_rgb.size >= n_per_image * 3:
+                indices = np.random.choice(img_rgb.size // 3, n_per_image, replace=False)
+                rgb_samples.append(img_rgb.reshape(-1, 3)[indices])
+                lab_samples.append(img_lab.reshape(-1, 3)[indices])
             else:
                 logging.warning(f"Insufficient samples in image. n_per_image: {n_per_image}, img_rgb.shape[0]: {img_rgb.shape[0]}")
 
@@ -80,8 +80,8 @@ def main(config_path='config.yaml'):
 
         rgb_samples = np.vstack(rgb_samples)[:, :3]  # Shape: (800, 3)
         lab_samples = np.vstack(lab_samples)[:, :3]  # Shape: (800, 3)
-        print(f"rgb_samples shape: {rgb_samples.shape}")
-        print(f"lab_samples shape: {lab_samples.shape}")
+        logging.info(f"rgb_samples shape: {rgb_samples.shape}")
+        logging.info(f"lab_samples shape: {lab_samples.shape}")
         
         # Train-test split
         x_train, x_test, y_train, y_test = train_test_split(rgb_samples, lab_samples, test_size=0.2, random_state=42)  # Fixed lab_data to lab_samples
@@ -91,6 +91,7 @@ def main(config_path='config.yaml'):
         output_size = 3
         hidden_layers = [100, 50, 25]
         dbn = DBN(input_size, hidden_layers, output_size)
+        logging.info("DBN model initialized")
 
         # Scale data
         scaler_x = StandardScaler().fit(x_train)
@@ -98,6 +99,7 @@ def main(config_path='config.yaml'):
         scaler_y_ab = MinMaxScaler(feature_range=(-128, 127)).fit(y_train[:, 1:])  # a,b channels
         x_train_scaled = scaler_x.transform(x_train)
         y_train_scaled = np.hstack((scaler_y.transform(y_train[:, [0]]), scaler_y_ab.transform(y_train[:, 1:])))
+        logging.info(f"x_train_scaled shape: {x_train_scaled.shape}, y_train_scaled shape: {y_train_scaled.shape}")
 
         # Build and optimize DBN with PSO
         sample_input = np.zeros((1, input_size))
@@ -107,6 +109,7 @@ def main(config_path='config.yaml'):
         try:
             optimized_weights = pso_optimize(dbn, x_train_scaled, y_train_scaled, bounds)
             dbn.model.set_weights(optimized_weights)
+            logging.info("PSO optimization completed")
         except Exception as e:
             logging.error(f"Failed to optimize DBN: {e}")
             return
@@ -119,11 +122,12 @@ def main(config_path='config.yaml'):
 
         target_colors = reference_kmeans_opt['avg_colors_lab']
         save_output(dataset_name, "reference_summary", "reference_summary.png", original_image)
+        logging.info(f"Reference image processed, target_colors shape: {len(target_colors)}")
 
         # Process test images
         overall_delta_e = {}
         for image_path in test_images:
-            # Load the image
+            logging.info(f"Processing test image: {image_path}")
             image = cv2.imread(image_path)
             if image is None:
                 logging.error(f"Failed to load image: {image_path}")
@@ -140,22 +144,26 @@ def main(config_path='config.yaml'):
                 unsharp_threshold=0
             )
             preprocessed_image = preprocessor.preprocess(image)
+            logging.info(f"Preprocessing completed, unique colors: {len(np.unique(preprocessed_image.reshape(-1, 3), axis=0))}")
 
-            # Segment the preprocessed image
-            segmenter = Segmenter(
-                preprocessed_image,
-                target_colors,
-                distance_threshold,
-                reference_kmeans_opt,
-                reference_som_opt,
-                dbn,
-                (scaler_x, scaler_y, scaler_y_ab),
-                predefined_k,
-                [10, 15, 20],
-                [5, 10, 20],
-                OUTPUT_DIR
-            )
-            result = segmenter.process()
+            # Test both determined and predefined k types
+            for k_type in ['determined', 'predefined']:
+                logging.info(f"Starting segmentation with k_type: {k_type}")
+                segmenter = Segmenter(
+                    preprocessed_image,
+                    target_colors,
+                    distance_threshold,
+                    reference_kmeans_opt,
+                    reference_som_opt,
+                    dbn,
+                    (scaler_x, scaler_y, scaler_y_ab),
+                    predefined_k,
+                    k_values=[10, 15, 20],
+                    som_values=[5, 10, 20],
+                    output_dir=OUTPUT_DIR,
+                    k_type=k_type
+                )
+                result = segmenter.process()
 
             if result:
                 preprocessed_path, \
