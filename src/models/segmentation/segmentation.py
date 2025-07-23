@@ -4,8 +4,10 @@ import cv2
 import numpy as np
 from abc import ABC, abstractmethod
 from sklearn.cluster import KMeans
+from src.utils.color.color_analysis import ColorMetricCalculator
 from src.utils.segmentation_utils import k_mean_segmentation, optimal_clusters, optimal_dbscan, optimal_som
 from src.utils.image_utils import ciede2000_distance
+from datetime import datetime
 
 # Abstract base class for cluster determination strategies
 class ClusterStrategy(ABC):
@@ -71,8 +73,8 @@ class SegmenterBase(ABC):
         if self.target_colors.shape[0] == 0:
             logging.error("Target colors array has no entries. Cannot find best matches.")
             return []
-        if len(segmented_colors) != len(range(len(segmented_colors))):
-            logging.error("Mismatch between segmented colors and indices. Check segmentation result.")
+        if not segmented_colors or len(segmented_colors) != len(range(len(segmented_colors))):
+            logging.error("Mismatch or empty segmented colors. Check segmentation result.")
             return []
         for i, color in enumerate(segmented_colors):
             if np.all(np.array(color) <= np.array([5, 130, 130])):  # Ignore nearly black segments
@@ -178,46 +180,55 @@ class Segmenter:
             return DBSCANSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.k_type, self.cluster_strategy)
         elif method == 'som_optimal':
             return SOMSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.som_values, self.predefined_k, self.k_type, self.cluster_strategy)
-        elif method == 'som_predefined':
+        elif method == 'som_predef':
             return SOMSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.som_values, self.predefined_k, 'predefined', self.cluster_strategy)
         else:
             raise ValueError(f"Unknown segmentation method: {method}")
 
     def process(self):
-        """Process the image with various segmentation methods.
-        
-        Returns:
-            tuple: (preprocessed_path, kmeans_opt_results, kmeans_predef_results, dbscan_results,
-                    som_opt_results, som_predef_results) where each _results is a tuple
-                    (segmented_image, similarities, best_matches).
-        """
+        """Process the image with various segmentation methods."""
         preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
         cv2.imwrite(preprocessed_path, self.preprocessed_image)
 
-        kmeans_opt = self.create_segmenter('kmeans_optimal')
-        kmeans_opt_results = kmeans_opt.segment()
-        sim_kmeans_opt = kmeans_opt.compute_similarity(kmeans_opt_results)
-        best_kmeans_opt = kmeans_opt.find_best_matches(kmeans_opt_results)
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        methods = {
+            'kmeans_optimal': self.create_segmenter('kmeans_optimal'),
+            'kmeans_predefined': self.create_segmenter('kmeans_predefined'),
+            'dbscan': self.create_segmenter('dbscan'),
+            'som_optimal': self.create_segmenter('som_optimal'),
+            'som_predef': self.create_segmenter('som_predefined')
+        }
+        results = {}
+        for method_name, segmenter in methods.items():
+            results[method_name] = segmenter.segment()
+            segmented_image = results[method_name][0]
+            file_name = f"{current_date}_{method_name}_{os.path.basename(self.output_dir).split('.')[0]}_segmented.png"
+            output_path = os.path.join(self.output_dir, file_name)
+            cv2.imwrite(output_path, segmented_image)
+            logging.info(f"Saved {file_name} to {output_path}")
 
-        kmeans_predef = self.create_segmenter('kmeans_predefined')
-        kmeans_predef_results = kmeans_predef.segment()
-        sim_kmeans_predef = kmeans_predef.compute_similarity(kmeans_predef_results)
-        best_kmeans_predef = kmeans_predef.find_best_matches(kmeans_predef_results)
+        # Initialize ColorComparator with target colors
+        color_comparator = ColorMetricCalculator(self.target_colors)
+        
+        kmeans_opt_results = results['kmeans_optimal']
+        sim_kmeans_opt = color_comparator.compute_similarity(kmeans_opt_results[1])  # Use avg_colors
+        best_kmeans_opt = color_comparator.find_best_matches(kmeans_opt_results[1])
 
-        dbscan = self.create_segmenter('dbscan')
-        dbscan_results = dbscan.segment()
-        sim_dbscan = dbscan.compute_similarity(dbscan_results)
-        best_dbscan = dbscan.find_best_matches(dbscan_results)
+        kmeans_predef_results = results['kmeans_predefined']
+        sim_kmeans_predef = color_comparator.compute_similarity(kmeans_predef_results[1])
+        best_kmeans_predef = color_comparator.find_best_matches(kmeans_predef_results[1])
 
-        som_opt = self.create_segmenter('som_optimal')
-        som_opt_results = som_opt.segment()
-        sim_som_opt = som_opt.compute_similarity(som_opt_results)
-        best_som_opt = som_opt.find_best_matches(som_opt_results)
+        dbscan_results = results['dbscan']
+        sim_dbscan = color_comparator.compute_similarity(dbscan_results[1])
+        best_dbscan = color_comparator.find_best_matches(dbscan_results[1])
 
-        som_predef = self.create_segmenter('som_predefined')
-        som_predef_results = som_predef.segment()
-        sim_som_predef = som_predef.compute_similarity(som_predef_results)
-        best_som_predef = som_predef.find_best_matches(som_predef_results)
+        som_opt_results = results['som_optimal']
+        sim_som_opt = color_comparator.compute_similarity(som_opt_results[1])
+        best_som_opt = color_comparator.find_best_matches(som_opt_results[1])
+
+        som_predef_results = results['som_predef']
+        sim_som_predef = color_comparator.compute_similarity(som_predef_results[1])
+        best_som_predef = color_comparator.find_best_matches(som_predef_results[1])
 
         logging.info("Segmentation process completed")
         return (

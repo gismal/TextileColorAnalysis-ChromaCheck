@@ -15,7 +15,8 @@ from src.data.load_data import load_config, validate_config, load_data
 from src.models.pso_dbn import DBN, pso_optimize, convert_colors_to_cielab_dbn
 from src.data.preprocess import Preprocessor
 from src.models.segmentation.segmentation import Segmenter
-from src.utils.image_utils import ciede2000_distance, process_reference_image
+from src.utils.color.color_analysis import ColorMetricCalculator
+from src.utils.image_utils import process_reference_image
 from src.utils.file_utils import save_output
 from src.utils.visualization import save_reference_summary_plot
 
@@ -23,12 +24,14 @@ from src.utils.visualization import save_reference_summary_plot
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# Set up logging
-logging.basicConfig(filename='output/log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 # Define absolute paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, '..', 'reports', 'figures')
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, '..', 'output')
+os.makedirs(OUTPUT_DIR, exist_ok=True)  # Ensure output directory exists
+
+# Set up logging
+log_file = os.path.join(OUTPUT_DIR, 'log.txt')
+logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main(config_path='config.yaml'):
     profiler = cProfile.Profile()
@@ -55,15 +58,13 @@ def main(config_path='config.yaml'):
         logging.info(f"rgb_data shape: {rgb_data.shape if hasattr(rgb_data, 'shape') else 'None'}")
         logging.info(f"lab_data shape: {lab_data.shape if hasattr(lab_data, 'shape') else 'None'}")
 
-        # ### MODIFIED: Fix array truth value check
         if rgb_data.size == 0 or lab_data.size == 0:
             logging.error("No valid data loaded from test_images. Check file paths.")
             return
         
         # Subsample 800 RGB-to-CIELAB pairs for training
         n_samples = 800
-        rgb_samples = []
-        lab_samples = []
+        rgb_samples, lab_samples = [], []
         for img_rgb, img_lab in zip(rgb_data, lab_data):
             logging.info(f"Processing img_rgb shape: {img_rgb.shape}, img_lab shape: {img_lab.shape}")
             n_per_image = n_samples // len(test_images)
@@ -72,7 +73,7 @@ def main(config_path='config.yaml'):
                 rgb_samples.append(img_rgb.reshape(-1, 3)[indices])
                 lab_samples.append(img_lab.reshape(-1, 3)[indices])
             else:
-                logging.warning(f"Insufficient samples in image. n_per_image: {n_per_image}, img_rgb.shape[0]: {img_rgb.shape[0]}")
+                logging.warning(f"Insufficient samples in image. n_per_image: {n_per_image}, img_rgb.size: {img_rgb.size}")
 
         if not rgb_samples:
             logging.error("No samples collected for rgb_samples. Exiting.")
@@ -84,7 +85,7 @@ def main(config_path='config.yaml'):
         logging.info(f"lab_samples shape: {lab_samples.shape}")
         
         # Train-test split
-        x_train, x_test, y_train, y_test = train_test_split(rgb_samples, lab_samples, test_size=0.2, random_state=42)  # Fixed lab_data to lab_samples
+        x_train, x_test, y_train, y_test = train_test_split(rgb_samples, lab_samples, test_size=0.2, random_state=42)
 
         # Initialize DBN for RGB-to-CIELAB
         input_size = 3
@@ -121,7 +122,7 @@ def main(config_path='config.yaml'):
             return
 
         target_colors = reference_kmeans_opt['avg_colors_lab']
-        save_output(dataset_name, "reference_summary", "reference_summary.png", original_image)
+        save_output(dataset_name, "reference_summary", "reference_summary.png", original_image, output_dir=OUTPUT_DIR)
         logging.info(f"Reference image processed, target_colors shape: {len(target_colors)}")
 
         # Process test images
@@ -144,6 +145,8 @@ def main(config_path='config.yaml'):
                 unsharp_threshold=0
             )
             preprocessed_image = preprocessor.preprocess(image)
+            image_name = os.path.splitext(os.path.basename(image_path))[0]
+            save_output(dataset_name, "preprocessed", f"{image_name}_preprocessed.png", preprocessed_image, output_dir=OUTPUT_DIR)
             logging.info(f"Preprocessing completed, unique colors: {len(np.unique(preprocessed_image.reshape(-1, 3), axis=0))}")
 
             # Test both determined and predefined k types
@@ -165,64 +168,37 @@ def main(config_path='config.yaml'):
                 )
                 result = segmenter.process()
 
-            if result:
-                preprocessed_path, \
-                (seg_kmeans_opt, sim_kmeans_opt, best_kmeans_opt), \
-                (seg_kmeans_predef, sim_kmeans_predef, best_kmeans_predef), \
-                (seg_dbscan, sim_dbscan, best_dbscan), \
-                (seg_som_opt, sim_som_opt, best_som_opt), \
-                (seg_som_predef, sim_som_predef, best_som_predef) = result
-                
-                image_name = os.path.splitext(os.path.basename(image_path))[0]
-                
-                # Save segmentation results
-                save_output(dataset_name, "kmeans_optimal", f"{image_name}_segmented.png", seg_kmeans_opt)
-                save_output(dataset_name, "kmeans_predefined", f"{image_name}_segmented.png", seg_kmeans_predef)
-                save_output(dataset_name, "dbscan", f"{image_name}_segmented.png", seg_dbscan)
-                save_output(dataset_name, "som_optimal", f"{image_name}_segmented.png", seg_som_opt)
-                save_output(dataset_name, "som_predefined", f"{image_name}_segmented.png", seg_som_predef)
-                
-                delta_e_traditional = float('nan')
-                delta_e_dbn = float('nan')
-                # Calculate and save Delta E with error handling
-                try:
+                if result:
+                    preprocessed_path, \
+                    (seg_kmeans_opt, sim_kmeans_opt, best_kmeans_opt), \
+                    (seg_kmeans_predef, sim_kmeans_predef, best_kmeans_predef), \
+                    (seg_dbscan, sim_dbscan, best_dbscan), \
+                    (seg_som_opt, sim_som_opt, best_som_opt), \
+                    (seg_som_predef, sim_som_predef, best_som_predef) = result
+
+                    # Calculate LAB colors for Delta E
                     rgb_colors = seg_kmeans_opt[1] if isinstance(seg_kmeans_opt[1], (list, np.ndarray)) else seg_kmeans_opt.get('avg_colors_rgb', [])
                     if not rgb_colors:
                         raise ValueError("No RGB colors available for Delta E calculation.")
-                    lab_traditional = [cv2.cvtColor(np.uint8([[color]]), cv2.COLOR_RGB2LAB)[0][0] for color in rgb_colors]
-                    lab_dbn = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, rgb_colors)
-                    
-                    # ### MODIFIED: Robust Delta E calculation with validation
-                    
-                    valid_pairs = []
-                    for i, (test_idx, ref_idx, _) in enumerate(best_kmeans_opt):
-                        if (0 <= test_idx < len(lab_traditional) and 
-                            ref_idx != -1 and 
-                            0 <= ref_idx < len(target_colors)):
-                            valid_pairs.append((lab_traditional[test_idx], target_colors[ref_idx]))
-                    if valid_pairs:
-                        delta_e_traditional = np.mean([ciede2000_distance(lab_t, lab_r) for lab_t, lab_r in valid_pairs])
-                        delta_e_dbn = np.mean([ciede2000_distance(lab_dbn[test_idx], target_colors[ref_idx]) 
-                                            for test_idx, ref_idx, _ in best_kmeans_opt 
-                                            if 0 <= test_idx < len(lab_dbn) and ref_idx != -1 and 0 <= ref_idx < len(target_colors)])
-                    else:
-                        logging.warning(f"No valid color pairs found for {image_name}. Delta E set to NaN.")
-                except Exception as e:
-                    logging.error(f"Error calculating Delta E for {image_name}: {str(e)}. Setting to NaN.")
-                
-                overall_delta_e[image_name] = {
-                    'traditional': delta_e_traditional,
-                    'pso_dbn': delta_e_dbn
-                }
-                save_output(dataset_name, "delta_e", f"{image_name}_delta_e.csv", overall_delta_e[image_name])
-        
+                    lab_traditional_converter = lambda x: cv2.cvtColor(np.uint8([[x]]), cv2.COLOR_RGB2LAB)[0][0]
+                    lab_dbn_converter = lambda x: convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, [x])[0]
+
+                    # Use ColorMetricCalculator for Delta E
+                    color_metric_calculator = ColorMetricCalculator(target_colors)
+                    delta_e_traditional = color_metric_calculator.compute_delta_e(rgb_colors, lab_traditional_converter, best_kmeans_opt)
+                    delta_e_dbn = color_metric_calculator.compute_delta_e(rgb_colors, lab_dbn_converter, best_kmeans_opt)
+
+                    overall_delta_e[image_name] = {
+                        'traditional': delta_e_traditional,
+                        'pso_dbn': delta_e_dbn
+                    }
+                    save_output(dataset_name, "delta_e", f"{image_name}_delta_e.csv", overall_delta_e[image_name], output_dir=OUTPUT_DIR)
+
         # Log and save overall Delta E results
         logging.info("Overall Delta E results:")
         for image_name, delta_e in overall_delta_e.items():
-            logging.info(f"Image: {image_name}")
-            logging.info(f"Traditional: {delta_e['traditional']:.3f}")
-            logging.info(f"PSO-DBN: {delta_e['pso_dbn']:.3f}")
-        save_output(dataset_name, "delta_e", "overall_delta_e.csv", overall_delta_e)
+            logging.info(f"Image: {image_name}, Traditional: {delta_e['traditional']:.3f}, PSO-DBN: {delta_e['pso_dbn']:.3f}")
+        save_output(dataset_name, "delta_e", "overall_delta_e.csv", overall_delta_e, output_dir=OUTPUT_DIR)
 
     finally:
         profiler.disable()

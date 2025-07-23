@@ -1,4 +1,3 @@
-# src/segmentation_utils.py
 import logging
 import cv2
 import numpy as np
@@ -52,7 +51,6 @@ def optimal_clusters(pixels, default_k, min_k=2, max_k=10, n_runs=3):
     dynamic_max_k = min(max_k, max(min_k + 2, len(unique_colors) // 20))
     logging.info(f"Unique colors: {len(unique_colors)}. Adjusted max_k: {dynamic_max_k}")
 
-    # Subsample if dataset is large
     if len(pixels) > 10000:
         logging.info("Subsampling pixels for efficiency")
         pixels = pixels[np.random.choice(len(pixels), 10000, replace=False)]
@@ -65,14 +63,12 @@ def optimal_clusters(pixels, default_k, min_k=2, max_k=10, n_runs=3):
         kmeans = KMeans(n_clusters=k, n_init=n_runs, random_state=42).fit(pixels)
         labels = kmeans.labels_
         
-        # Compute metrics
         scores['silhouette'].append(silhouette_score(pixels, labels))
         scores['ch'].append(calinski_harabasz_score(pixels, labels))
         logging.info(f"Metrics for k={k}: Silhouette={scores['silhouette'][-1]}, CH={scores['ch'][-1]}")
 
-    # Consensus: Choose k with best average normalized score
-    norm_sil = (scores['silhouette'] - min(scores['silhouette'])) / (max(scores['silhouette']) - min(scores['silhouette']))
-    norm_ch = (scores['ch'] - min(scores['ch'])) / (max(scores['ch']) - min(scores['ch']))
+    norm_sil = (np.array(scores['silhouette']) - min(scores['silhouette'])) / (max(scores['silhouette']) - min(scores['silhouette']) + 1e-10)
+    norm_ch = (np.array(scores['ch']) - min(scores['ch'])) / (max(scores['ch']) - min(scores['ch']) + 1e-10)
     avg_scores = (norm_sil + norm_ch) / 2
     optimal_k = k_range[np.argmax(avg_scores)]
     logging.info(f"Optimal k determined: {optimal_k}")
