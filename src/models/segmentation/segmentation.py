@@ -155,9 +155,16 @@ class SOMSegmenter(SegmenterBase):
         avg_colors = [cv2.mean(self.preprocessed_image, mask=(labels.reshape(self.preprocessed_image.shape[:2]) == i).astype(np.uint8))[:3] for i in range(max(labels) + 1)]
         return segmented_image, avg_colors, labels
 
+from enum import Enum
+
+class SegmentationMethod(Enum):
+    KMEANS = "kmeans"
+    SOM = "som"
+    DBSCAN = "dbscan"
+
 class Segmenter:
-    def __init__(self, preprocessed_image, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt, dbn, scalers, predefined_k, k_values, som_values, output_dir, k_type='determined', cluster_strategy=None):
-        self.preprocessed_image = preprocessed_image
+    def __init__(self, image, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt, dbn, scalers, predefined_k, k_values, som_values, output_dir, k_type):
+        self.image = image
         self.target_colors = target_colors
         self.distance_threshold = distance_threshold
         self.reference_kmeans_opt = reference_kmeans_opt
@@ -169,69 +176,51 @@ class Segmenter:
         self.som_values = som_values
         self.output_dir = output_dir
         self.k_type = k_type
-        self.cluster_strategy = cluster_strategy or MetricBasedStrategy()
+        self.preprocessed_path = None  # Set during preprocessing
 
-    def create_segmenter(self, method):
-        if method == 'kmeans':
-            return KMeansSegmenter(self.image, self.target_colors, self.distance_threshold, self.reference_kmeans_opt, self.scalers)
-        elif method == 'som':
-            return SOMSegmenter(self.image, self.target_colors, self.distance_threshold, self.reference_som_opt, self.scalers, k_type=self.k_type)
-        elif method == 'dbscan':
-            return DBSCANSegmenter(self.image, self.target_colors, self.distance_threshold, self.dbn, self.scalers)
+    def create_segmenter(self, method: SegmentationMethod):
+        if method == SegmentationMethod.KMEANS:
+            return KMeansSegmenter(
+                self.image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, 
+                self.output_dir, self.k_values, self.predefined_k, self.k_type
+            )
+        elif method == SegmentationMethod.SOM:
+            return SOMSegmenter(
+                self.image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, 
+                self.output_dir, self.som_values, self.predefined_k, self.k_type
+            )
+        elif method == SegmentationMethod.DBSCAN:
+            return DBSCANSegmenter(
+                self.image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, 
+                self.output_dir, self.k_type
+            )
         else:
-            raise ValueError(f"Unknown segmentation method: {method}")
+            raise ValueError(f"Unknown segmentation method: {method.value}")
 
     def process(self):
         """Process the image with various segmentation methods."""
-        preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
-        cv2.imwrite(preprocessed_path, self.preprocessed_image)
-
+        self.preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
+        cv2.imwrite(self.preprocessed_path, self.image)
+        
         current_date = datetime.now().strftime("%Y-%m-%d")
-        methods = {
-            'kmeans_optimal': self.create_segmenter('kmeans_optimal'),
-            'kmeans_predefined': self.create_segmenter('kmeans_predefined'),
-            'dbscan': self.create_segmenter('dbscan'),
-            'som_optimal': self.create_segmenter('som_optimal'),
-            'som_predef': self.create_segmenter('som_predefined')
-        }
+        methods = [SegmentationMethod.KMEANS, SegmentationMethod.SOM, SegmentationMethod.DBSCAN]
         results = {}
-        for method_name, segmenter in methods.items():
-            results[method_name] = segmenter.segment()
-            segmented_image = results[method_name][0]
-            file_name = f"{current_date}_{method_name}_{os.path.basename(self.output_dir).split('.')[0]}_segmented.png"
+        
+        for method in methods:
+            segmenter = self.create_segmenter(method)
+            seg_result, avg_colors, labels = segmenter.segment()
+            # Compute similarity and best matches
+            color_comparator = ColorMetricCalculator(self.target_colors)
+            sim_result = color_comparator.compute_similarity(avg_colors)
+            best_result = color_comparator.find_best_matches(avg_colors)
+            # Store results with a key that reflects k_type
+            key = f"{method.value}_{'opt' if self.k_type == 'determined' else 'predef'}" if method != SegmentationMethod.DBSCAN else method.value
+            results[key] = (seg_result, avg_colors, labels, sim_result, best_result)
+            # Save segmented image
+            file_name = f"{current_date}_{key}_segmented.png"
             output_path = os.path.join(self.output_dir, file_name)
-            cv2.imwrite(output_path, segmented_image)
+            cv2.imwrite(output_path, seg_result)
             logging.info(f"Saved {file_name} to {output_path}")
 
-        # Initialize ColorComparator with target colors
-        color_comparator = ColorMetricCalculator(self.target_colors)
-        
-        kmeans_opt_results = results['kmeans_optimal']
-        sim_kmeans_opt = color_comparator.compute_similarity(kmeans_opt_results[1])  # Use avg_colors
-        best_kmeans_opt = color_comparator.find_best_matches(kmeans_opt_results[1])
-
-        kmeans_predef_results = results['kmeans_predefined']
-        sim_kmeans_predef = color_comparator.compute_similarity(kmeans_predef_results[1])
-        best_kmeans_predef = color_comparator.find_best_matches(kmeans_predef_results[1])
-
-        dbscan_results = results['dbscan']
-        sim_dbscan = color_comparator.compute_similarity(dbscan_results[1])
-        best_dbscan = color_comparator.find_best_matches(dbscan_results[1])
-
-        som_opt_results = results['som_optimal']
-        sim_som_opt = color_comparator.compute_similarity(som_opt_results[1])
-        best_som_opt = color_comparator.find_best_matches(som_opt_results[1])
-
-        som_predef_results = results['som_predef']
-        sim_som_predef = color_comparator.compute_similarity(som_predef_results[1])
-        best_som_predef = color_comparator.find_best_matches(som_predef_results[1])
-
         logging.info("Segmentation process completed")
-        return (
-            preprocessed_path,
-            (kmeans_opt_results[0], sim_kmeans_opt, best_kmeans_opt),
-            (kmeans_predef_results[0], sim_kmeans_predef, best_kmeans_predef),
-            (dbscan_results[0], sim_dbscan, best_dbscan),
-            (som_opt_results[0], sim_som_opt, best_som_opt),
-            (som_predef_results[0], sim_som_predef, best_som_predef)
-        )
+        return self.preprocessed_path, results
