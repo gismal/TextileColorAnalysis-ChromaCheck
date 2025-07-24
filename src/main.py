@@ -174,8 +174,8 @@ def main(config_path='config.yaml'):
                     (seg_kmeans_predef, sim_kmeans_predef, best_kmeans_predef), \
                     (seg_dbscan, sim_dbscan, best_dbscan), \
                     (seg_som_opt, sim_som_opt, best_som_opt), \
-                    (seg_som_predef, sim_som_predef, best_som_predef) = result
-
+                    (seg_som, sim_som, best_som) = result 
+                    delta_e_som = color_metric_calculator.compute_delta_e(seg_som, lab_dbn_converter, best_som)
                     # Calculate LAB colors for Delta E
                     rgb_colors = seg_kmeans_opt[1] if isinstance(seg_kmeans_opt[1], (list, np.ndarray)) else seg_kmeans_opt.get('avg_colors_rgb', [])
                     if not rgb_colors:

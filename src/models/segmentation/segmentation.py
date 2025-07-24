@@ -172,16 +172,12 @@ class Segmenter:
         self.cluster_strategy = cluster_strategy or MetricBasedStrategy()
 
     def create_segmenter(self, method):
-        if method == 'kmeans_optimal':
-            return KMeansSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.k_values, self.predefined_k, self.k_type, self.cluster_strategy)
-        elif method == 'kmeans_predefined':
-            return KMeansSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.k_values, self.predefined_k, 'predefined', self.cluster_strategy)
+        if method == 'kmeans':
+            return KMeansSegmenter(self.image, self.target_colors, self.distance_threshold, self.reference_kmeans_opt, self.scalers)
+        elif method == 'som':
+            return SOMSegmenter(self.image, self.target_colors, self.distance_threshold, self.reference_som_opt, self.scalers, k_type=self.k_type)
         elif method == 'dbscan':
-            return DBSCANSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.k_type, self.cluster_strategy)
-        elif method == 'som_optimal':
-            return SOMSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.som_values, self.predefined_k, self.k_type, self.cluster_strategy)
-        elif method == 'som_predef':
-            return SOMSegmenter(self.preprocessed_image, self.target_colors, self.distance_threshold, self.dbn, self.scalers, self.output_dir, self.som_values, self.predefined_k, 'predefined', self.cluster_strategy)
+            return DBSCANSegmenter(self.image, self.target_colors, self.distance_threshold, self.dbn, self.scalers)
         else:
             raise ValueError(f"Unknown segmentation method: {method}")
 
