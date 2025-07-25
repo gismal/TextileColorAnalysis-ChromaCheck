@@ -19,6 +19,7 @@ from src.utils.color.color_analysis import ColorMetricCalculator
 from src.utils.image_utils import process_reference_image
 from src.utils.file_utils import save_output
 from src.utils.visualization import save_reference_summary_plot
+from src.utils.output_manager import OutputManager
 
 # Force TensorFlow to use CPU
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
@@ -44,14 +45,24 @@ def main(config_path='config.yaml'):
             logging.error("Invalid configuration. Exiting.")
             return
 
-        # Derive dataset name from config path
-        dataset_name = os.path.basename(os.path.dirname(config_path))
+        # Derive dataset name from config path (e.g., "block" from "block_config.yaml")
+        dataset_name = os.path.splitext(os.path.basename(config_path))[0].replace('_config', '')
+        output_manager = OutputManager(OUTPUT_DIR, dataset_name)
 
         reference_image_path = config['reference_image_path']
         test_images = config['test_images']
         distance_threshold = config['distance_threshold']
         k = config['kmeans_clusters']
         predefined_k = config['predefined_k']
+
+        # Save reference image
+        reference_image = cv2.imread(reference_image_path)
+        output_manager.save_reference_image(reference_image_path, reference_image)
+
+        # Save test images
+        for image_path in test_images:
+            test_image = cv2.imread(image_path)
+            output_manager.save_test_image(image_path, test_image)
 
         # Load and prepare data for DBN training
         rgb_data, lab_data = load_data(test_images)
@@ -122,11 +133,13 @@ def main(config_path='config.yaml'):
             return
 
         target_colors = reference_kmeans_opt['avg_colors_lab']
-        save_output(dataset_name, "reference_summary", "reference_summary.png", original_image, output_dir=OUTPUT_DIR)
+        output_manager.save_reference_summary(original_image)  # Using save_reference_summary_plot indirectly via image
         logging.info(f"Reference image processed, target_colors shape: {len(target_colors)}")
 
+        # Initialize list to collect all Delta E results
+        all_delta_e = []
+
         # Process test images
-        overall_delta_e = {}
         for image_path in test_images:
             logging.info(f"Processing test image: {image_path}")
             image = cv2.imread(image_path)
@@ -146,7 +159,7 @@ def main(config_path='config.yaml'):
             )
             preprocessed_image = preprocessor.preprocess(image)
             image_name = os.path.splitext(os.path.basename(image_path))[0]
-            save_output(dataset_name, "preprocessed", f"{image_name}_preprocessed.png", preprocessed_image, output_dir=OUTPUT_DIR)
+            output_manager.save_preprocessed_image(image_name, preprocessed_image)
             logging.info(f"Preprocessing completed, unique colors: {len(np.unique(preprocessed_image.reshape(-1, 3), axis=0))}")
 
             # Test both determined and predefined k types
@@ -163,7 +176,7 @@ def main(config_path='config.yaml'):
                     predefined_k,
                     k_values=[10, 15, 20],
                     som_values=[5, 10, 20],
-                    output_dir=OUTPUT_DIR,
+                    output_dir=str(output_manager.processed_dir / image_name / 'segmented'),
                     k_type=k_type
                 )
                 result = segmenter.process()
@@ -171,11 +184,9 @@ def main(config_path='config.yaml'):
                 if result:
                     preprocessed_path, results = result
                     # Access results from the dictionary
-                    # Example: Compute Delta E for K-means optimal/predefined based on k_type
                     method_key = f"kmeans_{'opt' if k_type == 'determined' else 'predef'}"
                     seg_kmeans, avg_colors_kmeans, labels_kmeans, sim_kmeans, best_kmeans = results[method_key]
 
-                    # Calculate LAB colors for Delta E
                     rgb_colors = avg_colors_kmeans if isinstance(avg_colors_kmeans, (list, np.ndarray)) else []
                     if not rgb_colors:
                         logging.error(f"No RGB colors available for Delta E calculation in {method_key}.")
@@ -188,40 +199,54 @@ def main(config_path='config.yaml'):
                     color_metric_calculator = ColorMetricCalculator(target_colors)
                     delta_e_traditional = color_metric_calculator.compute_delta_e(rgb_colors, lab_traditional_converter, best_kmeans)
                     delta_e_dbn = color_metric_calculator.compute_delta_e(rgb_colors, lab_dbn_converter, best_kmeans)
-                    overall_delta_e[f"{image_name}_{k_type}"] = {
+
+                    # Collect Delta E results
+                    all_delta_e.append({
+                        'dataset': dataset_name,
+                        'image': image_name,
+                        'method': 'kmeans',
+                        'k_type': k_type,
                         'traditional': delta_e_traditional,
                         'pso_dbn': delta_e_dbn
-                    }
-                    save_output(dataset_name, "delta_e", f"{image_name}_{k_type}_delta_e.csv", overall_delta_e[f"{image_name}_{k_type}"], output_dir=OUTPUT_DIR)
+                    })
 
-            # Optionally, process other methods (e.g., SOM, DBSCAN)
-            # For SOM
-            som_key = f"som_{'opt' if k_type == 'determined' else 'predef'}"
-            if som_key in results:
-                seg_som, avg_colors_som, labels_som, sim_som, best_som = results[som_key]
-                rgb_colors_som = avg_colors_som if isinstance(avg_colors_som, (list, np.ndarray)) else []
-                if rgb_colors_som:
-                    delta_e_som_traditional = color_metric_calculator.compute_delta_e(rgb_colors_som, lab_traditional_converter, best_som)
-                    delta_e_som_dbn = color_metric_calculator.compute_delta_e(rgb_colors_som, lab_dbn_converter, best_som)
-                    overall_delta_e[f"{image_name}_{som_key}"] = {
-                        'traditional': delta_e_som_traditional,
-                        'pso_dbn': delta_e_som_dbn
-                    }
-                    save_output(dataset_name, "delta_e", f"{image_name}_{som_key}_delta_e.csv", overall_delta_e[f"{image_name}_{som_key}"], output_dir=OUTPUT_DIR)
+                    # Process SOM
+                    som_key = f"som_{'opt' if k_type == 'determined' else 'predef'}"
+                    if som_key in results:
+                        seg_som, avg_colors_som, labels_som, sim_som, best_som = results[som_key]
+                        rgb_colors_som = avg_colors_som if isinstance(avg_colors_som, (list, np.ndarray)) else []
+                        if rgb_colors_som:
+                            delta_e_som_traditional = color_metric_calculator.compute_delta_e(rgb_colors_som, lab_traditional_converter, best_som)
+                            delta_e_som_dbn = color_metric_calculator.compute_delta_e(rgb_colors_som, lab_dbn_converter, best_som)
+                            all_delta_e.append({
+                                'dataset': dataset_name,
+                                'image': image_name,
+                                'method': 'som',
+                                'k_type': k_type,
+                                'traditional': delta_e_som_traditional,
+                                'pso_dbn': delta_e_som_dbn
+                            })
 
-            # For DBSCAN (only once, as it doesn’t depend on k_type)
-            if k_type == 'determined' and 'dbscan' in results:  # Run DBSCAN only once
-                seg_dbscan, avg_colors_dbscan, labels_dbscan, sim_dbscan, best_dbscan = results['dbscan']
-                rgb_colors_dbscan = avg_colors_dbscan if isinstance(avg_colors_dbscan, (list, np.ndarray)) else []
-                if rgb_colors_dbscan:
-                    delta_e_dbscan_traditional = color_metric_calculator.compute_delta_e(rgb_colors_dbscan, lab_traditional_converter, best_dbscan)
-                    delta_e_dbscan_dbn = color_metric_calculator.compute_delta_e(rgb_colors_dbscan, lab_dbn_converter, best_dbscan)
-                    overall_delta_e[f"{image_name}_dbscan"] = {
-                        'traditional': delta_e_dbscan_traditional,
-                        'pso_dbn': delta_e_dbscan_dbn
-                    }
-                    save_output(dataset_name, "delta_e", f"{image_name}_dbscan_delta_e.csv", overall_delta_e[f"{image_name}_dbscan"], output_dir=OUTPUT_DIR)
-                    
+                    # Process DBSCAN (only once, as it doesn’t depend on k_type)
+                    if k_type == 'determined' and 'dbscan' in results:
+                        seg_dbscan, avg_colors_dbscan, labels_dbscan, sim_dbscan, best_dbscan = results['dbscan']
+                        rgb_colors_dbscan = avg_colors_dbscan if isinstance(avg_colors_dbscan, (list, np.ndarray)) else []
+                        if rgb_colors_dbscan:
+                            delta_e_dbscan_traditional = color_metric_calculator.compute_delta_e(rgb_colors_dbscan, lab_traditional_converter, best_dbscan)
+                            delta_e_dbscan_dbn = color_metric_calculator.compute_delta_e(rgb_colors_dbscan, lab_dbn_converter, best_dbscan)
+                            all_delta_e.append({
+                                'dataset': dataset_name,
+                                'image': image_name,
+                                'method': 'dbscan',
+                                'k_type': 'n/a',
+                                'traditional': delta_e_dbscan_traditional,
+                                'pso_dbn': delta_e_dbscan_dbn
+                            })
+
+        # Save all Delta E results
+        if all_delta_e:
+            output_manager.save_delta_e_results(dataset_name, all_delta_e)
+
     finally:
         profiler.disable()
         stats = pstats.Stats(profiler).sort_stats('cumtime')

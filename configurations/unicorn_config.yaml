@@ -1,7 +1,7 @@
 kmeans_clusters: 6
 predefined_k: 6
 distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/dataset/unicorn/reference.jpg"
+reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/unicorn/inputs/reference.jpg"
 test_images:
-  - "C:/Users/LENOVO/Desktop/prints/dataset/unicorn/unicorn1.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/unicorn/unicorn2.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/unicorn/inputs/test_images/unicorn1.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/unicorn/inputs/test_images/unicorn2.jpg"

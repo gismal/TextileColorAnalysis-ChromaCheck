@@ -1,8 +1,8 @@
 kmeans_clusters: 3
 predefined_k: 3
 distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/dataset/stripes/reference.jpg"
+reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/stripes/inputs/reference.jpg"
 test_images:
-  - "C:/Users/LENOVO/Desktop/prints/dataset/stripes/stripes1.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/stripes/stripes2.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/stripes/stripes3.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/stripes/inputs/test_images/stripes1.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/stripes/inputs/test_images/stripes2.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/stripes/inputs/test_images/stripes3.jpg"

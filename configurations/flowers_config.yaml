@@ -2,7 +2,7 @@
 kmeans_clusters: 5
 predefined_k: 5
 distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/dataset/flowers/reference.jpg"
+reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/reference.jpg"
 test_images:
-  - "C:/Users/LENOVO/Desktop/prints/dataset/flowers/flowers1.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/flowers/flowers2.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/test_images/flowers1.jpg"
+  - "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/test_images/flowers2.jpg"

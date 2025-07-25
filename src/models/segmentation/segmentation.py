@@ -205,22 +205,9 @@ class Segmenter:
         current_date = datetime.now().strftime("%Y-%m-%d")
         methods = [SegmentationMethod.KMEANS, SegmentationMethod.SOM, SegmentationMethod.DBSCAN]
         results = {}
-        
-        for method in methods:
-            segmenter = self.create_segmenter(method)
-            seg_result, avg_colors, labels = segmenter.segment()
-            # Compute similarity and best matches
-            color_comparator = ColorMetricCalculator(self.target_colors)
-            sim_result = color_comparator.compute_similarity(avg_colors)
-            best_result = color_comparator.find_best_matches(avg_colors)
-            # Store results with a key that reflects k_type
-            key = f"{method.value}_{'opt' if self.k_type == 'determined' else 'predef'}" if method != SegmentationMethod.DBSCAN else method.value
-            results[key] = (seg_result, avg_colors, labels, sim_result, best_result)
-            # Save segmented image
-            file_name = f"{current_date}_{key}_segmented.png"
-            output_path = os.path.join(self.output_dir, file_name)
-            cv2.imwrite(output_path, seg_result)
-            logging.info(f"Saved {file_name} to {output_path}")
-
-        logging.info("Segmentation process completed")
-        return self.preprocessed_path, results
+        for method in ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']:
+            if method in self.methods:
+                seg_image, avg_colors, labels, sim, best_k = self.segment(method)
+                results[method] = (seg_image, avg_colors, labels, sim, best_k)
+                self.output_manager.save_segmentation_image(self.image_name, method, seg_image)
+        return preprocessed_path, results
