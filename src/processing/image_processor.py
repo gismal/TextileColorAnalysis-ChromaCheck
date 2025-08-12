@@ -2,124 +2,244 @@ import os
 import cv2
 import numpy as np
 import logging
-from src.models.segmentation.segmentation import k_mean_segmentation, som_segmentation, optimal_clusters_dbscan
-from src.utils.image_utils import calculate_similarity, find_best_matches, downsample_image
-from src.utils.visualization import save_segment_results_plot
-from src.data import preprocess
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Any, Union
+from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
+from enum import Enum
+import time
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
+import gc
+from functools import lru_cache
 
-class ImageProcessor:
-    def __init__(self, image_path, target_colors, distance_threshold, reference_kmeans, reference_som, dbn, scalers, predefined_k, eps_values, min_samples_values, output_dir):
-        self.image_path = image_path
-        self.target_colors = target_colors
-        self.distance_threshold = distance_threshold
-        self.reference_kmeans = reference_kmeans
-        self.reference_som = reference_som
-        self.dbn = dbn
-        self.scaler_x, self.scaler_y, self.scaler_y_ab = scalers
-        self.predefined_k = predefined_k
-        self.eps_values = eps_values
-        self.min_samples_values = min_samples_values
-        self.output_dir = output_dir
-        self.image_name = os.path.splitext(os.path.basename(image_path))[0]
+from config import PreprocessingConfig, SegmentationConfig, ProcessingConfig
+from preprocessing import Preprocessor, PreprocessingResult, PreprocessingError
+from segmentation import SegmentationOrchestrator, SegmentationResult, SegmentationConfig as SegConfig
 
-    def load_and_preprocess(self):
-        """Load and preprocess the image, saving the preprocessed version."""
-        logging.info(f"Processing image: {self.image_path}")
-        image = cv2.imread(self.image_path)
-        if image is None:
-            raise FileNotFoundError(f"Failed to load image: {self.image_path}")
-        
-        original_image = image.copy()
-        preprocessed_image = preprocess(image)
-        if preprocessed_image is None or preprocessed_image.size == 0:
-            raise ValueError("Preprocessed image is empty")
-        
-        resized_image = preprocess.resize_image(preprocessed_image)
-        
-        # Save preprocessed image
-        preprocessed_dir = os.path.join(self.output_dir, self.image_name, 'preprocessed')
-        os.makedirs(preprocessed_dir, exist_ok=True)
-        preprocessed_path = os.path.join(preprocessed_dir, f'preprocessed_{os.path.basename(self.image_path)}')
-        cv2.imwrite(preprocessed_path, preprocessed_image)
-        
-        return original_image, resized_image, preprocessed_path
+logger = logging.getLogger(__name__)
 
-    ## belki segmentation türleri ayrılabilir
-    def segment_and_analyze(self, image, downsampled_image, method, k=None):
-        """Perform segmentation and analysis based on the specified method."""
-        if method == 'kmeans_optimal':
-            segmented_image, avg_colors, labels = k_mean_segmentation(image, len(self.reference_kmeans['avg_colors']))
-        elif method == 'kmeans_predefined':
-            segmented_image, avg_colors, labels = k_mean_segmentation(image, k or self.predefined_k)
-        elif method == 'dbscan':
-            downsampled_pixels = downsampled_image.reshape(-1, 3).astype(np.float32)
-            labels, best_eps, best_min_samples = optimal_clusters_dbscan(downsampled_pixels, self.eps_values, self.min_samples_values)
-            unique_labels = np.unique(labels)
-            segmented_image = np.zeros_like(downsampled_image)
-            for label in unique_labels:
-                if label == -1:  # Skip noise
-                    continue
-                mask = (labels == label)
-                color = np.mean(downsampled_pixels[mask], axis=0).astype(np.uint8)
-                segmented_image[mask.reshape(downsampled_image.shape[:2])] = color
-            avg_colors = [np.mean(downsampled_pixels[labels == label], axis=0).astype(np.uint8) for label in unique_labels if label != -1]
-        elif method == 'som_optimal':
-            segmented_image, avg_colors, labels = som_segmentation(image, len(self.reference_som['avg_colors']))
-        elif method == 'som_predefined':
-            segmented_image, avg_colors, labels = som_segmentation(image, k or self.predefined_k)
-        else:
-            raise ValueError(f"Unsupported segmentation method: {method}")
+class ProgressCallback(Protocol):
+    """Protocol for progress callback functions"""
+    def __call__(sefl, stage: str, progress: float, message: str = "") -> None:
+            """Called to report processing progress"""
+            ...
+            
+class ResultCallback(Protocol):
+    """Protocol for result callback functions"""
+    def __call__(self, result: Any) -> None:
+        """Called when a processing stage completes"""
+        ...
 
-        from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
-        avg_colors_lab = convert_colors_to_cielab(avg_colors)
-        avg_colors_lab_dbn = convert_colors_to_cielab_dbn(self.dbn, self.scaler_x, self.scaler_y, self.scaler_y_ab, avg_colors)
-        segmentation_data = {
-            'original_image': image if method != 'dbscan' else downsampled_image,
-            'segmented_image': segmented_image,
-            'avg_colors': avg_colors,
-            'avg_colors_lab': avg_colors_lab,
-            'avg_colors_lab_dbn': avg_colors_lab_dbn,
-            'labels': labels
+#Type aliases       
+ImageArray = np.ndarray
+ColorArray = np.nd.array
+
+## ENUMS
+class ProcessingStage(Enum):
+    """Enumeration of processing pipeline stages"""
+    LOADING = "loading"
+    PREPROCESSING = "preprocessing"
+    SEGMENTATION = "segmentation"
+    COLOR_CONVERSION = "color_conversion"
+    SIMILARITY_ANALYSIS = "similarity_analysis"
+    RESULT_COMPILATION = "result_compilation"
+    SAVING = "saving"
+    
+class ProcessingStatus(Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    
+class SegmentationMethod(Enum):
+    """Enumeration of available segmentation methods"""
+    KMEANS_OPTIMAL = "kmeans_optimal"
+    KMEANS_PREDEFINED = "kmeans_predefined"
+    DBSCAN = "dbscan"
+    SOM_OPTIMAL = "som_optimal"
+    SOM_PREDEFINED = "som_predefined"
+    
+## Exceptions
+class ProcessingError(Exception):
+    def __init__(self, message: str, stage: Optional[ProcessingStage] = None, **kwargs):
+        super().__init__(message)
+        self.stage = stage
+        self.details = kwargs
+        
+class ResourceError(ProcessingError):
+    """Exception for resource-related errors"""
+    pass
+
+class ValidationError(ProcessingError):
+    """Exception for validation errors"""
+    pass
+
+## Result classes
+@dataclass
+class StageResult:
+    """Result of a single processing stage"""
+    stage: ProcessingStage
+    status: ProcessingStatus
+    data: Any = None
+    processing_time: float = 0.0
+    memory_used: float = 0.0
+    error_message: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def is_successful(self) -> bool:
+        """Check if the stage completed successfully"""
+        return self.status = ProcessingStatus.COMPLETED and self.data is not None
+    
+@dataclass
+class ProcessingContext:
+    """Context info passed between processing stages"""
+    image_path: str 
+    original_image: Optional[ImageArray] = None
+    preprocessed_image: Optional[ImageArray] = None
+    target_colors: Optional[ColorArray] = None
+    reference_data: Dict[str, Any] = field(default_factory = dict)
+    processing_config: Optional[ProcessingConfig] = None
+    stage_results: Dict[ProcessingStage, StageResult] = field(default_factory = dict)
+    
+    def add_stage_result(self, result: StageResult) -> None:
+        """Add a stage result to the context"""
+        self.stage_result[result.stage] = result
+        
+@dataclass
+class SegmentationResult:
+    method: str
+    segmented_image: ImageArray
+    avg_colors: List[ColorArray]
+    avg_colors_lab: List[ColorArray]
+    avg_colors_lab_dbn: List[ColorArray]
+    labels: np.ndarray
+    n_cluster: int
+    processing_time: float
+    quality_score: float = 0.0
+    similarity_score: float = 0.0
+    metadata: Dict[str, Any] = field(default_factory = dict)
+    
+    def is_valid(self) -> bool:
+        return (
+            self.segmented_image is not None and
+            self.segmented_image.size > 0 and
+            len(self.avg_colors) > 0 and
+            self.labels is not None
+        )
+        
+    def get_summary(self) -> Dict[str, Any]:
+        """Get a summary of the segmentation result"""
+        return {
+            'method': self.method,
+            'n_clusters': self.n_clusters,
+            'processing_time': self.processing_time,
+            'quality_score': self.quality_score,
+            'similarity_score': self.similarity_score
+            'valid': self.is_valid()
         }
         
-        similarity_scores = calculate_similarity(segmentation_data, self.target_colors)
-        reference = self.reference_kmeans if 'kmeans' in method or 'dbscan' in method else self.reference_som
-        best_matches = find_best_matches(segmentation_data, reference)
+@dataclass
+class ComprehensiveProcessingResult:
+    """Comprehensive result of the entire processing pipeline"""
+    image_path: str
+    processing_status: ProcessingStatus
+    stage_results: Dict[ProcessingStage, StageResult] = field(default_factory = dict)
+    segmentation_results: Dict[str, SegmentationResult] = field(default_factory = dict)
+    similarity_scores: Dict[str, float] = field(default_factory = dict)
+    best_matches: Dict[str, List] = field(default_factory = dict)
+    best_method: Optional[str] = None
+    total_processing_time: float = 0.0
+    memory_peak: float = 0.0
+    error_log: List[str] = field(default_factory = list)
+    
+    def get_successful_methods(self) -> List[str]:
+        """Get list of successfully processed methods"""
+        return [method for method, result in self.segmentation_results.items()
+                if result.is_valid()]
         
-        return segmentation_data, similarity_scores, best_matches
-
-    def save_results(self, segmentation_data, similarity_scores, best_matches, method, subfolder):
-        """Save segmentation results to the output directory."""
-        output_path = os.path.join(self.output_dir, self.image_name, subfolder)
-        save_segment_results_plot(
-            segmentation_data, similarity_scores, self.image_path, 
-            self.reference_kmeans if 'kmeans' in method or 'dbscan' in method else self.reference_som, 
-            best_matches, segmentation_data['avg_colors_lab_dbn'], 
-            method=method, output_dir=output_path
-        )
-
-    def process(self):
-        """Process the image using multiple segmentation methods."""
-        try:
-            original_image, image, preprocessed_path = self.load_and_preprocess()
-            downsampled_image = downsample_image(image, scale_factor=0.5)
-
-            results = {}
-            methods = [
-                ('kmeans_optimal', 'kmeans/optimal'),
-                ('kmeans_predefined', 'kmeans/predefined'),
-                ('dbscan', 'dbscan'),
-                ('som_optimal', 'som/optimal'),
-                ('som_predefined', 'som/predefined')
-            ]
-
-            for method, subfolder in methods:
-                seg_data, sim_scores, best_matches = self.segment_and_analyze(image, downsampled_image, method)
-                self.save_results(seg_data, sim_scores, best_matches, method.capitalize().replace('_', '-'), subfolder)
-                results[method] = (seg_data, sim_scores, best_matches)
-
-            return (preprocessed_path, *(results[method] for method in ['kmeans_optimal', 'kmeans_predefined', 'dbscan', 'som_optimal', 'som_predefined']))
-
-        except Exception as e:
-            logging.error(f"Error processing image {self.image_path}: {e}")
+    def get_best_result(self) -> Optional[SegmentationResult]:
+        """Get the best segmentation result"""
+        successful_results = {k: v for k, v in self.segmentation_results.items()
+                              if v.is_valid()}
+        
+        if not successful_results:
             return None
+        
+        best_method = max(successful_results.keys(),
+                          key = lambda k: (successful_results[k].quality_score + 
+                                      successful_results[k].similarity_score) / 2)
+        
+        self.best_method = best_method
+        return successful_results[best_method]
+    
+    def export_summary(self) -> Dict[str, Any]:
+        """export a summary of the processing results"""
+        return {
+            'image_path': self.image_path,
+            'status': self.processing_status.value,
+            'successful_methods': self.get_successful_methods(),
+            'best_method': self.best_method,
+            'total_time': self.total_processing_time,
+            'memory_peak': self.memory_peak,
+            'stage_summary': {
+                stage.value: result.is_successful()
+                for stage, result in self.stage_results.items()
+            },
+            'method_summaries': {
+                method: result.get_summary()
+                for method, result in self.segmentation_results.items()
+            }
+        }
+        
+## Processing Stages - Strategy Pattern
+class ProcessingStageBase(ABC):
+    """Abstract base class for processing steps"""
+    
+    def __init__(self, stage: ProcessingStage):
+        self.stage = stage
+        self.logger = logging.getLogger(f"{__name__.{self.__class__.__name__}")
+        
+    @abstractmethod
+    def execute(self, context: ProcessingContext, progress_callback: Optional[ProgressCallback] = None) -> StageResults:
+        """execute the processing stage"""
+        pass
+    
+    def _create_result(self, status: ProcessingStatus, data: Any = None, processing_time: float = 0.0,
+                       error_msg: str = None, **metadata) -> StageResult:
+        """Helper to create stage result"""
+        return StageResult(
+            stage = self.stage,
+            status = self.status,
+            data = data,
+            processing_time = processing_time,
+            error_message = error_message,
+            metadata = metadata
+        )
+        
+class ImageLoadingStage(ProcessingStageBase):
+    """Stage for loading and validating images"""
+    
+    def __init__(self):
+        super().__init__(ProcessingStage.LOADING)
+        
+    def execute(self, context: ProcessingContext, progress_callback: Optional[ProgressCallback] = None)
+        """load and validate the image"""
+        start_time = time.time()
+        
+        try:
+            if progress_callback:
+                progress_callback(self.stage.value, 0.0, "Starting image loading")
+                
+            image = cv2.imread(context.image_path)
+            if image is None:
+                raise ValidationError(f"Failed to load image: {context.image_path}")
+            
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            
+            if not self._validate_image(image):
+                raise ValidationError("Invalid image format or size")
+            
+            context.original_image = image

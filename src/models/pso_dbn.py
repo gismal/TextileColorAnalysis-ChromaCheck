@@ -13,6 +13,26 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # by Su et al., 2022, adapted for RGB-to-CIELAB
 # DOI: 10.1007/s00170-022-08729-7
 
+"""
+pso_params = {
+    'n_particles': [20, 30, 50],
+    'w': [0.5, 0.7, 0.9],          # inertia weight
+    'c1': [1.5, 2.0, 2.5],        # cognitive parameter  
+    'c2': [1.5, 2.0, 2.5],        # social parameter
+    'max_iter': [50, 100, 200]
+}
+
+dbn_architectures = [
+    [100, 50, 25],    # Current
+    [128, 64, 32],    # Larger
+    [64, 32],         # Simpler
+    [150, 100, 50, 25] # Deeper
+]
+
+
+"""
+
+
 class DBN:
     """Deep Belief Network for RGB to CIELAB conversion."""
     def __init__(self, input_size=3, hidden_layers=[100, 50, 25], output_size=3):
@@ -78,7 +98,14 @@ def pso_optimize(dbn, x_train, y_train, bounds):
             start += size
         dbn.model.set_weights(reshaped_weights)
         predictions = dbn.model.predict(x_train, verbose=0)
-        return np.mean((predictions - y_train) ** 2)
+        # FIX: Add validation loss to prevent overfitting
+        mse = np.mean((predictions - y_train) ** 2)
+        
+        # Add penalty for extreme predictions
+        l_penalty = np.mean(np.maximum(0, predictions[:, 0] - 1.2) + np.maximum(0, -0.2 - predictions[:, 0]))
+        ab_penalty = np.mean(np.maximum(0, np.abs(predictions[:, 1:]) - 1.2))
+        
+        return mse + 0.1 * (l_penalty + ab_penalty)
 
     initial_weights = dbn.model.get_weights()
     flat_weights = np.hstack([w.flatten() for w in initial_weights])
@@ -86,18 +113,19 @@ def pso_optimize(dbn, x_train, y_train, bounds):
     flat_bounds = []
     epsilon = 1e-5
     for w in initial_weights:
-        min_val = w.min()
-        max_val = w.max()
-        if min_val == max_val:
-            min_val -= epsilon
-            max_val += epsilon
+        # Use more conservative bounds to prevent divergence
+        std = np.std(w)
+        mean = np.mean(w)
+        min_val = mean - 2 * std  # 2 standard deviations
+        max_val = mean + 2 * std
         flat_bounds.extend([(min_val, max_val)] * w.size)
+
 
     lb = [b[0] for b in flat_bounds]
     ub = [b[1] for b in flat_bounds]
 
-    swarmsize = 5
-    maxiter = 5
+    swarmsize = 10
+    maxiter = 20
 
     logging.info(f"Starting PSO optimization with swarmsize={swarmsize} and maxiter={maxiter}")
     optimized_weights, _ = pso(objective, lb=lb, ub=ub, swarmsize=swarmsize, maxiter=maxiter)
@@ -128,8 +156,9 @@ def convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_color
     """
     logging.info(f"Converting {len(avg_colors)} RGB colors to CIELAB using PSO-DBN")
     avg_colors_array = np.array(avg_colors)
-    if len(avg_colors_array.shape) == 1:
-        avg_colors_array = avg_colors_array.reshape(1, -1)
+    if avg_colors_array.max() <= 1.0:
+        avg_colors_array = avg_colors_array * 255.0
+        logging.info("Converted RGB colors from 0-1 to 0-255 range")
 
     # Apply scaling to RGB inputs
     color_rgb_scaled = scaler_x.transform(avg_colors_array)  # [UPDATED] Expects 3 features
@@ -137,12 +166,22 @@ def convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_color
     # Predict using DBN
     color_lab_dbn_scaled = dbn.predict(color_rgb_scaled)
 
+
     # Inverse transform to get original CIELAB scale
     L_predicted_scaled = color_lab_dbn_scaled[:, [0]]
     ab_predicted_scaled = color_lab_dbn_scaled[:, 1:]
     L_predicted = scaler_y.inverse_transform(L_predicted_scaled)
     ab_predicted = scaler_y_ab.inverse_transform(ab_predicted_scaled)
     color_lab_dbn = np.hstack((L_predicted, ab_predicted))
+
+    # FIX: Add validation to ensure CIELAB values are in valid ranges
+    # L should be 0-100, a and b should be roughly -128 to 127
+    color_lab_dbn[:, 0] = np.clip(color_lab_dbn[:, 0], 0, 100)  # L channel
+    color_lab_dbn[:, 1:] = np.clip(color_lab_dbn[:, 1:], -128, 127)  # a,b channels
+    
+    logging.info(f"CIELAB ranges - L: [{color_lab_dbn[:, 0].min():.2f}, {color_lab_dbn[:, 0].max():.2f}], "
+                f"a: [{color_lab_dbn[:, 1].min():.2f}, {color_lab_dbn[:, 1].max():.2f}], "
+                f"b: [{color_lab_dbn[:, 2].min():.2f}, {color_lab_dbn[:, 2].max():.2f}]")
 
     # Convert to list of tuples
     avg_colors_lab_dbn = [tuple(color) for color in color_lab_dbn]

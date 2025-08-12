@@ -1,7 +1,15 @@
-# config.yaml
+segmentation_methods:
+  - kmeans_opt
+  - kmeans_predef
+  - som_opt
+  - som_predef
+  - dbscan
 kmeans_clusters: 5
 predefined_k: 5
 distance_threshold: 0.7
+k_values: [2, 3, 4] # Pool including predefined_k for K-means optimization
+som_values: [2, 3, 4] # Pool including predefined_k for SOM optimization
+
 reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/reference.jpg"
 test_images:
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/test_images/flowers1.jpg"

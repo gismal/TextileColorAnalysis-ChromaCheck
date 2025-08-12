@@ -1,6 +1,15 @@
+segmentation_methods:
+  - kmeans_opt
+  - kmeans_predef
+  - som_opt
+  - som_predef
+  - dbscan
 kmeans_clusters: 6
 predefined_k: 6
 distance_threshold: 0.7
+k_values: [2, 3, 4] # Pool including predefined_k for K-means optimization
+som_values: [2, 3, 4] # Pool including predefined_k for SOM optimization
+
 reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/unicorn/inputs/reference.jpg"
 test_images:
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/unicorn/inputs/test_images/unicorn1.jpg"

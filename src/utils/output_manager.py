@@ -8,6 +8,7 @@ class OutputManager:
     def __init__(self, base_dir, dataset_name):
         """Initialize OutputManager with base directory and dataset name."""
         self.base_dir = Path(base_dir)
+        self.output_dir = self.base_dir
         self.dataset_dir = self.base_dir / 'datasets' / dataset_name
         self.inputs_dir = self.dataset_dir / 'inputs'
         self.test_images_dir = self.inputs_dir / 'test_images'

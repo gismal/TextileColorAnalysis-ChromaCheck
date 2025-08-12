@@ -23,7 +23,13 @@ def ciede2000_distance(color1, color2):
     Returns:
         float: Delta E value.
     """
-    return deltaE_ciede2000(np.array([color1]), np.array([color2]))[0]
+    color1 = np.array(color1, dtype=np.float64)
+    color2 = np.array(color2, dtype=np.float64)
+    if color1.ndim != 1 or color2.ndim != 1 or color1.shape[0] != 3 or color2.shape[0] != 3:
+        raise ValueError("Colors must be 1D arrays of length 3 (e.g., [L, a, b])")
+    # Stack colors into a 2D array with shape (2, 3) for deltaE_ciede2000
+    colors = np.stack([color1, color2])
+    return deltaE_ciede2000(colors)[0]
 
 def calculate_similarity(segmentation_data, target_colors):
     """Calculate similarity scores for segmented colors against target colors.

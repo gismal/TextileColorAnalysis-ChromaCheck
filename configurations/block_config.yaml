@@ -1,7 +1,25 @@
-# config.yaml
+segmentation_methods:
+  - kmeans_opt
+  - kmeans_predef
+  - som_opt
+  - som_predef
+  - dbscan
 kmeans_clusters: 2
 predefined_k: 2
 distance_threshold: 0.7
+k_values: [2, 3, 4] # Pool including predefined_k for K-means optimization
+som_values: [2, 3, 4] # Pool including predefined_k for SOM optimization
+
+preprocessing:
+  initial_resize: 512
+  target_size_width: 128
+  target_size_height: 128
+  denoise_h: 10
+  max_colors: 8
+  edge_enhance: false
+  unsharp_amount: 0.0
+  unsharp_threshold: 0
+
 reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference.jpg"
 test_images:
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block1.jpg"
