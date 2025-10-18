@@ -2416,3 +2416,1089 @@
 2025-08-08 13:30:16,606 - root - INFO - main:704 - PROCESSING COMPLETED IN 677.51 SECONDS
 2025-08-08 13:30:16,606 - root - INFO - main:705 - ================================================================================
 2025-08-08 13:30:16,645 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-08-15 17:18:39,298 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-08-15 17:18:39,298 - root - INFO - main:418 - ================================================================================
+2025-08-15 17:18:39,302 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-08-15 17:18:39,302 - root - INFO - main:420 - ================================================================================
+2025-08-15 17:18:39,302 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-08-15 17:18:39,302 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-08-15 17:18:39,302 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-08-15 17:18:39,304 - root - INFO - timer:89 - Starting: Configuration loading
+2025-08-15 17:18:39,304 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-08-15 17:18:39,317 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-08-15 17:18:39,320 - root - INFO - validate_processing_config:160 - Configuration validation passed
+2025-08-15 17:18:39,321 - root - INFO - timer:93 - Completed: Configuration loading in 0.02 seconds
+2025-08-15 17:18:39,322 - root - INFO - main:450 - Processing dataset: block
+2025-08-15 17:18:39,323 - root - INFO - main:451 - Reference image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference.jpg
+2025-08-15 17:18:39,323 - root - INFO - main:452 - Test images: 5 files
+2025-08-15 17:18:39,323 - root - INFO - timer:89 - Starting: Reference image loading
+2025-08-15 17:18:41,027 - root - INFO - save_reference_image:28 - Saved reference image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\reference.png
+2025-08-15 17:18:41,027 - root - INFO - timer:93 - Completed: Reference image loading in 1.70 seconds
+2025-08-15 17:18:41,027 - root - INFO - timer:89 - Starting: Test images loading
+2025-08-15 17:18:41,637 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block1.jpg
+2025-08-15 17:18:42,586 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block2.jpg
+2025-08-15 17:18:43,077 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block3.jpg
+2025-08-15 17:18:43,536 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block4.jpg
+2025-08-15 17:18:43,997 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block5.jpg
+2025-08-15 17:18:44,006 - root - INFO - main:475 - Successfully loaded 5 test images
+2025-08-15 17:18:44,006 - root - INFO - timer:93 - Completed: Test images loading in 2.98 seconds
+2025-08-15 17:18:44,006 - root - INFO - timer:89 - Starting: Training data preparation
+2025-08-15 17:18:44,006 - root - INFO - load_data:84 - Processing 5 images
+2025-08-15 17:18:45,357 - root - INFO - load_data:101 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-08-15 17:18:45,362 - root - INFO - validate_loaded_data:189 - Data validation passed: 50000 total RGB-LAB pairs available
+2025-08-15 17:18:45,363 - root - INFO - main:482 - Loaded data - RGB: 5 images, LAB: 5 images
+2025-08-15 17:18:45,363 - root - INFO - efficient_data_sampling:200 - Data is pre-flattened: RGB (5, 30000), LAB (5, 30000)
+2025-08-15 17:18:45,364 - root - INFO - efficient_data_sampling:208 - Sampling 800 total samples, max 160 per image
+2025-08-15 17:18:45,369 - root - INFO - efficient_data_sampling:327 - Sampling completed: 800 samples from 5 images
+2025-08-15 17:18:45,370 - root - INFO - efficient_data_sampling:328 - RGB range: [21.00, 226.00]
+2025-08-15 17:18:45,370 - root - INFO - efficient_data_sampling:329 - LAB ranges: L[6.67, 88.63], a[-3.00, 4.00], b[-2.00, 10.00]
+2025-08-15 17:18:45,371 - root - INFO - timer:93 - Completed: Training data preparation in 1.36 seconds
+2025-08-15 17:18:45,371 - root - INFO - timer:89 - Starting: Data splitting
+2025-08-15 17:18:45,375 - root - INFO - main:492 - Training set: (640, 3), Test set: (160, 3)
+2025-08-15 17:18:45,376 - root - INFO - timer:93 - Completed: Data splitting in 0.00 seconds
+2025-08-15 17:18:45,376 - root - INFO - timer:89 - Starting: DBN initialization and training
+2025-08-15 17:18:45,377 - root - INFO - timer:93 - Completed: DBN initialization and training in 0.00 seconds
+2025-08-15 17:18:45,377 - root - ERROR - main:696 - Main execution failed: 'DBN' object has no attribute 'config'
+2025-08-15 17:18:45,382 - root - INFO - main:703 - ================================================================================
+2025-08-15 17:18:45,383 - root - INFO - main:704 - PROCESSING COMPLETED IN 6.08 SECONDS
+2025-08-15 17:18:45,383 - root - INFO - main:705 - ================================================================================
+2025-08-15 17:18:45,391 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:05:27,865 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:05:27,866 - root - INFO - main:418 - ================================================================================
+2025-10-18 22:05:27,866 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:05:27,867 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:05:27,867 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:05:27,868 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:05:27,868 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-10-18 22:05:27,869 - root - INFO - timer:89 - Starting: Configuration loading
+2025-10-18 22:05:27,869 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:05:27,882 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:05:27,882 - root - ERROR - validate_processing_config:164 - Configuration validation failed: Reference image not found: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference.jpg
+2025-10-18 22:05:27,883 - root - INFO - timer:93 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:05:27,884 - root - ERROR - main:696 - Main execution failed: Processing configuration validation failed
+2025-10-18 22:05:27,885 - root - INFO - main:703 - ================================================================================
+2025-10-18 22:05:27,886 - root - INFO - main:704 - PROCESSING COMPLETED IN 0.02 SECONDS
+2025-10-18 22:05:27,886 - root - INFO - main:705 - ================================================================================
+2025-10-18 22:05:27,891 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:27:54,251 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:27:54,251 - root - INFO - main:418 - ================================================================================
+2025-10-18 22:27:54,251 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:27:54,251 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:27:54,266 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:27:54,266 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:27:54,267 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-10-18 22:27:54,267 - root - INFO - timer:89 - Starting: Configuration loading
+2025-10-18 22:27:54,267 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:27:54,275 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:27:54,275 - root - ERROR - validate_processing_config:164 - Configuration validation failed: Reference image not found: C:/Users/LENOVO/Desktop/prints/output/datasets/block/reference_images/inputs/reference.jpg
+2025-10-18 22:27:54,275 - root - INFO - timer:93 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:27:54,275 - root - ERROR - main:696 - Main execution failed: Processing configuration validation failed
+2025-10-18 22:27:54,282 - root - INFO - main:703 - ================================================================================
+2025-10-18 22:27:54,282 - root - INFO - main:704 - PROCESSING COMPLETED IN 0.03 SECONDS
+2025-10-18 22:27:54,282 - root - INFO - main:705 - ================================================================================
+2025-10-18 22:27:54,289 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:28:56,478 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:28:56,478 - root - INFO - main:418 - ================================================================================
+2025-10-18 22:28:56,478 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:28:56,478 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:28:56,478 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:28:56,478 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:28:56,478 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-10-18 22:28:56,478 - root - INFO - timer:89 - Starting: Configuration loading
+2025-10-18 22:28:56,478 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:28:56,494 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:28:56,495 - root - ERROR - validate_processing_config:164 - Configuration validation failed: Reference image not found: C:/Users/LENOVO/Desktop/prints/output/datasets/block/reference_images/inputs/reference.jpg
+2025-10-18 22:28:56,496 - root - INFO - timer:93 - Completed: Configuration loading in 0.02 seconds
+2025-10-18 22:28:56,496 - root - ERROR - main:696 - Main execution failed: Processing configuration validation failed
+2025-10-18 22:28:56,497 - root - INFO - main:703 - ================================================================================
+2025-10-18 22:28:56,498 - root - INFO - main:704 - PROCESSING COMPLETED IN 0.02 SECONDS
+2025-10-18 22:28:56,498 - root - INFO - main:705 - ================================================================================
+2025-10-18 22:28:56,506 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:29:09,575 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:29:09,575 - root - INFO - main:418 - ================================================================================
+2025-10-18 22:29:09,576 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:29:09,576 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:29:09,577 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:29:09,577 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:29:09,578 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-10-18 22:29:09,578 - root - INFO - timer:89 - Starting: Configuration loading
+2025-10-18 22:29:09,579 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:29:09,589 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:29:09,590 - root - ERROR - validate_processing_config:164 - Configuration validation failed: Reference image not found: C:/Users/LENOVO/Desktop/prints/output/datasets/block/reference_images/inputs/reference.jpg
+2025-10-18 22:29:09,591 - root - INFO - timer:93 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:29:09,591 - root - ERROR - main:696 - Main execution failed: Processing configuration validation failed
+2025-10-18 22:29:09,592 - root - INFO - main:703 - ================================================================================
+2025-10-18 22:29:09,593 - root - INFO - main:704 - PROCESSING COMPLETED IN 0.02 SECONDS
+2025-10-18 22:29:09,593 - root - INFO - main:705 - ================================================================================
+2025-10-18 22:29:09,598 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:30:27,579 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:30:27,581 - root - INFO - main:418 - ================================================================================
+2025-10-18 22:30:27,581 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:30:27,581 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:30:27,581 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:30:27,582 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:30:27,582 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-10-18 22:30:27,583 - root - INFO - timer:89 - Starting: Configuration loading
+2025-10-18 22:30:27,583 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:30:27,593 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:30:27,594 - root - ERROR - validate_processing_config:164 - Configuration validation failed: Reference image not found: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_images/reference.jpg
+2025-10-18 22:30:27,595 - root - INFO - timer:93 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:30:27,595 - root - ERROR - main:696 - Main execution failed: Processing configuration validation failed
+2025-10-18 22:30:27,596 - root - INFO - main:703 - ================================================================================
+2025-10-18 22:30:27,597 - root - INFO - main:704 - PROCESSING COMPLETED IN 0.02 SECONDS
+2025-10-18 22:30:27,597 - root - INFO - main:705 - ================================================================================
+2025-10-18 22:30:27,602 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:31:36,335 - root - INFO - setup_logging:82 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:31:36,335 - root - INFO - main:418 - ================================================================================
+2025-10-18 22:31:36,335 - root - INFO - main:419 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:31:36,336 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:31:36,336 - root - INFO - main:421 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:31:36,337 - root - INFO - main:422 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:31:36,337 - root - INFO - main:423 - Config file: configurations\block_config.yaml
+2025-10-18 22:31:36,337 - root - INFO - timer:89 - Starting: Configuration loading
+2025-10-18 22:31:36,338 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:31:36,350 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:31:36,351 - root - INFO - validate_processing_config:160 - Configuration validation passed
+2025-10-18 22:31:36,352 - root - INFO - timer:93 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:31:36,353 - root - INFO - main:450 - Processing dataset: block
+2025-10-18 22:31:36,354 - root - INFO - main:451 - Reference image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg
+2025-10-18 22:31:36,354 - root - INFO - main:452 - Test images: 5 files
+2025-10-18 22:31:36,355 - root - INFO - timer:89 - Starting: Reference image loading
+2025-10-18 22:31:37,944 - root - INFO - save_reference_image:28 - Saved reference image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\reference.png
+2025-10-18 22:31:37,945 - root - INFO - timer:93 - Completed: Reference image loading in 1.59 seconds
+2025-10-18 22:31:37,946 - root - INFO - timer:89 - Starting: Test images loading
+2025-10-18 22:31:38,524 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block1.jpg
+2025-10-18 22:31:39,246 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block2.jpg
+2025-10-18 22:31:39,652 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block3.jpg
+2025-10-18 22:31:40,093 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block4.jpg
+2025-10-18 22:31:40,547 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block5.jpg
+2025-10-18 22:31:40,548 - root - INFO - main:475 - Successfully loaded 5 test images
+2025-10-18 22:31:40,548 - root - INFO - timer:93 - Completed: Test images loading in 2.60 seconds
+2025-10-18 22:31:40,549 - root - INFO - timer:89 - Starting: Training data preparation
+2025-10-18 22:31:40,549 - root - INFO - load_data:84 - Processing 5 images
+2025-10-18 22:31:41,807 - root - INFO - load_data:101 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-18 22:31:41,812 - root - INFO - validate_loaded_data:189 - Data validation passed: 50000 total RGB-LAB pairs available
+2025-10-18 22:31:41,813 - root - INFO - main:482 - Loaded data - RGB: 5 images, LAB: 5 images
+2025-10-18 22:31:41,813 - root - INFO - efficient_data_sampling:200 - Data is pre-flattened: RGB (5, 30000), LAB (5, 30000)
+2025-10-18 22:31:41,814 - root - INFO - efficient_data_sampling:208 - Sampling 800 total samples, max 160 per image
+2025-10-18 22:31:41,819 - root - INFO - efficient_data_sampling:327 - Sampling completed: 800 samples from 5 images
+2025-10-18 22:31:41,820 - root - INFO - efficient_data_sampling:328 - RGB range: [22.00, 227.00]
+2025-10-18 22:31:41,820 - root - INFO - efficient_data_sampling:329 - LAB ranges: L[7.45, 89.02], a[-3.00, 4.00], b[-2.00, 10.00]
+2025-10-18 22:31:41,821 - root - INFO - timer:93 - Completed: Training data preparation in 1.27 seconds
+2025-10-18 22:31:41,821 - root - INFO - timer:89 - Starting: Data splitting
+2025-10-18 22:31:41,824 - root - INFO - main:492 - Training set: (640, 3), Test set: (160, 3)
+2025-10-18 22:31:41,824 - root - INFO - timer:93 - Completed: Data splitting in 0.00 seconds
+2025-10-18 22:31:41,825 - root - INFO - timer:89 - Starting: DBN initialization and training
+2025-10-18 22:31:41,826 - root - INFO - timer:93 - Completed: DBN initialization and training in 0.00 seconds
+2025-10-18 22:31:41,827 - root - ERROR - main:696 - Main execution failed: 'int' object has no attribute 'hidden_layers'
+2025-10-18 22:31:41,829 - root - INFO - main:703 - ================================================================================
+2025-10-18 22:31:41,829 - root - INFO - main:704 - PROCESSING COMPLETED IN 5.50 SECONDS
+2025-10-18 22:31:41,830 - root - INFO - main:705 - ================================================================================
+2025-10-18 22:31:41,837 - root - WARNING - main:715 - Failed to save profiling results: print_stats() got an unexpected keyword argument 'file'
+2025-10-18 22:46:58,543 - root - INFO - setup_logging:84 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:46:58,544 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:46:58,544 - root - INFO - main:421 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:46:58,545 - root - INFO - main:422 - ================================================================================
+2025-10-18 22:46:58,545 - root - INFO - main:423 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:46:58,546 - root - INFO - main:424 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:46:58,546 - root - INFO - main:425 - Config file: configurations\block_config.yaml
+2025-10-18 22:46:58,546 - root - INFO - timer:91 - Starting: Configuration loading
+2025-10-18 22:46:58,547 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:46:58,558 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:46:58,560 - root - INFO - validate_processing_config:162 - Configuration validation passed
+2025-10-18 22:46:58,560 - root - INFO - timer:95 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:46:58,561 - root - INFO - main:452 - Processing dataset: block
+2025-10-18 22:46:58,562 - root - INFO - main:453 - Reference image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg
+2025-10-18 22:46:58,562 - root - INFO - main:454 - Test images: 5 files
+2025-10-18 22:46:58,563 - root - INFO - timer:91 - Starting: Reference image loading
+2025-10-18 22:47:00,404 - root - INFO - save_reference_image:28 - Saved reference image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\reference.png
+2025-10-18 22:47:00,404 - root - INFO - timer:95 - Completed: Reference image loading in 1.84 seconds
+2025-10-18 22:47:00,405 - root - INFO - timer:91 - Starting: Test images loading
+2025-10-18 22:47:01,026 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block1.jpg
+2025-10-18 22:47:01,859 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block2.jpg
+2025-10-18 22:47:02,292 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block3.jpg
+2025-10-18 22:47:02,743 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block4.jpg
+2025-10-18 22:47:03,213 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block5.jpg
+2025-10-18 22:47:03,213 - root - INFO - main:477 - Successfully loaded 5 test images
+2025-10-18 22:47:03,214 - root - INFO - timer:95 - Completed: Test images loading in 2.81 seconds
+2025-10-18 22:47:03,214 - root - INFO - timer:91 - Starting: Training data preparation
+2025-10-18 22:47:03,215 - root - INFO - load_data:84 - Processing 5 images
+2025-10-18 22:47:04,586 - root - INFO - load_data:101 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-18 22:47:04,590 - root - INFO - validate_loaded_data:191 - Data validation passed: 50000 total RGB-LAB pairs available
+2025-10-18 22:47:04,591 - root - INFO - main:484 - Loaded data - RGB: 5 images, LAB: 5 images
+2025-10-18 22:47:04,591 - root - INFO - efficient_data_sampling:202 - Data is pre-flattened: RGB (5, 30000), LAB (5, 30000)
+2025-10-18 22:47:04,592 - root - INFO - efficient_data_sampling:210 - Sampling 800 total samples, max 160 per image
+2025-10-18 22:47:04,597 - root - INFO - efficient_data_sampling:329 - Sampling completed: 800 samples from 5 images
+2025-10-18 22:47:04,598 - root - INFO - efficient_data_sampling:330 - RGB range: [18.00, 224.00]
+2025-10-18 22:47:04,598 - root - INFO - efficient_data_sampling:331 - LAB ranges: L[5.49, 88.24], a[-3.00, 5.00], b[-4.00, 10.00]
+2025-10-18 22:47:04,599 - root - INFO - timer:95 - Completed: Training data preparation in 1.39 seconds
+2025-10-18 22:47:04,599 - root - INFO - timer:91 - Starting: Data splitting
+2025-10-18 22:47:04,602 - root - INFO - main:494 - Training set: (640, 3), Test set: (160, 3)
+2025-10-18 22:47:04,603 - root - INFO - timer:95 - Completed: Data splitting in 0.00 seconds
+2025-10-18 22:47:04,603 - root - INFO - timer:91 - Starting: DBN initialization and training
+2025-10-18 22:47:04,604 - src.models.pso_dbn - INFO - __init__:106 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-18 22:47:04,604 - root - INFO - timer:95 - Completed: DBN initialization and training in 0.00 seconds
+2025-10-18 22:47:04,605 - root - ERROR - main:703 - Main execution failed: 'DBN' object has no attribute '_build_model'
+2025-10-18 22:47:04,607 - root - INFO - main:710 - ================================================================================
+2025-10-18 22:47:04,608 - root - INFO - main:711 - PROCESSING COMPLETED IN 6.06 SECONDS
+2025-10-18 22:47:04,608 - root - INFO - main:712 - ================================================================================
+2025-10-18 22:47:04,618 - root - INFO - main:721 - Profiling results saved to: c:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-18 22:51:44,011 - root - INFO - setup_logging:84 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 22:51:44,011 - root - INFO - main:420 - ================================================================================
+2025-10-18 22:51:44,012 - root - INFO - main:421 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 22:51:44,012 - root - INFO - main:422 - ================================================================================
+2025-10-18 22:51:44,013 - root - INFO - main:423 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 22:51:44,013 - root - INFO - main:424 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 22:51:44,013 - root - INFO - main:425 - Config file: configurations\block_config.yaml
+2025-10-18 22:51:44,014 - root - INFO - timer:91 - Starting: Configuration loading
+2025-10-18 22:51:44,014 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 22:51:44,025 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 22:51:44,027 - root - INFO - validate_processing_config:162 - Configuration validation passed
+2025-10-18 22:51:44,027 - root - INFO - timer:95 - Completed: Configuration loading in 0.01 seconds
+2025-10-18 22:51:44,029 - root - INFO - main:452 - Processing dataset: block
+2025-10-18 22:51:44,030 - root - INFO - main:453 - Reference image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg
+2025-10-18 22:51:44,030 - root - INFO - main:454 - Test images: 5 files
+2025-10-18 22:51:44,030 - root - INFO - timer:91 - Starting: Reference image loading
+2025-10-18 22:51:45,614 - root - INFO - save_reference_image:28 - Saved reference image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\reference.png
+2025-10-18 22:51:45,615 - root - INFO - timer:95 - Completed: Reference image loading in 1.59 seconds
+2025-10-18 22:51:45,615 - root - INFO - timer:91 - Starting: Test images loading
+2025-10-18 22:51:46,240 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block1.jpg
+2025-10-18 22:51:46,992 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block2.jpg
+2025-10-18 22:51:47,433 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block3.jpg
+2025-10-18 22:51:47,901 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block4.jpg
+2025-10-18 22:51:48,341 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block5.jpg
+2025-10-18 22:51:48,341 - root - INFO - main:477 - Successfully loaded 5 test images
+2025-10-18 22:51:48,342 - root - INFO - timer:95 - Completed: Test images loading in 2.73 seconds
+2025-10-18 22:51:48,342 - root - INFO - timer:91 - Starting: Training data preparation
+2025-10-18 22:51:48,343 - root - INFO - load_data:84 - Processing 5 images
+2025-10-18 22:51:49,629 - root - INFO - load_data:101 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-18 22:51:49,633 - root - INFO - validate_loaded_data:191 - Data validation passed: 50000 total RGB-LAB pairs available
+2025-10-18 22:51:49,634 - root - INFO - main:484 - Loaded data - RGB: 5 images, LAB: 5 images
+2025-10-18 22:51:49,634 - root - INFO - efficient_data_sampling:202 - Data is pre-flattened: RGB (5, 30000), LAB (5, 30000)
+2025-10-18 22:51:49,635 - root - INFO - efficient_data_sampling:210 - Sampling 800 total samples, max 160 per image
+2025-10-18 22:51:49,638 - root - INFO - efficient_data_sampling:329 - Sampling completed: 800 samples from 5 images
+2025-10-18 22:51:49,639 - root - INFO - efficient_data_sampling:330 - RGB range: [22.00, 222.00]
+2025-10-18 22:51:49,639 - root - INFO - efficient_data_sampling:331 - LAB ranges: L[7.06, 87.45], a[-3.00, 4.00], b[-2.00, 9.00]
+2025-10-18 22:51:49,639 - root - INFO - timer:95 - Completed: Training data preparation in 1.30 seconds
+2025-10-18 22:51:49,640 - root - INFO - timer:91 - Starting: Data splitting
+2025-10-18 22:51:49,642 - root - INFO - main:494 - Training set: (640, 3), Test set: (160, 3)
+2025-10-18 22:51:49,643 - root - INFO - timer:95 - Completed: Data splitting in 0.00 seconds
+2025-10-18 22:51:49,643 - root - INFO - timer:91 - Starting: DBN initialization and training
+2025-10-18 22:51:49,644 - src.models.pso_dbn - INFO - __init__:106 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-18 22:51:49,644 - root - INFO - timer:95 - Completed: DBN initialization and training in 0.00 seconds
+2025-10-18 22:51:49,645 - root - ERROR - main:703 - Main execution failed: 'DBN' object has no attribute '_build_model'
+2025-10-18 22:51:49,647 - root - INFO - main:710 - ================================================================================
+2025-10-18 22:51:49,647 - root - INFO - main:711 - PROCESSING COMPLETED IN 5.64 SECONDS
+2025-10-18 22:51:49,648 - root - INFO - main:712 - ================================================================================
+2025-10-18 22:51:49,654 - root - INFO - main:721 - Profiling results saved to: c:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-18 23:01:45,498 - root - INFO - setup_logging:84 - Logging setup complete. Log file: c:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-18 23:01:45,498 - root - INFO - main:420 - ================================================================================
+2025-10-18 23:01:45,498 - root - INFO - main:421 - TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+2025-10-18 23:01:45,498 - root - INFO - main:422 - ================================================================================
+2025-10-18 23:01:45,498 - root - INFO - main:423 - Current working directory: C:\Users\LENOVO\Desktop\prints
+2025-10-18 23:01:45,498 - root - INFO - main:424 - Output directory: c:\Users\LENOVO\Desktop\prints\output
+2025-10-18 23:01:45,498 - root - INFO - main:425 - Config file: configurations\block_config.yaml
+2025-10-18 23:01:45,498 - root - INFO - timer:91 - Starting: Configuration loading
+2025-10-18 23:01:45,498 - root - INFO - load_config:30 - Loading configuration from configurations\block_config.yaml...
+2025-10-18 23:01:45,512 - root - INFO - load_config:34 - Configuration loaded successfully.
+2025-10-18 23:01:45,516 - root - INFO - validate_processing_config:162 - Configuration validation passed
+2025-10-18 23:01:45,516 - root - INFO - timer:95 - Completed: Configuration loading in 0.02 seconds
+2025-10-18 23:01:45,517 - root - INFO - main:452 - Processing dataset: block
+2025-10-18 23:01:45,517 - root - INFO - main:453 - Reference image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg
+2025-10-18 23:01:45,518 - root - INFO - main:454 - Test images: 5 files
+2025-10-18 23:01:45,519 - root - INFO - timer:91 - Starting: Reference image loading
+2025-10-18 23:01:47,020 - root - INFO - save_reference_image:28 - Saved reference image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\reference.png
+2025-10-18 23:01:47,020 - root - INFO - timer:95 - Completed: Reference image loading in 1.50 seconds
+2025-10-18 23:01:47,028 - root - INFO - timer:91 - Starting: Test images loading
+2025-10-18 23:01:47,575 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block1.jpg
+2025-10-18 23:01:48,265 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block2.jpg
+2025-10-18 23:01:48,697 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block3.jpg
+2025-10-18 23:01:49,151 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block4.jpg
+2025-10-18 23:01:49,606 - root - INFO - save_test_image:36 - Saved test image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\inputs\test_images\block5.jpg
+2025-10-18 23:01:49,606 - root - INFO - main:477 - Successfully loaded 5 test images
+2025-10-18 23:01:49,606 - root - INFO - timer:95 - Completed: Test images loading in 2.58 seconds
+2025-10-18 23:01:49,606 - root - INFO - timer:91 - Starting: Training data preparation
+2025-10-18 23:01:49,606 - root - INFO - load_data:84 - Processing 5 images
+2025-10-18 23:01:50,890 - root - INFO - load_data:101 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-18 23:01:50,898 - root - INFO - validate_loaded_data:191 - Data validation passed: 50000 total RGB-LAB pairs available
+2025-10-18 23:01:50,898 - root - INFO - main:484 - Loaded data - RGB: 5 images, LAB: 5 images
+2025-10-18 23:01:50,898 - root - INFO - efficient_data_sampling:202 - Data is pre-flattened: RGB (5, 30000), LAB (5, 30000)
+2025-10-18 23:01:50,898 - root - INFO - efficient_data_sampling:210 - Sampling 800 total samples, max 160 per image
+2025-10-18 23:01:50,905 - root - INFO - efficient_data_sampling:329 - Sampling completed: 800 samples from 5 images
+2025-10-18 23:01:50,906 - root - INFO - efficient_data_sampling:330 - RGB range: [22.00, 225.00]
+2025-10-18 23:01:50,906 - root - INFO - efficient_data_sampling:331 - LAB ranges: L[7.06, 88.24], a[-3.00, 5.00], b[-4.00, 10.00]
+2025-10-18 23:01:50,907 - root - INFO - timer:95 - Completed: Training data preparation in 1.30 seconds
+2025-10-18 23:01:50,907 - root - INFO - timer:91 - Starting: Data splitting
+2025-10-18 23:01:50,909 - root - INFO - main:494 - Training set: (640, 3), Test set: (160, 3)
+2025-10-18 23:01:50,910 - root - INFO - timer:95 - Completed: Data splitting in 0.00 seconds
+2025-10-18 23:01:50,910 - root - INFO - timer:91 - Starting: DBN initialization and training
+2025-10-18 23:01:50,911 - src.models.pso_dbn - INFO - __init__:105 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-18 23:01:51,250 - src.models.pso_dbn - INFO - _build_model:157 - DBN model built with 7503 parameters
+2025-10-18 23:01:51,250 - root - INFO - main:507 - DBN initialized with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-18 23:01:51,265 - root - INFO - main:519 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-18 23:01:51,265 - root - INFO - main:520 - X range: [0.000, 1.000]
+2025-10-18 23:01:51,265 - root - INFO - main:521 - Y range: [0.000, 1.000]
+2025-10-18 23:01:51,351 - root - INFO - main:528 - Initial model has 20 weight layers
+2025-10-18 23:01:51,352 - root - INFO - main:530 - Layer 0: shape (3, 100), range [-0.241, 0.241]
+2025-10-18 23:01:51,353 - root - INFO - main:530 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-18 23:01:51,353 - root - INFO - main:530 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-18 23:01:51,354 - root - INFO - main:530 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-18 23:01:51,354 - root - INFO - main:530 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-18 23:01:51,355 - root - INFO - main:530 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-18 23:01:51,355 - root - INFO - main:530 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-18 23:01:51,356 - root - INFO - main:530 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-18 23:01:51,356 - root - INFO - main:530 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-18 23:01:51,356 - root - INFO - main:530 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-18 23:01:51,357 - root - INFO - main:530 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-18 23:01:51,357 - root - INFO - main:530 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-18 23:01:51,358 - root - INFO - main:530 - Layer 12: shape (50, 25), range [-0.283, 0.283]
+2025-10-18 23:01:51,358 - root - INFO - main:530 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-18 23:01:51,359 - root - INFO - main:530 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-18 23:01:51,359 - root - INFO - main:530 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-18 23:01:51,360 - root - INFO - main:530 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-18 23:01:51,360 - root - INFO - main:530 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-18 23:01:51,361 - root - INFO - main:530 - Layer 18: shape (25, 3), range [-0.449, 0.456]
+2025-10-18 23:01:51,361 - root - INFO - main:530 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-18 23:01:51,362 - root - INFO - safe_pso_optimization:348 - PSO optimization attempt 1/3
+2025-10-18 23:01:51,362 - root - INFO - timer:91 - Starting: PSO optimization
+2025-10-18 23:01:51,363 - src.models.pso_dbn - WARNING - pso_optimize:557 - Using legacy pso_optimize function. Consider upgrading to PSOOptimizer class.
+2025-10-18 23:01:51,363 - src.models.pso_dbn - INFO - optimize:296 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-18 23:04:30,738 - src.models.pso_dbn - WARNING - optimize:362 - PSO produced invalid weights, using best found weights
+2025-10-18 23:04:30,738 - src.models.pso_dbn - INFO - optimize:365 - PSO optimization completed in 159.37s - Final fitness: 0.021946
+2025-10-18 23:04:30,738 - root - INFO - timer:95 - Completed: PSO optimization in 159.38 seconds
+2025-10-18 23:04:30,738 - root - INFO - safe_pso_optimization:362 - PSO optimization completed successfully
+2025-10-18 23:04:30,738 - root - INFO - timer:95 - Completed: DBN initialization and training in 159.83 seconds
+2025-10-18 23:04:30,738 - root - INFO - timer:91 - Starting: Reference image processing
+2025-10-18 23:04:30,738 - root - INFO - process_reference_image:373 - Processing reference image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg
+2025-10-18 23:04:30,738 - root - INFO - load_and_preprocess_image:285 - Loading image from C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg
+2025-10-18 23:04:31,117 - root - INFO - load_and_preprocess_image:290 - Starting preprocessing
+2025-10-18 23:04:31,117 - root - INFO - preprocess:67 - Starting preprocessing
+2025-10-18 23:04:31,149 - root - INFO - preprocess:72 - Initial resize to approx 512x512
+2025-10-18 23:04:32,396 - root - INFO - preprocess:76 - Applied non-local means denoising with h=10
+2025-10-18 23:04:32,712 - root - INFO - estimate_n_colors:33 - Estimated 299 unique colors, setting n_colors to 8
+2025-10-18 23:04:33,570 - root - INFO - quantize_image:47 - Quantized to 8 colors, unique colors: 8
+2025-10-18 23:04:33,570 - root - INFO - preprocess:86 - Resized to 256x256
+2025-10-18 23:04:33,570 - root - INFO - preprocess:88 - Preprocessing completed
+2025-10-18 23:04:33,570 - root - INFO - load_and_preprocess_image:295 - Preprocessing completed
+2025-10-18 23:04:33,581 - root - INFO - process_reference_image:392 - Resizing preprocessed image to 256x256
+2025-10-18 23:04:33,581 - root - INFO - process_reference_image:396 - Subsampling pixels for cluster determination
+2025-10-18 23:04:33,584 - root - INFO - determine_optimal_clusters:310 - Determining optimal number of clusters
+2025-10-18 23:04:33,586 - root - INFO - determine_optimal_clusters:312 - Number of unique colors after quantization: 21
+2025-10-18 23:04:33,589 - root - INFO - optimal_clusters:52 - Unique colors: 21. Adjusted max_k: 5
+2025-10-18 23:04:33,589 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:04:33,709 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.951673150062561, CH=450824.34375
+2025-10-18 23:04:33,709 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:04:33,815 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.8278075456619263, CH=611948.1875
+2025-10-18 23:04:33,815 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:04:33,964 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.7645464539527893, CH=840853.25
+2025-10-18 23:04:33,964 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:04:33,964 - root - INFO - determine_optimal_clusters:314 - Optimal number of clusters determined: 3
+2025-10-18 23:04:33,964 - root - INFO - process_reference_image:403 - Determining the number of clusters using DPC
+2025-10-18 23:04:33,964 - root - INFO - optimal_clusters_dpc:178 - Number of unique colors: 21. Adjusting max_k to: 10
+2025-10-18 23:04:33,964 - root - INFO - dpc_clustering:128 - Starting Density Peak Clustering
+2025-10-18 23:04:33,964 - root - INFO - dpc_clustering:159 - Density Peak Clustering completed
+2025-10-18 23:04:33,964 - root - INFO - optimal_clusters_dpc:195 - Optimal number of clusters determined by DPC: 10
+2025-10-18 23:04:33,964 - root - INFO - perform_segmentation:331 - Performing K-means segmentation with optimal k
+2025-10-18 23:04:33,979 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:04:34,047 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:04:34,047 - src.models.pso_dbn - INFO - convert_colors_to_cielab_dbn:509 - Converting 3 RGB colors to CIELAB using PSO-DBN
+2025-10-18 23:04:34,047 - src.models.pso_dbn - WARNING - predict:254 - Model has not been trained yet
+2025-10-18 23:04:34,301 - src.models.pso_dbn - INFO - convert_colors_to_cielab_dbn:545 - Color conversion using PSO-DBN completed successfully
+2025-10-18 23:04:34,301 - root - INFO - perform_segmentation:344 - Performing SOM segmentation with optimal k
+2025-10-18 23:04:34,301 - root - INFO - som_segmentation:36 - Starting SOM segmentation with 3 clusters
+2025-10-18 23:04:35,952 - root - INFO - som_segmentation:46 - SOM segmentation completed with 3 clusters
+2025-10-18 23:04:35,952 - src.models.pso_dbn - INFO - convert_colors_to_cielab_dbn:509 - Converting 3 RGB colors to CIELAB using PSO-DBN
+2025-10-18 23:04:35,967 - src.models.pso_dbn - WARNING - predict:254 - Model has not been trained yet
+2025-10-18 23:04:36,081 - src.models.pso_dbn - INFO - convert_colors_to_cielab_dbn:545 - Color conversion using PSO-DBN completed successfully
+2025-10-18 23:04:36,081 - root - INFO - save_reference_summary:61 - Saved reference summary to c:\Users\LENOVO\Desktop\prints\output\datasets\block\summaries\reference_summary.png
+2025-10-18 23:04:36,081 - root - INFO - main:552 - Reference processed - target colors: 3, DPC k: 10
+2025-10-18 23:04:36,081 - root - INFO - timer:95 - Completed: Reference image processing in 5.34 seconds
+2025-10-18 23:04:36,081 - root - INFO - timer:91 - Starting: Processing test image 1/5
+2025-10-18 23:04:36,081 - root - INFO - main:565 - Processing test image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block1.jpg
+2025-10-18 23:04:36,299 - root - INFO - preprocess:67 - Starting preprocessing
+2025-10-18 23:04:36,329 - root - INFO - preprocess:72 - Initial resize to approx 512x512
+2025-10-18 23:04:37,563 - root - INFO - preprocess:76 - Applied non-local means denoising with h=10
+2025-10-18 23:04:37,895 - root - INFO - estimate_n_colors:33 - Estimated 339 unique colors, setting n_colors to 8
+2025-10-18 23:04:38,378 - root - INFO - quantize_image:47 - Quantized to 8 colors, unique colors: 8
+2025-10-18 23:04:38,378 - root - INFO - preprocess:86 - Resized to 128x128
+2025-10-18 23:04:38,378 - root - INFO - preprocess:88 - Preprocessing completed
+2025-10-18 23:04:38,378 - root - INFO - save_preprocessed_image:45 - Saved preprocessed image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\processed\block1\preprocessed.png
+2025-10-18 23:04:38,402 - root - INFO - main:589 - Preprocessing completed - unique colors: 133
+2025-10-18 23:04:38,403 - root - INFO - timer:91 - Starting: Segmentation with k_type: determined
+2025-10-18 23:04:38,403 - root - INFO - main:598 - Starting segmentation with k_type: determined
+2025-10-18 23:04:38,404 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:04:38,404 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:04:38,593 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:04:38,632 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:04:38,633 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:04:38,634 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:04:40,508 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9739011526107788, CH=4088055.75
+2025-10-18 23:04:40,508 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:04:42,383 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9620038866996765, CH=3887554.0
+2025-10-18 23:04:42,383 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:04:44,265 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9495277404785156, CH=3773006.25
+2025-10-18 23:04:44,265 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:04:44,265 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:04:44,265 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:04:44,302 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:04:44,302 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:04:44,303 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:04:44,304 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:04:44,496 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:04:44,496 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:04:44,496 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:04:44,496 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:04:44,496 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:04:44,510 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:04:44,743 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:04:44,796 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:04:44,796 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:04:44,796 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:04:46,676 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9733018279075623, CH=3664606.0
+2025-10-18 23:04:46,676 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:04:48,576 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9617434740066528, CH=3622859.25
+2025-10-18 23:04:48,576 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:04:50,486 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9492170214653015, CH=3759358.0
+2025-10-18 23:04:50,486 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:04:50,486 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:04:50,507 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:04:50,508 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:04:50,510 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:04:52,391 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9851518273353577, CH=3257148.25
+2025-10-18 23:04:52,391 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:04:54,276 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9747366905212402, CH=4038138.75
+2025-10-18 23:04:54,276 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:04:54,682 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:04:54,682 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:04:54,690 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:04:54,882 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:04:54,959 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:04:54,959 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:04:54,959 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:04:56,841 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9840271472930908, CH=2685520.5
+2025-10-18 23:04:56,841 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:04:57,273 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:04:57,273 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:04:57,273 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:04:57,480 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:04:57,496 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:04:57,496 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:04:57,496 - root - INFO - process:743 - Processing completed in 19.09s. Successful: 0, Errors: 5
+2025-10-18 23:04:57,496 - root - WARNING - main:625 - No successful segmentation results for determined
+2025-10-18 23:04:57,496 - root - INFO - timer:95 - Completed: Segmentation with k_type: determined in 19.09 seconds
+2025-10-18 23:04:57,496 - root - INFO - timer:91 - Starting: Segmentation with k_type: predefined
+2025-10-18 23:04:57,496 - root - INFO - main:598 - Starting segmentation with k_type: predefined
+2025-10-18 23:04:57,496 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:04:57,496 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:04:57,728 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:04:57,759 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:04:57,759 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:04:57,759 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:04:59,657 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9734815359115601, CH=3663099.75
+2025-10-18 23:04:59,657 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:05:01,560 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.962372362613678, CH=3530369.25
+2025-10-18 23:05:01,560 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:05:03,493 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9519168138504028, CH=3712667.0
+2025-10-18 23:05:03,493 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:05:03,493 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:05:03,493 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:05:03,515 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:05:03,515 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:03,516 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:03,516 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:05:03,746 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:05:03,746 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:05:03,762 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:05:03,762 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:03,764 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:03,764 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:05:03,977 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:05:04,008 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:05:04,008 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:04,008 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:05,894 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.974992573261261, CH=4356592.5
+2025-10-18 23:05:05,894 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:05:07,780 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9632768630981445, CH=3838041.25
+2025-10-18 23:05:07,780 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:05:09,656 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8456405401229858, CH=3858310.25
+2025-10-18 23:05:09,656 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:05:09,656 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:05:09,680 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:05:09,680 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:09,680 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:05:11,568 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9842438697814941, CH=2746131.75
+2025-10-18 23:05:11,568 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:13,438 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9735122919082642, CH=4223654.5
+2025-10-18 23:05:13,438 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:05:13,849 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:13,849 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:13,849 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:05:14,065 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:05:14,089 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:05:14,089 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:14,089 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:05:16,006 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9844955205917358, CH=2878364.5
+2025-10-18 23:05:16,006 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:05:16,454 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:16,454 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:16,454 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:05:16,687 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:05:16,687 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:05:16,687 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:05:16,687 - root - INFO - process:743 - Processing completed in 19.19s. Successful: 0, Errors: 5
+2025-10-18 23:05:16,687 - root - WARNING - main:625 - No successful segmentation results for predefined
+2025-10-18 23:05:16,687 - root - INFO - timer:95 - Completed: Segmentation with k_type: predefined in 19.19 seconds
+2025-10-18 23:05:16,687 - root - INFO - timer:95 - Completed: Processing test image 1/5 in 40.61 seconds
+2025-10-18 23:05:16,687 - root - INFO - timer:91 - Starting: Processing test image 2/5
+2025-10-18 23:05:16,687 - root - INFO - main:565 - Processing test image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block2.jpg
+2025-10-18 23:05:17,020 - root - INFO - preprocess:67 - Starting preprocessing
+2025-10-18 23:05:17,043 - root - INFO - preprocess:72 - Initial resize to approx 512x512
+2025-10-18 23:05:18,420 - root - INFO - preprocess:76 - Applied non-local means denoising with h=10
+2025-10-18 23:05:18,758 - root - INFO - estimate_n_colors:33 - Estimated 317 unique colors, setting n_colors to 8
+2025-10-18 23:05:19,186 - root - INFO - quantize_image:47 - Quantized to 8 colors, unique colors: 8
+2025-10-18 23:05:19,186 - root - INFO - preprocess:86 - Resized to 128x128
+2025-10-18 23:05:19,186 - root - INFO - preprocess:88 - Preprocessing completed
+2025-10-18 23:05:19,186 - root - INFO - save_preprocessed_image:45 - Saved preprocessed image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\processed\block2\preprocessed.png
+2025-10-18 23:05:19,196 - root - INFO - main:589 - Preprocessing completed - unique colors: 133
+2025-10-18 23:05:19,212 - root - INFO - timer:91 - Starting: Segmentation with k_type: determined
+2025-10-18 23:05:19,212 - root - INFO - main:598 - Starting segmentation with k_type: determined
+2025-10-18 23:05:19,212 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:05:19,213 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:05:19,438 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:05:19,487 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:05:19,487 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:19,490 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:21,412 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9663938283920288, CH=2767125.75
+2025-10-18 23:05:21,412 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:05:23,352 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.8624221682548523, CH=2316988.0
+2025-10-18 23:05:23,352 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:05:25,322 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8835924863815308, CH=3242152.25
+2025-10-18 23:05:25,322 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:05:25,322 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:05:25,322 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:05:25,347 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:05:25,347 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:25,347 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:25,347 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:05:25,564 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:05:25,564 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:05:25,575 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:05:25,575 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:25,575 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:25,575 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:05:25,776 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:05:25,819 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:05:25,820 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:25,820 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:27,745 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9668697118759155, CH=2861795.25
+2025-10-18 23:05:27,745 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:05:29,686 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9488219022750854, CH=2770786.0
+2025-10-18 23:05:29,686 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:05:31,679 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8834084868431091, CH=3299506.5
+2025-10-18 23:05:31,679 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:05:31,679 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:05:31,707 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:05:31,707 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:31,709 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:05:33,659 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9803400635719299, CH=2553446.75
+2025-10-18 23:05:33,659 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:35,624 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9658323526382446, CH=2671587.0
+2025-10-18 23:05:35,624 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:05:36,056 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:36,056 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:36,056 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:05:36,257 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:05:36,300 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:05:36,300 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:36,302 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:05:38,220 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9805352687835693, CH=2568351.5
+2025-10-18 23:05:38,220 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:05:38,637 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:38,637 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:38,637 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:05:38,853 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:05:38,853 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:05:38,868 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:05:38,868 - root - INFO - process:743 - Processing completed in 19.66s. Successful: 0, Errors: 5
+2025-10-18 23:05:38,868 - root - WARNING - main:625 - No successful segmentation results for determined
+2025-10-18 23:05:38,868 - root - INFO - timer:95 - Completed: Segmentation with k_type: determined in 19.66 seconds
+2025-10-18 23:05:38,868 - root - INFO - timer:91 - Starting: Segmentation with k_type: predefined
+2025-10-18 23:05:38,868 - root - INFO - main:598 - Starting segmentation with k_type: predefined
+2025-10-18 23:05:38,868 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:05:38,868 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:05:39,122 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:05:39,150 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:05:39,150 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:39,150 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:41,083 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9647253751754761, CH=2750097.0
+2025-10-18 23:05:41,091 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:05:43,041 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.8825886845588684, CH=2533371.25
+2025-10-18 23:05:43,041 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:05:44,972 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8772339820861816, CH=2970745.25
+2025-10-18 23:05:44,972 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:05:44,972 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:05:44,988 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:05:45,010 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:05:45,010 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:45,011 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:45,011 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:05:45,211 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:05:45,211 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:05:45,211 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:05:45,225 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:45,225 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:05:45,225 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:05:45,488 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:05:45,515 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:05:45,515 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:45,515 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:47,445 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9653185606002808, CH=2885899.5
+2025-10-18 23:05:47,461 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:05:49,434 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.8842965960502625, CH=2645101.0
+2025-10-18 23:05:49,434 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:05:51,399 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8838027119636536, CH=3342489.0
+2025-10-18 23:05:51,399 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:05:51,399 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:05:51,418 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:05:51,419 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:51,420 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:05:53,388 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9811145663261414, CH=2859769.5
+2025-10-18 23:05:53,388 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:05:55,331 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9656546115875244, CH=2929237.25
+2025-10-18 23:05:55,331 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:05:55,767 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:55,767 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:55,775 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:05:55,984 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:05:56,013 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:05:56,013 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:05:56,013 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:05:57,944 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9812064170837402, CH=2871275.5
+2025-10-18 23:05:57,944 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:05:58,437 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:58,437 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:05:58,453 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:05:58,654 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:05:58,654 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:05:58,670 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:05:58,670 - root - INFO - process:743 - Processing completed in 19.80s. Successful: 0, Errors: 5
+2025-10-18 23:05:58,670 - root - WARNING - main:625 - No successful segmentation results for predefined
+2025-10-18 23:05:58,670 - root - INFO - timer:95 - Completed: Segmentation with k_type: predefined in 19.80 seconds
+2025-10-18 23:05:58,670 - root - INFO - timer:95 - Completed: Processing test image 2/5 in 41.98 seconds
+2025-10-18 23:05:58,670 - root - INFO - timer:91 - Starting: Processing test image 3/5
+2025-10-18 23:05:58,670 - root - INFO - main:565 - Processing test image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block3.jpg
+2025-10-18 23:05:58,876 - root - INFO - preprocess:67 - Starting preprocessing
+2025-10-18 23:05:58,899 - root - INFO - preprocess:72 - Initial resize to approx 512x512
+2025-10-18 23:06:00,245 - root - INFO - preprocess:76 - Applied non-local means denoising with h=10
+2025-10-18 23:06:00,609 - root - INFO - estimate_n_colors:33 - Estimated 357 unique colors, setting n_colors to 8
+2025-10-18 23:06:01,056 - root - INFO - quantize_image:47 - Quantized to 8 colors, unique colors: 8
+2025-10-18 23:06:01,056 - root - INFO - preprocess:86 - Resized to 128x128
+2025-10-18 23:06:01,056 - root - INFO - preprocess:88 - Preprocessing completed
+2025-10-18 23:06:01,056 - root - INFO - save_preprocessed_image:45 - Saved preprocessed image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\processed\block3\preprocessed.png
+2025-10-18 23:06:01,082 - root - INFO - main:589 - Preprocessing completed - unique colors: 132
+2025-10-18 23:06:01,082 - root - INFO - timer:91 - Starting: Segmentation with k_type: determined
+2025-10-18 23:06:01,082 - root - INFO - main:598 - Starting segmentation with k_type: determined
+2025-10-18 23:06:01,082 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:06:01,082 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:06:01,279 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:06:01,302 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:06:01,310 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:01,311 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:03,226 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.8255873918533325, CH=1364119.375
+2025-10-18 23:06:03,226 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:05,189 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.8140202164649963, CH=1567571.375
+2025-10-18 23:06:05,189 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:06:07,115 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.7344357371330261, CH=1768948.25
+2025-10-18 23:06:07,115 - root - INFO - optimal_clusters:74 - Optimal k determined: 4
+2025-10-18 23:06:07,115 - root - INFO - segment:410 - Optimal k determined: 4
+2025-10-18 23:06:07,115 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 4 clusters
+2025-10-18 23:06:07,145 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 4 clusters
+2025-10-18 23:06:07,145 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:07,145 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:07,145 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:06:07,339 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:06:07,339 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:06:07,339 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:06:07,339 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:07,339 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:07,339 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:06:07,595 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:06:07,626 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:06:07,627 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:07,627 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:09,560 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9336887001991272, CH=1195643.25
+2025-10-18 23:06:09,560 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:11,487 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.794279932975769, CH=1504592.875
+2025-10-18 23:06:11,487 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:06:13,374 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.7297132611274719, CH=1585570.5
+2025-10-18 23:06:13,374 - root - INFO - optimal_clusters:74 - Optimal k determined: 4
+2025-10-18 23:06:13,374 - root - INFO - segment:511 - Optimal k determined: 4
+2025-10-18 23:06:13,396 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 4
+2025-10-18 23:06:13,396 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:13,401 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:06:15,322 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9651622772216797, CH=1830675.125
+2025-10-18 23:06:15,330 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:17,215 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.8022227883338928, CH=1479323.5
+2025-10-18 23:06:17,215 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:19,135 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.7501685619354248, CH=1231925.375
+2025-10-18 23:06:19,135 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:06:19,573 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:19,573 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:19,573 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:06:19,789 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:06:19,828 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:06:19,829 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:19,831 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:06:21,723 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9651099443435669, CH=1811067.375
+2025-10-18 23:06:21,723 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:06:22,177 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:22,177 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:22,177 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:06:22,378 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:06:22,378 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:06:22,378 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:06:22,378 - root - INFO - process:743 - Processing completed in 21.30s. Successful: 0, Errors: 5
+2025-10-18 23:06:22,378 - root - WARNING - main:625 - No successful segmentation results for determined
+2025-10-18 23:06:22,378 - root - INFO - timer:95 - Completed: Segmentation with k_type: determined in 21.30 seconds
+2025-10-18 23:06:22,378 - root - INFO - timer:91 - Starting: Segmentation with k_type: predefined
+2025-10-18 23:06:22,394 - root - INFO - main:598 - Starting segmentation with k_type: predefined
+2025-10-18 23:06:22,394 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:06:22,395 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:06:22,610 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:06:22,634 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:06:22,634 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:22,634 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:24,519 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.818831205368042, CH=1345470.375
+2025-10-18 23:06:24,519 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:26,453 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.795914351940155, CH=1617940.125
+2025-10-18 23:06:26,453 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:06:28,378 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8761316537857056, CH=1712587.5
+2025-10-18 23:06:28,378 - root - INFO - optimal_clusters:74 - Optimal k determined: 5
+2025-10-18 23:06:28,378 - root - INFO - segment:410 - Optimal k determined: 5
+2025-10-18 23:06:28,378 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 5 clusters
+2025-10-18 23:06:28,419 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 5 clusters
+2025-10-18 23:06:28,420 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:28,421 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:28,422 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:06:28,635 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:06:28,635 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:06:28,635 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:06:28,635 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:28,635 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:28,645 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:06:28,873 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:06:28,895 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:06:28,903 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:28,905 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:30,808 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.8025867938995361, CH=1347924.5
+2025-10-18 23:06:30,808 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:32,667 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.7058406472206116, CH=1183625.25
+2025-10-18 23:06:32,667 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:06:34,545 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.7203465104103088, CH=1709957.5
+2025-10-18 23:06:34,545 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:06:34,545 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:06:34,566 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:06:34,566 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:34,569 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:06:36,496 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9648815393447876, CH=1763662.375
+2025-10-18 23:06:36,496 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:38,407 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.8229429721832275, CH=1358957.5
+2025-10-18 23:06:38,407 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:06:38,850 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:38,850 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:38,850 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:06:39,060 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:06:39,086 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:06:39,086 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:39,086 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:06:40,982 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9650978446006775, CH=1830932.25
+2025-10-18 23:06:40,982 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:06:41,410 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:41,410 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:06:41,410 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:06:41,610 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:06:41,610 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:06:41,610 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:06:41,610 - root - INFO - process:743 - Processing completed in 19.22s. Successful: 0, Errors: 5
+2025-10-18 23:06:41,610 - root - WARNING - main:625 - No successful segmentation results for predefined
+2025-10-18 23:06:41,610 - root - INFO - timer:95 - Completed: Segmentation with k_type: predefined in 19.23 seconds
+2025-10-18 23:06:41,626 - root - INFO - timer:95 - Completed: Processing test image 3/5 in 42.96 seconds
+2025-10-18 23:06:41,626 - root - INFO - timer:91 - Starting: Processing test image 4/5
+2025-10-18 23:06:41,626 - root - INFO - main:565 - Processing test image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block4.jpg
+2025-10-18 23:06:41,842 - root - INFO - preprocess:67 - Starting preprocessing
+2025-10-18 23:06:41,869 - root - INFO - preprocess:72 - Initial resize to approx 512x512
+2025-10-18 23:06:43,200 - root - INFO - preprocess:76 - Applied non-local means denoising with h=10
+2025-10-18 23:06:43,550 - root - INFO - estimate_n_colors:33 - Estimated 258 unique colors, setting n_colors to 8
+2025-10-18 23:06:43,968 - root - INFO - quantize_image:47 - Quantized to 8 colors, unique colors: 8
+2025-10-18 23:06:43,976 - root - INFO - preprocess:86 - Resized to 128x128
+2025-10-18 23:06:43,976 - root - INFO - preprocess:88 - Preprocessing completed
+2025-10-18 23:06:43,978 - root - INFO - save_preprocessed_image:45 - Saved preprocessed image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\processed\block4\preprocessed.png
+2025-10-18 23:06:43,997 - root - INFO - main:589 - Preprocessing completed - unique colors: 145
+2025-10-18 23:06:43,999 - root - INFO - timer:91 - Starting: Segmentation with k_type: determined
+2025-10-18 23:06:43,999 - root - INFO - main:598 - Starting segmentation with k_type: determined
+2025-10-18 23:06:44,000 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:06:44,000 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:06:44,182 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:06:44,216 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:06:44,217 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:44,220 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:46,107 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9698630571365356, CH=3227864.0
+2025-10-18 23:06:46,107 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:48,061 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9118117094039917, CH=3570189.75
+2025-10-18 23:06:48,061 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:06:49,959 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9642630815505981, CH=3081567.75
+2025-10-18 23:06:49,959 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:06:49,959 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:06:49,959 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:06:49,966 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:06:49,966 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:49,982 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:49,983 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:06:50,228 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:06:50,228 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:06:50,244 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:06:50,244 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:50,252 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:06:50,253 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:06:50,466 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:06:50,488 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:06:50,488 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:50,488 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:06:52,400 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9680510759353638, CH=2978726.25
+2025-10-18 23:06:52,400 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:06:54,329 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9127223491668701, CH=3107192.75
+2025-10-18 23:06:54,329 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:06:56,302 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9072646498680115, CH=3816628.25
+2025-10-18 23:06:56,302 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:06:56,302 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:06:56,325 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:06:56,326 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:06:56,327 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:06:58,257 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9803457856178284, CH=2279099.25
+2025-10-18 23:06:58,257 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:00,181 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9681203961372375, CH=3021948.0
+2025-10-18 23:07:00,181 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:07:00,613 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:00,613 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:00,613 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:07:00,828 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:07:00,851 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:07:00,851 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:00,851 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:07:02,780 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9816378951072693, CH=2750022.25
+2025-10-18 23:07:02,780 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:07:03,202 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:03,202 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:03,202 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:07:03,402 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:07:03,402 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:07:03,402 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:07:03,402 - root - INFO - process:743 - Processing completed in 19.40s. Successful: 0, Errors: 5
+2025-10-18 23:07:03,402 - root - WARNING - main:625 - No successful segmentation results for determined
+2025-10-18 23:07:03,402 - root - INFO - timer:95 - Completed: Segmentation with k_type: determined in 19.40 seconds
+2025-10-18 23:07:03,402 - root - INFO - timer:91 - Starting: Segmentation with k_type: predefined
+2025-10-18 23:07:03,402 - root - INFO - main:598 - Starting segmentation with k_type: predefined
+2025-10-18 23:07:03,402 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:07:03,402 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:07:03,634 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:07:03,664 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:07:03,664 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:03,664 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:05,582 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9677863121032715, CH=2701075.25
+2025-10-18 23:07:05,582 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:07:07,501 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9550293684005737, CH=2582403.0
+2025-10-18 23:07:07,501 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:07:09,435 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9083666801452637, CH=3671639.75
+2025-10-18 23:07:09,435 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:07:09,435 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:07:09,435 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:07:09,465 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:07:09,466 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:09,466 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:09,466 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:07:09,657 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:07:09,657 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:07:09,657 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:07:09,657 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:09,657 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:09,672 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:07:09,904 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:07:09,949 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:07:09,949 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:09,952 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:11,862 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9677722454071045, CH=2884979.5
+2025-10-18 23:07:11,862 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:07:13,794 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9092399477958679, CH=3025059.0
+2025-10-18 23:07:13,794 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:07:15,728 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9021515846252441, CH=3633084.75
+2025-10-18 23:07:15,728 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:07:15,728 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:07:15,751 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:07:15,751 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:15,751 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:07:17,676 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9806346893310547, CH=2469616.0
+2025-10-18 23:07:17,676 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:19,591 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.967338502407074, CH=2798099.0
+2025-10-18 23:07:19,597 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:07:20,030 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:20,030 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:20,030 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:07:20,230 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:07:20,260 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:07:20,260 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:20,260 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:07:22,161 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9813299775123596, CH=2666843.5
+2025-10-18 23:07:22,161 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:07:22,592 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:22,592 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:22,592 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:07:22,793 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:07:22,793 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:07:22,793 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:07:22,793 - root - INFO - process:743 - Processing completed in 19.39s. Successful: 0, Errors: 5
+2025-10-18 23:07:22,793 - root - WARNING - main:625 - No successful segmentation results for predefined
+2025-10-18 23:07:22,808 - root - INFO - timer:95 - Completed: Segmentation with k_type: predefined in 19.41 seconds
+2025-10-18 23:07:22,808 - root - INFO - timer:95 - Completed: Processing test image 4/5 in 41.18 seconds
+2025-10-18 23:07:22,808 - root - INFO - timer:91 - Starting: Processing test image 5/5
+2025-10-18 23:07:22,808 - root - INFO - main:565 - Processing test image: C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block5.jpg
+2025-10-18 23:07:23,015 - root - INFO - preprocess:67 - Starting preprocessing
+2025-10-18 23:07:23,037 - root - INFO - preprocess:72 - Initial resize to approx 512x512
+2025-10-18 23:07:24,382 - root - INFO - preprocess:76 - Applied non-local means denoising with h=10
+2025-10-18 23:07:24,695 - root - INFO - estimate_n_colors:33 - Estimated 306 unique colors, setting n_colors to 8
+2025-10-18 23:07:25,149 - root - INFO - quantize_image:47 - Quantized to 8 colors, unique colors: 8
+2025-10-18 23:07:25,149 - root - INFO - preprocess:86 - Resized to 128x128
+2025-10-18 23:07:25,149 - root - INFO - preprocess:88 - Preprocessing completed
+2025-10-18 23:07:25,159 - root - INFO - save_preprocessed_image:45 - Saved preprocessed image to c:\Users\LENOVO\Desktop\prints\output\datasets\block\processed\block5\preprocessed.png
+2025-10-18 23:07:25,176 - root - INFO - main:589 - Preprocessing completed - unique colors: 139
+2025-10-18 23:07:25,177 - root - INFO - timer:91 - Starting: Segmentation with k_type: determined
+2025-10-18 23:07:25,177 - root - INFO - main:598 - Starting segmentation with k_type: determined
+2025-10-18 23:07:25,178 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:07:25,179 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:07:25,380 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:07:25,409 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:07:25,409 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:25,409 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:27,362 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9632189273834229, CH=2429545.0
+2025-10-18 23:07:27,362 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:07:29,311 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9153538942337036, CH=2348113.75
+2025-10-18 23:07:29,311 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:07:31,236 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8972602486610413, CH=2781869.25
+2025-10-18 23:07:31,236 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:07:31,236 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:07:31,236 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:07:31,263 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:07:31,263 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:31,264 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:31,264 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:07:31,499 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:07:31,499 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:07:31,516 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:07:31,516 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:31,517 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:31,518 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:07:31,737 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:07:31,772 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:07:31,773 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:31,774 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:33,721 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9628270268440247, CH=2291109.75
+2025-10-18 23:07:33,721 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:07:35,633 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9460875988006592, CH=2011912.5
+2025-10-18 23:07:35,633 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:07:37,557 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.8995517492294312, CH=2457688.75
+2025-10-18 23:07:37,557 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:07:37,557 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:07:37,572 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:07:37,572 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:37,589 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:07:39,490 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9793959259986877, CH=2406893.25
+2025-10-18 23:07:39,490 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:41,423 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9646888375282288, CH=2693883.75
+2025-10-18 23:07:41,423 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:07:41,824 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:41,824 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:41,824 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:07:42,056 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:07:42,088 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:07:42,088 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:42,088 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:07:44,012 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9781669974327087, CH=2026283.5
+2025-10-18 23:07:44,012 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:07:44,466 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:44,466 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:07:44,466 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:07:44,682 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:07:44,682 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:07:44,682 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:07:44,682 - root - INFO - process:743 - Processing completed in 19.50s. Successful: 0, Errors: 5
+2025-10-18 23:07:44,682 - root - WARNING - main:625 - No successful segmentation results for determined
+2025-10-18 23:07:44,682 - root - INFO - timer:95 - Completed: Segmentation with k_type: determined in 19.50 seconds
+2025-10-18 23:07:44,682 - root - INFO - timer:91 - Starting: Segmentation with k_type: predefined
+2025-10-18 23:07:44,682 - root - INFO - main:598 - Starting segmentation with k_type: predefined
+2025-10-18 23:07:44,682 - root - INFO - process:696 - Starting segmentation processing with methods: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan']
+2025-10-18 23:07:44,688 - root - INFO - process:709 - Processing method: kmeans_opt
+2025-10-18 23:07:44,913 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:07:44,937 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:07:44,937 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:44,937 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:46,856 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9639972448348999, CH=2562242.0
+2025-10-18 23:07:46,856 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:07:48,762 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.9467560648918152, CH=2333381.25
+2025-10-18 23:07:48,762 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:07:50,674 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9019841551780701, CH=3017791.75
+2025-10-18 23:07:50,674 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:07:50,674 - root - INFO - segment:410 - Optimal k determined: 3
+2025-10-18 23:07:50,674 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 3 clusters
+2025-10-18 23:07:50,684 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 3 clusters
+2025-10-18 23:07:50,684 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:50,693 - root - ERROR - process:724 - Method kmeans_opt failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:50,694 - root - INFO - process:709 - Processing method: kmeans_predef
+2025-10-18 23:07:50,913 - root - INFO - segment:413 - Using predefined k: 2
+2025-10-18 23:07:50,913 - root - INFO - k_mean_segmentation:23 - Starting K-means segmentation with 2 clusters
+2025-10-18 23:07:50,928 - root - INFO - k_mean_segmentation:30 - K-means segmentation completed with 2 clusters
+2025-10-18 23:07:50,928 - root - ERROR - segment:442 - K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:50,928 - root - ERROR - process:724 - Method kmeans_predef failed: K-means segmentation failed: 'bool' object has no attribute 'reshape'
+2025-10-18 23:07:50,937 - root - INFO - process:709 - Processing method: som_opt
+2025-10-18 23:07:51,176 - root - INFO - determine_k:200 - Determining optimal k for pixels with shape (16384, 3)
+2025-10-18 23:07:51,219 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 5
+2025-10-18 23:07:51,220 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:51,220 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:07:53,131 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.964287281036377, CH=2601000.5
+2025-10-18 23:07:53,139 - root - INFO - optimal_clusters:62 - Testing k=4
+2025-10-18 23:07:55,027 - root - INFO - optimal_clusters:68 - Metrics for k=4: Silhouette=0.953749418258667, CH=2336500.75
+2025-10-18 23:07:55,027 - root - INFO - optimal_clusters:62 - Testing k=5
+2025-10-18 23:07:56,953 - root - INFO - optimal_clusters:68 - Metrics for k=5: Silhouette=0.9052068591117859, CH=3026424.0
+2025-10-18 23:07:56,953 - root - INFO - optimal_clusters:74 - Optimal k determined: 3
+2025-10-18 23:07:56,953 - root - INFO - segment:511 - Optimal k determined: 3
+2025-10-18 23:07:56,975 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 3
+2025-10-18 23:07:56,976 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:07:56,977 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:07:58,910 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9792357683181763, CH=2414738.0
+2025-10-18 23:07:58,910 - root - INFO - optimal_clusters:62 - Testing k=3
+2025-10-18 23:08:00,834 - root - INFO - optimal_clusters:68 - Metrics for k=3: Silhouette=0.9626337885856628, CH=2490650.5
+2025-10-18 23:08:00,849 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:08:01,265 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:08:01,265 - root - ERROR - process:724 - Method som_opt failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:08:01,265 - root - INFO - process:709 - Processing method: som_predef
+2025-10-18 23:08:01,465 - root - INFO - segment:514 - Using predefined k: 2
+2025-10-18 23:08:01,500 - root - INFO - optimal_clusters:52 - Unique colors: 50. Adjusted max_k: 2
+2025-10-18 23:08:01,500 - root - INFO - optimal_clusters:55 - Subsampling pixels for efficiency
+2025-10-18 23:08:01,500 - root - INFO - optimal_clusters:62 - Testing k=2
+2025-10-18 23:08:03,401 - root - INFO - optimal_clusters:68 - Metrics for k=2: Silhouette=0.9794445037841797, CH=2432166.5
+2025-10-18 23:08:03,401 - root - INFO - optimal_clusters:74 - Optimal k determined: 2
+2025-10-18 23:08:03,836 - root - ERROR - segment:567 - SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:08:03,836 - root - ERROR - process:724 - Method som_predef failed: SOM segmentation failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-18 23:08:03,836 - root - INFO - process:709 - Processing method: dbscan
+2025-10-18 23:08:04,049 - root - ERROR - segment:496 - DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:08:04,049 - root - ERROR - process:724 - Method dbscan failed: DBSCAN segmentation failed: optimal_dbscan() takes 1 positional argument but 2 were given
+2025-10-18 23:08:04,049 - root - ERROR - _save_preprocessed_image:683 - Failed to save preprocessed image: 'OutputManager' object has no attribute 'get_current_image_name'
+2025-10-18 23:08:04,049 - root - INFO - process:743 - Processing completed in 19.37s. Successful: 0, Errors: 5
+2025-10-18 23:08:04,049 - root - WARNING - main:625 - No successful segmentation results for predefined
+2025-10-18 23:08:04,049 - root - INFO - timer:95 - Completed: Segmentation with k_type: predefined in 19.37 seconds
+2025-10-18 23:08:04,049 - root - INFO - timer:95 - Completed: Processing test image 5/5 in 41.24 seconds
+2025-10-18 23:08:04,049 - root - INFO - timer:91 - Starting: Results saving
+2025-10-18 23:08:04,049 - root - WARNING - main:700 - No Delta E results to save
+2025-10-18 23:08:04,049 - root - INFO - timer:95 - Completed: Results saving in 0.00 seconds
+2025-10-18 23:08:04,049 - root - INFO - main:710 - ================================================================================
+2025-10-18 23:08:04,049 - root - INFO - main:711 - PROCESSING COMPLETED IN 378.55 SECONDS
+2025-10-18 23:08:04,049 - root - INFO - main:712 - ================================================================================
+2025-10-18 23:08:04,121 - root - INFO - main:721 - Profiling results saved to: c:\Users\LENOVO\Desktop\prints\output\profile_stats.txt

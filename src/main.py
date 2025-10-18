@@ -26,7 +26,9 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 # Project imports
 from src.data.load_data import load_config, validate_config, load_data
-from src.models.pso_dbn import DBN, pso_optimize, convert_colors_to_cielab_dbn
+from src.models.pso_dbn import (
+    DBN, pso_optimize, convert_colors_to_cielab_dbn, DBNConfig
+)
 from src.data.preprocess import Preprocessor
 from src.models.segmentation.segmentation import (
     Segmenter, SegmentationConfig, ModelConfig, 
@@ -495,9 +497,14 @@ def main(config_path='configurations/block_config.yaml', log_level='INFO'):
         with timer("DBN initialization and training"):
             input_size = 3
             output_size = 3
-            hidden_layers = [100, 50, 25]
-            dbn = DBN(input_size, hidden_layers, output_size)
-            logging.info(f"DBN initialized with architecture: {input_size} -> {hidden_layers} -> {output_size}")
+            hidden_layers_list = [100, 50, 25]
+            
+            dbn_config = DBNConfig(hidden_layers = hidden_layers_list)
+            dbn = DBN(input_size = input_size,
+                      output_size = output_size, 
+                      config = dbn_config
+                      )
+            logging.info(f"DBN initialized with architecture: {input_size} -> {dbn_config.hidden_layers} -> {output_size}")
 
             # Scale data
             scaler_x = MinMaxScaler(feature_range=(0, 1))  # entrance best range of rgb values for the nn
@@ -709,7 +716,8 @@ def main(config_path='configurations/block_config.yaml', log_level='INFO'):
             stats = pstats.Stats(profiler).sort_stats('cumtime')
             profile_path = OUTPUT_DIR / 'profile_stats.txt'
             with open(profile_path, 'w') as f:
-                stats.print_stats(20, file=f)
+                stats.stream = f  
+                stats.print_stats(20)
             logging.info(f"Profiling results saved to: {profile_path}")
         except Exception as e:
             logging.warning(f"Failed to save profiling results: {e}")

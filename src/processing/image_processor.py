@@ -214,7 +214,7 @@ class ProcessingStageBase(ABC):
         """Helper to create stage result"""
         return StageResult(
             stage = self.stage,
-            status = self.status,
+            status = status,
             data = data,
             processing_time = processing_time,
             error_message = error_message,
@@ -326,7 +326,7 @@ class PreprocessingStage(ProcessingStageBase):
             
             return self._create_result(
                 ProcessingStatus.FAILED,
-                processing_time = processing.time,
+                processing_time = processing_time,
                 error_message = error_msg
             )
             
@@ -391,7 +391,7 @@ class SegmentationStage(ProcessingStageBase):
                 context.intermediate_results['segmentation_results'] = results
                 
                 if progress_callback:
-                    progress_class(self.stage.value, 1.0, f"Segmentation completed: {len(results)} methods")
+                    progress_callback(self.stage.value, 1.0, f"Segmentation completed: {len(results)} methods")
                     
                 progressing_time = time.time() - start_time
                 self.logger.info(f"Segmentation stage completed in {processing_time:.2f}s with {len(results)} successful methods")
@@ -464,7 +464,7 @@ class ColorConversionStage(ProcessingStageBase):
         self.scalers = scalers
         self.has_dbn = dbn is not None and scalers is not None
         
-    def execute(self, context: ProcessingContext, progress_callback: Optimal[ProgressCallback] = None) -> StageResults:
+    def execute(self, context: ProcessingContext, progress_callback: Optional[ProgressCallback] = None) -> StageResults:
         start_time = time.time()
         
         try: 
@@ -486,8 +486,6 @@ class ColorConversionStage(ProcessingStageBase):
                     if progress_callback:
                         progress = i / total_results
                         progress_callback(self.stage.value, progress, f"Converting colors")
-                        
-                    conversion_results = {}
                     
                     if self.has_dbn:
                         total_results = len(segmentation_results)
@@ -1294,27 +1292,80 @@ def benchmark_processing(processor: EnhancedImageProcessor,
 # MAIN EXECUTION AND EXAMPLES
 # ==============================================================================
 
-if __name__ == "__main__":
-    """Example usage and testing."""
+def execute(self, context: ProcessingContext, progress_callback: Optional[ProgressCallback] = None) -> StageResult:
+    start_time = time.time()
     
-    # Create a test processor
-    processor = create_test_processor()
-    
-    # Setup progress tracking
-    def progress_callback(stage: str, progress: float, message: str = ""):
-        print(f"[{progress*100:.1f}%] {stage}: {message}")
-    
-    processor.set_progress_callback(progress_callback)
-    
-    # Example: Process a single image
     try:
-        # You would replace this with actual image path
-        # result = processor.process_image("path/to/your/image.jpg")
-        # print(f"Processing completed. Best method: {result.best_method}")
-        print("Enhanced Image Processor initialized successfully!")
-        print("Available methods:", [method.value for method in processor.get_available_methods()])
+        if context.preprocessed_image is None:
+            raise ProcessingError("No preprocessed image available for segmentation")
+        
+        if progress_callback:
+            progress_callback(self.stage.value, 0.0, "Starting segmentation")
+        
+        seg_config = self._convert_to_seg_config(context)
+        
+        from output_manager import OutputManager
+        output_manager = OutputManager(base_dir="output", dataset_name=Path(context.image_path).parent.name)
+        
+        from segmentation import ModelConfig
+        models = ModelConfig()
+        
+        orchestrator = SegmentationOrchestrator(
+            context.preprocessed_image, seg_config, models, output_manager
+        )
+        
+        method_names = [method.value for method in self.methods]
+        seg_config.methods = method_names
+        
+        results = {}
+        total_methods = len(method_names)
+        
+        for i, method_name in enumerate(method_names):
+            try:
+                if progress_callback:
+                    progress = i / total_methods
+                    progress_callback(self.stage.value, progress, f"Processing {method_name}")
+                
+                method_result, _ = orchestrator._process_single_method(method_name)
+                
+                if method_result.is_valid():
+                    enhanced_result = self._convert_to_enhanced_result(method_result)
+                    # Save segmentation image
+                    output_manager.save_segmentation_image(
+                        output_manager.get_current_image_name(), method_name, enhanced_result.segmented_image
+                    )
+                    results[method_name] = enhanced_result
+                    self.logger.info(f"Segmentation method {method_name} completed successfully")
+                else:
+                    self.logger.warning(f"Invalid result for segmentation method {method_name}")
+            except Exception as e:
+                self.logger.warning(f"Error in segmentation method {method_name}: {e}")
+                continue
+        
+        context.intermediate_results['segmentation_results'] = results
+        
+        if progress_callback:
+            progress_callback(self.stage.value, 1.0, f"Segmentation completed: {len(results)} methods")
+        
+        processing_time = time.time() - start_time
+        self.logger.info(f"Segmentation stage completed in {processing_time:.2f}s with {len(results)} successful methods")
+        
+        return self._create_result(
+            ProcessingStatus.COMPLETED,
+            data=results,
+            processing_time=processing_time,
+            successful_methods=len(results),
+            total_methods=total_methods,
+            method_names=list(results.keys())
+        )
         
     except Exception as e:
-        print(f"Error in example: {e}")
-
-            
+        processing_time = time.time() - start_time
+        error_msg = f"Segmentation stage failed: {str(e)}"
+        self.logger.error(error_msg)
+        
+        return self._create_result(
+            ProcessingStatus.FAILED,
+            processing_time=processing_time,
+            error_message=error_msg
+        )

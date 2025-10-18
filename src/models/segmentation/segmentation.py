@@ -217,8 +217,6 @@ class ElbowMethodStrategy(ClusterStrategy):
     def determine_k(self, pixels: np.ndarray, default_k: int) -> int:
         """Determine k using elbow method."""
         try:
-            from sklearn.cluster import KMeans
-            
             # Subsample if too many pixels
             if len(pixels) > self.config.subsample_size:
                 indices = np.random.choice(len(pixels), self.config.subsample_size, replace=False)
@@ -228,21 +226,18 @@ class ElbowMethodStrategy(ClusterStrategy):
             
             # Calculate within-cluster sum of squares for different k values
             wcss = []
-            k_range = range(self.config.min_k, min(self.config.max_k + 1, len(np.unique(pixels_sample, axis=0))))
+            k_range = range(self.config.min_k, min(self.config.max_k + 1, len(np.unique(pixels_sample, axis=0)) + 1))
             
             for k in k_range:
                 kmeans = KMeans(n_clusters=k, random_state=self.config.random_state, n_init=3)
                 kmeans.fit(pixels_sample)
                 wcss.append(kmeans.inertia_)
             
-            # Find elbow point (simplified version)
+            # Find elbow point
             if len(wcss) < 2:
                 return default_k
             
-            # Calculate rate of change
             rates = [wcss[i-1] - wcss[i] for i in range(1, len(wcss))]
-            
-            # Find the point where rate of change decreases significantly
             optimal_idx = 0
             for i in range(1, len(rates)):
                 if rates[i] < rates[i-1] * 0.5:  # 50% decrease threshold
@@ -265,7 +260,7 @@ class SegmenterBase(ABC):
     """Abstract base class for image segmentation."""
     
     def __init__(self, image: np.ndarray, config: SegmentationConfig, 
-                 models: ModelConfig, output_manager, 
+                 models: ModelConfig, output_manager: Any, 
                  cluster_strategy: Optional[ClusterStrategy] = None):
         """Initialize base segmenter.
         
@@ -283,7 +278,7 @@ class SegmenterBase(ABC):
         self.config = config
         self.models = models
         self.output_manager = output_manager
-        self.cluster_strategy = cluster_strategy
+        self.cluster_strategy = cluster_strategy or MetricBasedStrategy(ClusterStrategyConfig())
         self.preprocessed_image = None
     
     @abstractmethod
@@ -297,6 +292,10 @@ class SegmenterBase(ABC):
             n_colors = self.config.quantization_colors
         
         image_to_quantize = self.preprocessed_image if self.preprocessed_image is not None else self.image
+        
+        if image_to_quantize.size == 0:
+            logging.warning("Empty image detected, skipping quantization")
+            return image_to_quantize
         
         unique_colors_before = len(np.unique(image_to_quantize.reshape(-1, 3), axis=0))
         logging.debug(f"Quantizing image with {unique_colors_before} unique colors to {n_colors}")
@@ -316,59 +315,64 @@ class SegmenterBase(ABC):
             logging.debug(f"Quantization complete: {unique_colors_before} -> {unique_colors_after} colors")
             
             return quantized_image
-            
         except Exception as e:
             logging.warning(f"Quantization failed: {e}. Using original image.")
             return image_to_quantize
     
     def compute_similarity(self, segmentation_data: Tuple[np.ndarray, List[np.ndarray], np.ndarray]) -> List[float]:
-    """Compute similarity scores between segmented colors and target colors."""
-    segmented_colors = segmentation_data[1]  # avg_colors
-    similarities = []
-    
-    if not self.config.target_colors or len(self.config.target_colors) == 0:
-        logging.warning("No target colors provided for similarity computation")
-        return [0.0] * len(segmented_colors)
-    
-    for seg_color in segmented_colors:
-        try:
-            if not isinstance(seg_color, (list, np.ndarray)) or len(seg_color) != 3:
-                logging.warning(f"Invalid segmented color: {seg_color}. Skipping.")
-                similarities.append(0.0)
-                continue
-            
-            min_distance = float('inf')
-            for target_color in self.config.target_colors:
-                if not isinstance(target_color, (list, np.ndarray)) or len(target_color) != 3:
-                    logging.warning(f"Invalid target color: {target_color}. Skipping.")
+        """Compute similarity scores between segmented colors and target colors.
+        
+        Args:
+            segmentation_data: Tuple containing (segmented_image, avg_colors, labels).
+        
+        Returns:
+            List of similarity scores.
+        """
+        segmented_colors = segmentation_data[1]  # avg_colors
+        similarities = []
+        
+        if not self.config.target_colors or len(self.config.target_colors) == 0:
+            logging.warning("No target colors provided for similarity computation")
+            return [0.0] * len(segmented_colors)
+        
+        for seg_color in segmented_colors:
+            try:
+                if not isinstance(seg_color, (list, np.ndarray)) or len(seg_color) != 3:
+                    logging.warning(f"Invalid segmented color: {seg_color}. Skipping.")
+                    similarities.append(0.0)
                     continue
-                distance = ciede2000_distance(seg_color, target_color)
-                min_distance = min(min_distance, distance)
-            
-            similarity_score = 1.0 / (1.0 + min_distance) if min_distance < 100 else 0.0
-            similarities.append(similarity_score)
-        except Exception as e:
-            logging.error(f"Error computing similarity for color {seg_color}: {e}")
-            similarities.append(0.0)
-    
-    return similarities
+                
+                min_distance = float('inf')
+                for target_color in self.config.target_colors:
+                    if not isinstance(target_color, (list, np.ndarray)) or len(target_color) != 3:
+                        logging.warning(f"Invalid target color: {target_color}. Skipping.")
+                        continue
+                    distance = ciede2000_distance(seg_color, target_color)
+                    min_distance = min(min_distance, distance)
+                
+                # Avoid division by zero
+                similarity_score = 1.0 / (1.0 + max(min_distance, 1e-6)) if min_distance < 100 else 0.0
+                similarities.append(similarity_score)
+            except Exception as e:
+                logging.error(f"Error computing similarity for color {seg_color}: {e}")
+                similarities.append(0.0)
+        
+        return similarities
     
     def _calculate_average_colors(self, labels: np.ndarray, n_clusters: int) -> List[np.ndarray]:
         """Calculate average colors for each cluster."""
         avg_colors = []
         
         for i in range(n_clusters):
-            cluster_mask = (labels == i)
+            cluster_mask = (labels == i).reshape(self.image.shape[:2])
             if np.any(cluster_mask):
-                cluster_pixels = self.image[cluster_mask.reshape(self.image.shape[:2])]
+                cluster_pixels = self.image[cluster_mask]
                 if len(cluster_pixels) > 0:
                     avg_color = np.mean(cluster_pixels, axis=0)
                     avg_colors.append(avg_color)
                 else:
-                    # Fallback: use a default color
                     avg_colors.append(np.array([0, 0, 0], dtype=np.float32))
             else:
-                # No pixels in this cluster
                 avg_colors.append(np.array([0, 0, 0], dtype=np.float32))
         
         return avg_colors
@@ -393,13 +397,6 @@ class SegmenterBase(ABC):
 class KMeansSegmenter(SegmenterBase):
     """K-means based image segmentation."""
     
-    def __init__(self, image: np.ndarray, config: SegmentationConfig, 
-                 models: ModelConfig, output_manager,
-                 cluster_strategy: Optional[ClusterStrategy] = None):
-        if cluster_strategy is None:
-            cluster_strategy = MetricBasedStrategy(ClusterStrategyConfig())
-        super().__init__(image, config, models, output_manager, cluster_strategy)
-    
     def segment(self) -> SegmentationResult:
         """Perform K-means segmentation."""
         method_name = f"kmeans_{self.config.k_type}"
@@ -407,12 +404,9 @@ class KMeansSegmenter(SegmenterBase):
         with timer(f"K-means segmentation ({self.config.k_type})"):
             try:
                 # Determine number of clusters
+                pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
                 if self.config.k_type == 'determined':
-                    pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
-                    optimal_k = self.cluster_strategy.determine_k(
-                        pixels, 
-                        default_k=self.config.predefined_k
-                    )
+                    optimal_k = self.cluster_strategy.determine_k(pixels, self.config.predefined_k)
                     logging.info(f"Optimal k determined: {optimal_k}")
                 else:
                     optimal_k = self.config.predefined_k
@@ -421,12 +415,10 @@ class KMeansSegmenter(SegmenterBase):
                 # Perform segmentation
                 segmentation_result = k_mean_segmentation(self.image, optimal_k)
                 
-                # Handle different return formats from k_mean_segmentation
-                if len(segmentation_result) >= 2:
-                    segmented_image = segmentation_result[0]
-                    labels = segmentation_result[1]
-                else:
+                if len(segmentation_result) < 2:
                     raise SegmentationMethodError("k_mean_segmentation returned insufficient data")
+                
+                segmented_image, labels = segmentation_result[0], segmentation_result[1]
                 
                 # Calculate average colors
                 avg_colors = self._calculate_average_colors(labels, optimal_k)
@@ -445,7 +437,6 @@ class KMeansSegmenter(SegmenterBase):
                 
                 logging.info(f"K-means segmentation completed successfully with k={optimal_k}")
                 return result
-                
             except Exception as e:
                 error_msg = f"K-means segmentation failed: {str(e)}"
                 logging.error(error_msg)
@@ -459,9 +450,7 @@ class DBSCANSegmenter(SegmenterBase):
         with timer("DBSCAN segmentation"):
             try:
                 pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
-                logging.info("Running DBSCAN segmentation with optimal parameters")
-                
-                labels = optimal_dbscan(self.image)
+                labels = optimal_dbscan(pixels, self.config.distance_threshold)
                 unique_labels = np.unique(labels[labels >= 0])
                 
                 if len(unique_labels) == 0:
@@ -481,7 +470,7 @@ class DBSCANSegmenter(SegmenterBase):
                 segmented_flat[mask] = centers[labels[mask]]
                 segmented_image = segmented_flat.reshape(self.image.shape)
                 
-                # Calculate average colors using cv2.mean for accuracy
+                # Calculate average colors
                 avg_colors = []
                 for label in unique_labels:
                     cluster_mask = (labels.reshape(self.image.shape[:2]) == label).astype(np.uint8)
@@ -502,7 +491,6 @@ class DBSCANSegmenter(SegmenterBase):
                 
                 logging.info(f"DBSCAN segmentation completed with {len(unique_labels)} clusters")
                 return result
-                
             except Exception as e:
                 error_msg = f"DBSCAN segmentation failed: {str(e)}"
                 logging.error(error_msg)
@@ -511,44 +499,30 @@ class DBSCANSegmenter(SegmenterBase):
 class SOMSegmenter(SegmenterBase):
     """Self-Organizing Map based image segmentation."""
     
-    def __init__(self, image: np.ndarray, config: SegmentationConfig, 
-                 models: ModelConfig, output_manager,
-                 cluster_strategy: Optional[ClusterStrategy] = None):
-        if cluster_strategy is None:
-            cluster_strategy = MetricBasedStrategy(ClusterStrategyConfig())
-        super().__init__(image, config, models, output_manager, cluster_strategy)
-    
     def segment(self) -> SegmentationResult:
         """Perform SOM segmentation."""
         method_name = f"som_{self.config.k_type}"
         
         with timer(f"SOM segmentation ({self.config.k_type})"):
             try:
-                # Determine number of clusters
+                pixels = self.quantize_image().reshape(-1, 3).astype(np.float32) / 255.0
                 if self.config.k_type == 'determined':
-                    pixels = self.quantize_image().reshape(-1, 3).astype(np.float32) / 255.0
-                    optimal_k = self.cluster_strategy.determine_k(
-                        pixels,  # unnormalized pixels
-                        default_k=self.config.predefined_k
-                    )
+                    optimal_k = self.cluster_strategy.determine_k(pixels, self.config.predefined_k)
                     logging.info(f"Optimal k determined: {optimal_k}")
                 else:
                     optimal_k = self.config.predefined_k
                     logging.info(f"Using predefined k: {optimal_k}")
                 
-                # Perform SOM segmentation
-                labels = optimal_som(self.image, optimal_k)
+                labels = optimal_som(pixels, optimal_k)
                 
                 if len(np.unique(labels)) == 0:
                     raise SegmentationMethodError("SOM produced no valid clusters")
-                                
-                pixels_normalized = self.image.reshape(-1, 3).astype(np.float32) / 255.0
+                
                 # Calculate cluster centers
                 max_label = max(labels) if len(labels) > 0 else 0
-                
                 centers = []
                 for i in range(max_label + 1):
-                    cluster_pixels = pixels_normalized[labels == i]
+                    cluster_pixels = pixels[labels == i]
                     if len(cluster_pixels) > 0:
                         center = np.mean(cluster_pixels, axis=0) * 255.0
                         centers.append(center)
@@ -558,11 +532,10 @@ class SOMSegmenter(SegmenterBase):
                 centers = np.array(centers).astype(np.uint8)
                 
                 # Create segmented image
-                segmented_flat = np.zeros_like(pixels_normalized)
+                segmented_flat = np.zeros_like(pixels)
                 for i, center in enumerate(centers):
                     mask = labels == i
                     segmented_flat[mask] = center / 255.0
-                
                 segmented_image = (segmented_flat.reshape(self.image.shape) * 255).astype(np.uint8)
                 
                 # Calculate average colors
@@ -589,7 +562,6 @@ class SOMSegmenter(SegmenterBase):
                 
                 logging.info(f"SOM segmentation completed successfully with k={optimal_k}")
                 return result
-                
             except Exception as e:
                 error_msg = f"SOM segmentation failed: {str(e)}"
                 logging.error(error_msg)
@@ -603,7 +575,7 @@ class Segmenter:
     """Main segmentation class that orchestrates different segmentation methods."""
     
     def __init__(self, image: np.ndarray, config: SegmentationConfig, 
-                 models: ModelConfig, output_manager):
+                 models: ModelConfig, output_manager: Any):
         """Initialize the main segmenter.
         
         Args:
@@ -695,7 +667,7 @@ class Segmenter:
             methods=self.config.methods,
             quantization_colors=self.config.quantization_colors
         )
-        
+    
     def _save_preprocessed_image(self) -> str:
         """Save the preprocessed image and return its path."""
         try:
@@ -704,13 +676,13 @@ class Segmenter:
                 self.output_manager.processed_dir, 
                 f"{image_name}_preprocessed.jpg"
             )
-            cv2.imwrite(preprocessed_path, self.image)
+            cv2.imwrite(preprocessed_path, cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
             logging.debug(f"Preprocessed image saved to: {preprocessed_path}")
             return preprocessed_path
         except Exception as e:
             logging.error(f"Failed to save preprocessed image: {e}")
             return ""
-
+    
     def process(self) -> ProcessingResult:
         """Process the image with all configured segmentation methods.
         
@@ -744,7 +716,7 @@ class Segmenter:
                     # Save segmentation output
                     image_name = self.output_manager.get_current_image_name()
                     self.output_manager.save_segmentation_image(
-                        image_name, method_name, result.segmented_image
+                        image_name, method_name, cv2.cvtColor(result.segmented_image, cv2.COLOR_RGB2BGR)
                     )
                     logging.info(f"Method {method_name} completed successfully")
                 else:
@@ -772,8 +744,7 @@ class Segmenter:
                     f"Successful: {len(results)}, Errors: {len(errors)}")
         
         return result
-    
-    
+
 # ==============================================================================
 # BACKWARD COMPATIBILITY LAYER
 # ==============================================================================
@@ -868,7 +839,7 @@ class LegacySegmenter(BackwardCompatibilityMixin):
         
         # Create new segmenter
         self.new_segmenter = Segmenter(
-            preprocessed_image, self.seg_config, self.model_config, output_manager
+            preprocessed_image, self.seg_config, self.model_config, output_manager or None
         )
     
     def process(self) -> tuple:
@@ -876,7 +847,6 @@ class LegacySegmenter(BackwardCompatibilityMixin):
         processing_result = self.new_segmenter.process()
         return self.processing_result_to_dict(processing_result)
     
-    # Legacy methods for individual segmentation types
     def create_segmenter(self, method):
         """Legacy method mapping."""
         if isinstance(method, str):

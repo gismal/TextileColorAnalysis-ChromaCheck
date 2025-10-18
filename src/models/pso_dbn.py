@@ -25,21 +25,20 @@ logger = logging.getLogger(__name__)
 """
 pso_params = {
     'n_particles': [20, 30, 50],
-    'w': [0.5, 0.7, 0.9],          # inertia weight
+    'w': [0.5, 0.7, 0.9],         # inertia weight
     'c1': [1.5, 2.0, 2.5],        # cognitive parameter  
     'c2': [1.5, 2.0, 2.5],        # social parameter
     'max_iter': [50, 100, 200]
 }
 
 dbn_architectures = [
-    [100, 50, 25],    # Current
-    [128, 64, 32],    # Larger
-    [64, 32],         # Simpler
+    [100, 50, 25],     # Current
+    [128, 64, 32],     # Larger
+    [64, 32],          # Simpler
     [150, 100, 50, 25] # Deeper
 ]
-
-
 """
+
 @dataclass
 class PSOConfig:
     """Configuration for PSO optimization params"""
@@ -70,7 +69,7 @@ class DBNConfig:
     dropout_rate: float = 0.1
     batch_normalization: bool = True
     activation: str = 'relu'
-    output_activation: str = 'sigmoid'  # will squeeze the values 0-1
+    output_activation: str = 'sigmoid'  # DÜZELTME: [0, 1] aralığı için 'sigmoid'
     optimizer: str = 'adam'
     learning_rate: float = 0.001
     epochs: int = 50
@@ -80,24 +79,24 @@ class DBNConfig:
     
     def __post_init__(self):
         if self.hidden_layers is None:
-            self.hidden_layers = [100, 50, 25]        
+            self.hidden_layers = [100, 50, 25]
 
 class DBN:
     """Deep Belief Network for RGB to CIELAB conversion."""
     def __init__(self, 
-                input_size: int = 3, 
-                output_size: int = 3,
-                config: Optional[DBNConfig] = None):
+                 input_size: int = 3, 
+                 output_size: int = 3,
+                 config: Optional[DBNConfig] = None):
         """Initialize the DBN model.
 
-         Args:
+        Args:
             input_size: Number of input features (3 for RGB)
             output_size: Number of output features (3 for CIELAB)
             config: DBN configuration parameters
         """
         self.input_size = input_size
         self.output_size = output_size
-        self.config = config or DBNConfig()
+        self.config = config or DBNConfig() # DÜZELTME: 'confif' -> 'config'
         
         self.model = None
         self.training_history = None
@@ -106,37 +105,39 @@ class DBN:
         logger.info(f"Initializing DBN with architecture: {input_size} -> {self.config.hidden_layers} -> {output_size}")
         self._build_model()
         
-        def _build_model(self) -> None:
-            """Build the nn architecture"""
-            self.model = Sequential(name = 'PSO-DBN')
+    # DÜZELTME: Bu fonksiyonun girintisi azaltıldı (__init__ ile aynı seviyede)
+    def _build_model(self) -> None:
+        """Build the nn architecture"""
+        self.model = Sequential(name = 'PSO-DBN')
+        
+        # input layer with optional batch normalization
+        self.model.add(Dense(
+            self.config.hidden_layers[0],
+            input_dim = self.input_size,
+            activation = self.config.activation,
+            name = 'input_dense'
+        ))
+        
+        if self.config.batch_normalization:
+            self.model.add(BatchNormalization(name = 'input_bn'))
             
-            # input layer with optional batch normalization
+        if self.config.dropout_rate > 0:
+            self.model.add(Dropout(self.config.dropout_rate, name= 'input_dropout'))
+            
+        # hidden layers
+        # DÜZELTME: 'hidden_layer' -> 'hidden_layers'
+        for i, layer_size in enumerate(self.config.hidden_layers[1:], 1):
             self.model.add(Dense(
-                self.config.hidden_layers[0],
-                input_dim = self.input_size,
+                layer_size,
                 activation = self.config.activation,
-                name = 'input_dense'
+                name = f"hidden_{i}"
             ))
             
             if self.config.batch_normalization:
-                self.model.add(BatchNormalization(name = 'input_bn'))
+                self.model.add(BatchNormalization(name = f"hidden_bn{i}"))
                 
             if self.config.dropout_rate > 0:
-                self.model.add(Dropout(self.config.dropout_rate, name= 'input_dropout'))
-                
-            # hidden layers
-            for i, layer_size in enumerate(self.config.hidden_layers[1:], 1):
-                self.model.add(Dense(
-                    layer_size,
-                    activation = self.config.activation,
-                    name = f"hidden_{i}"
-                ))
-                
-                if self.config.batch_normalization:
-                    self.model.add(BatchNormalization(name = f"hidden_bn{i}"))
-                    
-                if self.config.dropout_rate > 0:
-                    self.model.add(Dropout(self.config.dropout_rate, name=f'hidden_dropout_{i}'))
+                self.model.add(Dropout(self.config.dropout_rate, name=f'hidden_dropout_{i}'))
         
         # Output layer
         self.model.add(Dense(
@@ -148,93 +149,95 @@ class DBN:
         # Compile model
         optimizer = Adam(learning_rate = self.config.learning_rate)
         self.model.compile(
-            optimizaer = optimizer,
+            optimizer = optimizer, # DÜZELTME: 'optimizear' -> 'optimizer'
             loss = 'mean_squared_error',
             metrics = ['mae', 'mse']
         )
         
         logger.info(f"DBN model built with {self.model.count_params()} parameters")   
         
-        def train(self,
-                  x_train: np.ndarray,
-                  y_train: np.ndarray,
-                  x_val: Optional[np.ndarray] = None,
-                  y_val: Optional[np.ndarray] = None,
-                  verbose: int = 0
-                  ) -> Dict[str, Any]:
-            """Train the DBN model.
+    # DÜZELTME: Bu fonksiyonun girintisi azaltıldı
+    def train(self,
+              x_train: np.ndarray,
+              y_train: np.ndarray,
+              x_val: Optional[np.ndarray] = None,
+              y_val: Optional[np.ndarray] = None,
+              verbose: int = 0
+              ) -> Dict[str, Any]:
+        """Train the DBN model.
 
-            Args:
-                x_train: Input RGB data (shape: (n_samples, 3))
-                y_train: Target CIELAB data (shape: (n_samples, 3))
-                x_val: Validation RGB data
-                y_val: Validation CIELAB data
-                verbose: Verbosity level
-                
-            Returns:
-                Training history and metrics
-            """
-            logger.info(f"Training DBN for {self.config.epochs} epochs")
+        Args:
+            x_train: Input RGB data (shape: (n_samples, 3))
+            y_train: Target CIELAB data (shape: (n_samples, 3))
+            x_val: Validation RGB data
+            y_val: Validation CIELAB data
+            verbose: Verbosity level
             
-            # Setup callbacks
-            callbacks = []
-            
-            if self.config.early_stopping_patience > 0:
-                early_stopping = EarlyStopping(
-                    monitor='val_loss' if x_val is not None else 'loss',
-                    patience=self.config.early_stopping_patience,
-                    restore_best_weights=True,
-                    verbose=verbose
-                )
-                callbacks.append(early_stopping)
-                
-                # Learning rate reduction
-                lr_scheduler = ReduceLROnPlateau(
-                    monitor='val_loss' if x_val is not None else 'loss',
-                    factor=0.5,
-                    patience=5,
-                    min_lr=1e-6,
-                    verbose=verbose
-                )
-                callbacks.append(lr_scheduler)
-            
-            validation_data = None
-            if x_val is not None and y_val is not None:  # Changed from 'y_val is not None:' to 'and y_val is not None'
-                validation_data = (x_val, y_val)
-            elif self.config.validation_split > 0:
-                pass  # Add logic here if validation split is needed
-            
-            start_time = time.time()
-            
-            history = self.model.fit(
-                x_train, y_train,
-                epochs=self.config.epochs,
-                batch_size=self.config.batch_size,
-                validation_data=validation_data,
-                validation_split=self.config.validation_split if validation_data is None else 0.0,
-                callbacks=callbacks,
-                verbose=verbose
-            )    
-            
-            training_time = time.time() - start_time
-            self.training_history = history.history
-            self._is_trained = True
-            
-            final_loss = history.history['loss'][-1]
-            final_val_loss = history.history.get('val_loss', [final_loss])[-1]
-            
-            metrics = {
-                'training_time': training_time,
-                'epochs_trained': len(history.history['loss']),
-                'final_loss': final_loss,
-                'final_val_loss': final_val_loss,
-                'best_epoch': np.argmin(history.history.get('val_loss', history.history['loss'])) + 1
-            }
-            
-            logger.info(f"DBN training completed in {training_time:.2f}s - "
-                    f"Final loss: {final_loss:.6f}, Val loss: {final_val_loss:.6f}")
-            return metrics
+        Returns:
+            Training history and metrics
+        """
+        logger.info(f"Training DBN for {self.config.epochs} epochs")
         
+        # Setup callbacks
+        callbacks = []
+        
+        if self.config.early_stopping_patience > 0:
+            early_stopping = EarlyStopping(
+                monitor='val_loss' if x_val is not None else 'loss',
+                patience=self.config.early_stopping_patience,
+                restore_best_weights=True,
+                verbose=verbose
+            )
+            callbacks.append(early_stopping)
+            
+            # Learning rate reduction
+            lr_scheduler = ReduceLROnPlateau(
+                monitor='val_loss' if x_val is not None else 'loss',
+                factor=0.5,
+                patience=5,
+                min_lr=1e-6,
+                verbose=verbose
+            )
+            callbacks.append(lr_scheduler)
+        
+        validation_data = None
+        if x_val is not None and y_val is not None:
+            validation_data = (x_val, y_val)
+        elif self.config.validation_split > 0:
+            pass  # Add logic here if validation split is needed
+        
+        start_time = time.time()
+        
+        history = self.model.fit(
+            x_train, y_train,
+            epochs=self.config.epochs,
+            batch_size=self.config.batch_size,
+            validation_data=validation_data,
+            validation_split=self.config.validation_split if validation_data is None else 0.0,
+            callbacks=callbacks,
+            verbose=verbose
+        )    
+        
+        training_time = time.time() - start_time
+        self.training_history = history.history
+        self._is_trained = True
+        
+        final_loss = history.history['loss'][-1]
+        final_val_loss = history.history.get('val_loss', [final_loss])[-1]
+        
+        metrics = {
+            'training_time': training_time,
+            'epochs_trained': len(history.history['loss']),
+            'final_loss': final_loss,
+            'final_val_loss': final_val_loss,
+            'best_epoch': np.argmin(history.history.get('val_loss', history.history['loss'])) + 1
+        }
+        
+        logger.info(f"DBN training completed in {training_time:.2f}s - "
+                    f"Final loss: {final_loss:.6f}, Val loss: {final_val_loss:.6f}")
+        return metrics
+    
+    # DÜZELTME: Bu fonksiyonun girintisi azaltıldı
     def predict(self,
                 x_test: np.ndarray,
                 batch_size: Optional[int] = None) -> np.ndarray:
@@ -250,9 +253,10 @@ class DBN:
         if not self._is_trained:
             logger.warning("Model has not been trained yet")
         
-        batch_size = batch_size or self.config.batch_size
+        batch_size = batch_size or self.config.batch_size # DÜZELTME: 'eslf' -> 'self'
         return self.model.predict(x_test, batch_size = batch_size, verbose=0)
     
+    # DÜZELTME: Bu fonksiyonun girintisi azaltıldı
     def get_model_summary(self) -> str:
         """Get model architectrue summary"""
         import io
@@ -313,14 +317,16 @@ class PSOOptimizer:
                 else:
                     total_loss = train_loss
                 
-                # add regularization penalties                    
-                penaly = self._calculate_penalties(train_pred, reshaped_weights)
+                # add regularization penalties                  
+                # DÜZELTME: 'penaly' -> 'penalty'
+                penalty = self._calculate_penalties(train_pred, reshaped_weights)
                 
                 fitness = total_loss + penalty
                 
                 if fitness < self.best_fitness:
                     self.best_fitness = fitness
-                    self.best_weight = reshaped_weigths.copy()
+                    # DÜZELTME: 'best_weight' -> 'best_weights' ve 'weigths' -> 'weights'
+                    self.best_weights = reshaped_weights.copy()
                     
                 return fitness
             
@@ -343,7 +349,7 @@ class PSOOptimizer:
                 maxiter = self.config.maxiter,
                 minstep = self.config.minstep,
                 minfunc = self.config.minfunc,
-                debug = self.config.debug                
+                debug = self.config.debug            
             )
             
             optimization_time = time.time() - start_time
@@ -351,12 +357,13 @@ class PSOOptimizer:
             optimized_weights = self._reshape_weights(optimized_flat, initial_weights)
             
             # Validation: ensure optimized weights are reasonable
+            # DÜZELTME: 'optimizaed' -> 'optimized'
             if not self._validate_weights(optimized_weights, initial_weights):
                 logger.warning("PSO produced invalid weights, using best found weights")
                 optimized_weights = self.best_weights or initial_weights
             
             logger.info(f"PSO optimization completed in {optimization_time:.2f}s - "
-                       f"Final fitness: {final_fitness:.6f}")
+                          f"Final fitness: {final_fitness:.6f}")
             
             return optimized_weights
             
@@ -389,24 +396,26 @@ class PSOOptimizer:
                 min_val = mean_w - margin
                 max_val = mean_w + margin
                 
-            bounds.extend([(min_val, max_val)] *  w.size) 
+            bounds.extend([(min_val, max_val)] * w.size) 
             
         return bounds
 
     def _reshape_weights(self, flat_weights: np.ndarray, 
-                        reference_weights: List[np.ndarray]) -> List[np.ndarray]:
+                         reference_weights: List[np.ndarray]) -> List[np.ndarray]:
         """Reshape flat weights back to original weight structure."""
         reshaped_weights = []
         start_idx = 0
         
         for w in reference_weights:
             size = w.size
-            reshaped_w = flat_weights[start_idx: start_idx + size].reshape(w.reshape)
+            # DÜZELTME: 'strt_idx' -> 'start_idx' ve 'w.reshape' -> 'w.shape'
+            reshaped_w = flat_weights[start_idx: start_idx + size].reshape(w.shape)
             reshaped_weights.append(reshaped_w)
             start_idx += size
             
         return reshaped_weights
     
+    # DÜZELTME: '_calcualte' -> '_calculate'
     def _calculate_penalties(self,
                              predictions: np.ndarray,
                              weights: List[np.ndarray]
@@ -417,7 +426,7 @@ class PSOOptimizer:
         # CIELAB range penalties
         # After scaling L channel should be 0-1
         l_penalty = np.mean(np.maximum(0, predictions[:, 0] - 1.2) +
-                            np.maximum(0, -0.2 - predictions[:,0]))
+                             np.maximum(0, -0.2 - predictions[:,0]))
         # a and b channels should be roughly -1 to 1 after scaling  
         ab_penalty = np.mean(np.maximum(0, np.abs(predictions[:, 1:]) - 1.5))
         
@@ -426,7 +435,9 @@ class PSOOptimizer:
         
         return penalty
     
+    # DÜZELTME: '_validate_weigths' -> '_validate_weights'
     def _validate_weights(self, 
+                          # DÜZELTME: 'optimizaed' -> 'optimized'
                           optimized_weights: List[np.ndarray],
                           initial_weights: List[np.ndarray]) -> bool:
         """Validate that optimized weights are reasonable"""
@@ -467,14 +478,14 @@ def optimize_dbn_with_pso(dbn: DBN,
     
     metrics = {
         'best_fitness': optimizer.best_fitness,
-        'pso_config': optimizer.config.to_dict()
-    }    
+        'pso_config': optimizer.config.to_dict() # DÜZELTME: 'optimier' -> 'optimizer'
+    }   
     
     return optimized_weights, metrics
 
     
 def convert_colors_to_cielab_dbn(dbn: DBN, 
-                                 scaler_x: StandardScaler, 
+                                 scaler_x: StandardScaler, # Bu MinMaxScaler olmalı, main.py'ye göre
                                  scaler_y: MinMaxScaler, 
                                  scaler_y_ab: MinMaxScaler, 
                                  avg_colors: List) -> List[Tuple[float, float, float]]:
@@ -482,7 +493,7 @@ def convert_colors_to_cielab_dbn(dbn: DBN,
     
     Args:
         dbn: Trained DBN model
-        scaler_x: Scaler for RGB input
+        scaler_x: Scaler for RGB input (Muhtemelen MinMaxScaler, StandardScaler değil)
         scaler_y: Scaler for CIELAB L channel
         scaler_y_ab: Scaler for CIELAB a,b channels
         avg_colors: RGB color values
@@ -525,8 +536,8 @@ def convert_colors_to_cielab_dbn(dbn: DBN,
         
         # Log color ranges for debugging
         logger.debug(f"CIELAB ranges - L: [{color_lab_dbn[:, 0].min():.2f}, {color_lab_dbn[:, 0].max():.2f}], "
-                    f"a: [{color_lab_dbn[:, 1].min():.2f}, {color_lab_dbn[:, 1].max():.2f}], "
-                    f"b: [{color_lab_dbn[:, 2].min():.2f}, {color_lab_dbn[:, 2].max():.2f}]")
+                     f"a: [{color_lab_dbn[:, 1].min():.2f}, {color_lab_dbn[:, 1].max():.2f}], "
+                     f"b: [{color_lab_dbn[:, 2].min():.2f}, {color_lab_dbn[:, 2].max():.2f}]")
         
         # Convert to list of tuples
         result = [tuple(color.astype(float)) for color in color_lab_dbn]
@@ -546,4 +557,8 @@ def pso_optimize(dbn, x_train, y_train, bounds=None):
     logger.warning("Using legacy pso_optimize function. Consider upgrading to PSOOptimizer class.")
     
     optimizer = PSOOptimizer()
+    
+    # 'bounds' argümanını 'optimize' metoduna geçirmiyoruz, çünkü
+    # PSOOptimizer sınıfı kendi 'bounds' hesaplamasını (_calculate_adaptive_bounds) yapıyor.
+    # Eğer legacy 'bounds'u zorlamak istiyorsanız, PSOOptimizer.optimize metodunu modifiye etmeniz gerekir.
     return optimizer.optimize(dbn, x_train, y_train)

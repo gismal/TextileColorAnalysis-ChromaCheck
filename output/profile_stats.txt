@@ -1,0 +1,28 @@
+         66867712 function calls (63755081 primitive calls) in 378.407 seconds
+
+   Ordered by: cumulative time
+   List reduced from 2865 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       10    0.002    0.000  195.953   19.595 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:686(process)
+       41    0.065    0.002  176.256    4.299 c:\Users\LENOVO\Desktop\prints\src\utils\segmentation_utils.py:49(optimal_clusters)
+3091/2151    0.014    0.000  171.767    0.080 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\utils\_param_validation.py:185(wrapper)
+       94    0.001    0.000  171.500    1.824 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\cluster\_unsupervised.py:42(silhouette_score)
+       94    0.020    0.000  171.493    1.824 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\cluster\_unsupervised.py:196(silhouette_samples)
+      192    3.198    0.017  171.336    0.892 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:2082(pairwise_distances_chunked)
+        1    0.000    0.000  159.377  159.377 c:\Users\LENOVO\Desktop\prints\src\main.py:337(safe_pso_optimization)
+        1    0.000    0.000  159.374  159.374 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:555(pso_optimize)
+        1    0.001    0.001  159.373  159.373 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:279(optimize)
+        1    0.437    0.437  159.364  159.364 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:3(pso)
+     1020    0.007    0.000  158.893    0.156 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:74(<lambda>)
+     1020    0.053    0.000  158.886    0.156 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:301(objective_function)
+1199/1079    5.635    0.005  148.561    0.138 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\utils\traceback_utils.py:110(error_handler)
+     1022    0.351    0.000  142.517    0.139 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:500(predict)
+     8718    1.365    0.000  132.885    0.015 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:391(_euclidean_distances)
+       20    0.021    0.001  131.079    6.554 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:502(segment)
+       96    0.001    0.000  127.584    1.329 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:2266(pairwise_distances)
+       96    0.001    0.000  127.583    1.329 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:1964(_parallel_pairwise)
+       96    0.001    0.000  127.576    1.329 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:273(euclidean_distances)
+     1074   87.617    0.082  120.190    0.112 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:582(_euclidean_distances_upcast)
+
+
