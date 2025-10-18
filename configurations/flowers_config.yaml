@@ -10,7 +10,7 @@ distance_threshold: 0.7
 k_values: [2, 3, 4] # Pool including predefined_k for K-means optimization
 som_values: [2, 3, 4] # Pool including predefined_k for SOM optimization
 
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/reference.jpg"
+reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/reference_images/reference.jpg"
 test_images:
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/test_images/flowers1.jpg"
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/flowers/inputs/test_images/flowers2.jpg"

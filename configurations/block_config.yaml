@@ -20,7 +20,7 @@ preprocessing:
   unsharp_amount: 0.0
   unsharp_threshold: 0
 
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference.jpg"
+reference_image_path: "C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/reference_image/reference.jpg"
 test_images:
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block1.jpg"
   - "C:/Users/LENOVO/Desktop/prints/output/datasets/block/inputs/test_images/block2.jpg"
