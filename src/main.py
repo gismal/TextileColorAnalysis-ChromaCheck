@@ -500,9 +500,9 @@ def main(config_path='configurations/block_config.yaml', log_level='INFO'):
             logging.info(f"DBN initialized with architecture: {input_size} -> {hidden_layers} -> {output_size}")
 
             # Scale data
-            scaler_x = MinMaxScaler(feature_range=(0, 1))
-            scaler_y = MinMaxScaler(feature_range=(0, 100))     # L channel: 0-100
-            scaler_y_ab = MinMaxScaler(feature_range=(-128, 127))  # a,b channels: -128 to 127
+            scaler_x = MinMaxScaler(feature_range=(0, 1))  # entrance best range of rgb values for the nn
+            scaler_y = MinMaxScaler(feature_range=(0, 1))     # exit  L channel: 0-100
+            scaler_y_ab = MinMaxScaler(feature_range=(0, 1))  # a,b channels: -128 to 127
             
             x_train_scaled = scaler_x.fit_transform(x_train)
             y_l_scaled = scaler_y.fit_transform(y_train[:, [0]])
