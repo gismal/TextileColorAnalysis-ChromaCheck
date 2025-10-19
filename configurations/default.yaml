@@ -1,0 +1,24 @@
+# DBN Eğitim Parametreleri
+dbn_params:
+  hidden_layers: [100, 50, 25]
+  dropout_rate: 0.1
+  batch_normalization: true
+  activation: "relu"
+
+# PSO Eğitim Parametreleri
+pso_params:
+  swarmsize: 20
+  maxiter: 50 # Deneme için 50 iyidir, gerçek sonuç için 100+ yapabilirsiniz
+  w: 0.7
+  c1: 2.0
+  c2: 2.0
+
+segmentation_params:
+  dbscan_eps: 10.0
+  dbscan_min_samples: 3
+
+# Genel Eğitim Parametreleri
+training_params:
+  n_samples: 800
+  test_size: 0.2
+  pso_retries: 3
