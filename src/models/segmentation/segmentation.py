@@ -3,35 +3,167 @@ import os
 import cv2
 import numpy as np
 from abc import ABC, abstractmethod
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
+from minisom import MiniSom
 from src.utils.color.color_analysis import ColorMetricCalculator
-from src.utils.segmentation_utils import k_mean_segmentation, optimal_clusters, optimal_dbscan, optimal_som
 from src.utils.image_utils import ciede2000_distance
 from datetime import datetime
+from typing import List, Dict, Any, Optional, Tuple
 
+from src.models.pso_dbn import DBN
+from sklearn.preprocessing import MinMaxScaler
+
+logger = logging.getLogger(__name__)
+
+
+#
+#  Data Classes and Custom Exceptions
+#
+
+class SegmentationError(Exception):
+    """error exception for general segmentation errors"""
+    pass
+
+class InvalidConfigurationError(ValueError):
+    """invalid configuration errors"""
+    pass
+
+@dataclass
+class SegmentationConfig:
+    """configs for segmentation process"""
+    target_colors: np.ndarray
+    distance_threshold: float
+    predefined_k: int
+    k_values: List[int]
+    som_values: List[int]
+    k_type: str = 'determined'
+    methods: List[str] = field(default_factory = lambda: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predefe', 'dbscan'])
+    
+    dbscan_eps: float = 10.0
+    dbscan_min_samples: int = 3
+    
+@dataclass
+class ModelConfig:
+    """configs and references for model"""
+    dbn: DBN
+    scalers: List[MinMaxScaler]
+    reference_kmeans_opt: Dict[str, Any]
+    reference_som_opt: Dict[str, Any]
+    
+@dataclass 
+class SegmentationResult:
+    """keeps the result of one segmentation method"""
+    method_name: str
+    segmented_image: Optional[np.ndarray] = None
+    avg_colors: List[Tuple[float, float, float]] = field(default_factory = list)
+    labels: Optional[np.ndarray] = None
+    n_clusters: int = 0
+    processing_time: float = 0.0   
+    
+    def is_valid(self) -> bool:
+        """checks if result is valid"""
+        return (self.segmented_images is not None and 
+                self.avg_color is not None and
+                len(self.avg_colors) > 0 and
+                self.n_clusters > 0)
+    
+@dataclass
+class ProcessingResult:
+    """collects all the segmentation methods"""
+    preprocessed_path: str
+    results: Dict[str, SegmentationResult] = field(default_factory = dict)
+    
+# Strategy Pattern for CLuster Determination
 # Abstract base class for cluster determination strategies
 class ClusterStrategy(ABC):
     @abstractmethod
-    def determine_k(self, pixels, default_k, min_k, max_k):
+    def determine_k(self, pixels: np.ndarray, config: SegmentationConfig) -> int:
         pass
 
-# Concrete strategy using the existing metric-based approach
+# Concrete strategy to find the optimal k using clustering metrics
 class MetricBasedStrategy(ClusterStrategy):
-    def determine_k(self, pixels, default_k, min_k=3, max_k=10):
-        logging.info(f"Determining optimal k for pixels with shape {pixels.shape}")
-        return optimal_clusters(pixels, default_k, min_k, max_k)
+    def determine_k(self, pixels : np.ndarray, config: SegmentationConfig, n_runs = 3) -> int:
+        """optimal k based on combined normalized metrics"""
+        # determine the k range based on the method
+        k_range_list = config.k_values if 'kmeans' in config.methods else config.som_values
+        min_k = min(k_range_list)
+        max_k = max(k_range_list)
+        
+        unique_colors = np.unique(pixels, axis = 0)
+        # adjust max_k to be sensible based on unique colors
+        dynamic_max_k = min(max_k, max(min_k + 2, len(unique_colors) // 20))
+        # ensure min_k is not greater than dynamic_max_k
+        min_k = min(min_k, dynamic_max_k)
+        
+        logger.info(f"Unique colors: {len(unique_colors)}. Adjusted k-range: [{min_k}, {dynamic_max_k}]")
+
+        if len(pixels) > 10000:
+            logger.info("Subsampling pixels for cluster analysis efficiency")
+            pixels = pixels[np.random.choice(len(pixels), 10000, replace=False)]
+
+        scores = {'silhouette': [], 'ch': []}
+        k_range = list(range(min_k, dynamic_max_k + 1))
+
+        if not k_range:
+            logger.warning(f"K-range is empty (min_k={min_k}, max_k={dynamic_max_k}). Defaulting to predefined_k={config.predefined_k}")
+            return config.predefined_k
+
+        for k in k_range:
+            logger.info(f"Testing k={k}")
+            try:
+                kmeans = KMeans(n_clusters=k, n_init=n_runs, random_state=42).fit(pixels)
+                labels = kmeans.labels_
+                
+                # Check for single cluster case
+                if len(np.unique(labels)) < 2:
+                    logger.warning(f"Only 1 cluster found for k={k}. Assigning worst score.")
+                    scores['silhouette'].append(-1.0)
+                    scores['ch'].append(0.0)
+                    continue
+
+                scores['silhouette'].append(silhouette_score(pixels, labels))
+                scores['ch'].append(calinski_harabasz_score(pixels, labels))
+                logger.info(f"Metrics for k={k}: Silhouette={scores['silhouette'][-1]:.3f}, CH={scores['ch'][-1]:.1f}")
+            
+            except Exception as e:
+                logger.error(f"Error calculating metrics for k={k}: {e}")
+                scores['silhouette'].append(-1.0) # Penalize failure
+                scores['ch'].append(0.0)
+
+        # Normalize scores to [0, 1]
+        sil_scores = np.array(scores['silhouette'])
+        ch_scores = np.array(scores['ch'])
+        
+        # Check for division by zero if all scores are identical
+        if (sil_scores.max() - sil_scores.min()) < 1e-10:
+            norm_sil = np.zeros_like(sil_scores)
+        else:
+            norm_sil = (sil_scores - sil_scores.min()) / (sil_scores.max() - sil_scores.min())
+            
+        if (ch_scores.max() - ch_scores.min()) < 1e-10:
+            norm_ch = np.zeros_like(ch_scores)
+        else:
+            norm_ch = (ch_scores - ch_scores.min()) / (ch_scores.max() - ch_scores.min())
+        
+        avg_scores = (norm_sil + norm_ch) / 2
+        optimal_k = k_range[np.argmax(avg_scores)]
+        logger.info(f"Optimal k determined: {optimal_k} (scores: {avg_scores})")
+        
+        return optimal_k
 
 # Abstract base class for segmentation
 class SegmenterBase(ABC):
-    def __init__(self, preprocessed_image, target_colors, distance_threshold, dbn, scalers, output_dir, k_type='determined', cluster_strategy=None):
+    def __init__(self,
+                 preprocessed_image: np.ndarray,
+                 config: SegmentationConfig,
+                 models: ModelConfig,
+                 cluster_strategy: ClusterStrategy):
+        
         self.preprocessed_image = preprocessed_image
-        self.target_colors = target_colors
-        self.distance_threshold = distance_threshold
-        self.dbn = dbn
-        self.scalers = scalers  # Tuple of (scaler_x, scaler_y, scaler_y_ab)
-        self.output_dir = output_dir
-        self.k_type = k_type  # 'determined' or 'predefined'
-        self.cluster_strategy = cluster_strategy or MetricBasedStrategy()
+        self. config = config
+        self.models = models
+        self.cluster_strategy = cluster_strategy
 
     @abstractmethod
     def segment(self):
@@ -43,195 +175,309 @@ class SegmenterBase(ABC):
         pass
 
     def quantize_image(self, n_colors=50):
-        """Quantize the image to reduce the number of unique colors."""
-        logging.info(f"Quantizing image with {len(np.unique(self.preprocessed_image.reshape(-1, 3), axis=0))} unique colors to {n_colors}")
-        pixels = self.preprocessed_image.reshape(-1, 3)
-        kmeans = KMeans(n_clusters=n_colors, n_init=3, random_state=42).fit(pixels)
-        quantized_pixels = kmeans.cluster_centers_[kmeans.predict(pixels)]
+        logger.info(f"Quantizing image with {len(np.unique(self.preprocessed_image.reshape(-1, 3), axis=0))} unique colors to {n_colors}")
+        pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
+        
+        # Subsample if the image is very large
+        if pixels.shape[0] > 20000:
+            indices = np.random.choice(pixels.shape[0], 20000, replace=False)
+            pixels_sample = pixels[indices]
+        else:
+            pixels_sample = pixels
+            
+        kmeans = KMeans(n_clusters=n_colors, n_init=3, random_state=42).fit(pixels_sample)
+        
+        # Predict on the full pixel set
+        labels = kmeans.predict(pixels)
+        quantized_pixels = kmeans.cluster_centers_[labels]
         return quantized_pixels.reshape(self.preprocessed_image.shape).astype(np.uint8)
 
-    def compute_similarity(self, segmentation_result):
-        """Compute similarity scores between segmented colors and target colors."""
-        segmented_colors = segmentation_result[1]  # avg_colors from segmentation
-        similarities = []
-        for color in segmented_colors:
-            min_distance = min(ciede2000_distance(color, target) for target in self.target_colors)
-            similarities.append(min_distance)
-        return similarities
-
-    def find_best_matches(self, segmentation_result):
-        """Find the best matches between segmented colors and target colors.
-        
-        Args:
-            segmentation_result: Tuple of (segmented_image, avg_colors, labels).
-        
-        Returns:
-            list: List of (test_idx, ref_idx, distance) tuples.
-        """
-        segmented_colors = segmentation_result[1]  # avg_colors
-        best_matches = []
-        if self.target_colors.shape[0] == 0:
-            logging.error("Target colors array has no entries. Cannot find best matches.")
-            return []
-        if not segmented_colors or len(segmented_colors) != len(range(len(segmented_colors))):
-            logging.error("Mismatch or empty segmented colors. Check segmentation result.")
-            return []
-        for i, color in enumerate(segmented_colors):
-            if np.all(np.array(color) <= np.array([5, 130, 130])):  # Ignore nearly black segments
-                best_matches.append((i, -1, float('inf')))
-                continue
-            min_distance = float('inf')
-            best_target_idx = -1
-            for j, target in enumerate(self.target_colors):
-                distance = ciede2000_distance(color, target)
-                if distance < min_distance:
-                    min_distance = distance
-                    best_target_idx = j
-            if best_target_idx >= self.target_colors.shape[0]:
-                logging.warning(f"Invalid best_target_idx {best_target_idx} for {self.target_colors.shape[0]} target colors. Setting to -1.")
-                best_target_idx = -1
-            best_matches.append((i, best_target_idx, min_distance))
-        logging.debug(f"Best matches: {best_matches}")  # Debug output
-        return best_matches
-
+## Concrete Segmentation Implementations
 class KMeansSegmenter(SegmenterBase):
-    def __init__(self, preprocessed_image, target_colors, distance_threshold, dbn, scalers, output_dir, k_values, predefined_k, k_type='determined', cluster_strategy=None):
-        super().__init__(preprocessed_image, target_colors, distance_threshold, dbn, scalers, output_dir, k_type, cluster_strategy)
-        self.k_values = k_values
-        self.predefined_k = predefined_k
-
-    def segment(self):
-        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
-        logging.info(f"Running K-means segmentation")
-        if self.k_type == 'determined':
-            optimal_k = self.cluster_strategy.determine_k(pixels, default_k=3, min_k=3, max_k=max(self.k_values))
-            logging.info(f"Optimal k determined: {optimal_k}")
+    """Segments an fabric using KMeans clustering"""
+    def __init__(self, preprocessed_image, config: SegmentationConfig, models: ModelConfig, cluster_strategy = ClusterStrategy):
+        super().__init__(preprocessed_image, config, models, cluster_strategy)
+        logger.info(f"KMeansSegmenter initialized with k_type: {self.config.k_type}")
+    
+    def segment(self) -> SegmentationResult:
+        start_time = time.time()
+        
+        # quantize the images to get stable pixels for clustering
+        quantized_pixels = self.quantize_image().reshape(-1,3).astype(np.float32)
+        
+        if self.config.k_type == 'determined':
+            optimal_k = self.cluster_strategy.determine_k(quantized_pixels, self.config)
+            method_name = "kmeans_opt"
+            logger.info(f"Optimal k determined: {optimal_k}")
         else:
-            optimal_k = self.predefined_k
+            optimal_k = self.config.predefined_k
+            method_name = "kmeans_predef"
             logging.info(f"Using predefined k: {optimal_k}")
-        return k_mean_segmentation(self.preprocessed_image, optimal_k)
-
-class DBSCANSegmenter(SegmenterBase):
-    def segment(self):
-        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
-        logging.info("Running DBSCAN segmentation with optimal parameters")
-        labels = optimal_dbscan(self.preprocessed_image)
-        unique_labels = np.unique(labels[labels >= 0])
-        if len(unique_labels) == 0:
-            logging.warning("No clusters found in DBSCAN. Returning original image.")
-            return self.preprocessed_image, [], labels
-        centers = np.array([np.mean(pixels[labels == label], axis=0) for label in unique_labels])
+            
+        pixels_for_segmentation = self.preprocessed_image.reshape(-1,3).astype(np.float32)
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        
+        _, labels_flat, centers = cv2.kmeans(
+            pixels_for_segmentation, optimal_k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS
+        )
+        
         centers = np.uint8(centers)
-        # Create mask for clustered pixels
+        segmented_image = centers[labels_flat.flatten()].reshape(self.preprocessed_image.shape)
+        labels_2d = labels_flat.reshape(self.preprocessed_image.shape[:2])
+        
+        avg_colors = []
+        for i in range(optimal_k):
+            mask = (labels_2d == i).astype(np.uint8)
+            # calculate avg color from the original preprocessed image for accuracy
+            avg_color_bgr = cv2.mean(self.preprocessed_image, mask = mask)[:3]
+            avg_colors.append(avg_color_bgr)
+            
+        duration = time.time() - start_time
+        
+        return SegmentationResult(
+            method_name=method_name,
+            segmented_image=segmented_image,
+            avg_colors=avg_colors,
+            labels=labels_flat,
+            n_clusters=optimal_k,
+            processing_time=duration
+        )
+        
+class DBSCANSegmenter(SegmenterBase):
+    #Segmentation with DBSCAN
+    def __init__(self, preprocessed_image, config: SegmentationConfig, models: ModelConfig, cluster_strategy: ClusterStrategy):
+        super().__init__(preprocessed_image, config, models, cluster_strategy)
+        logger.info(f"DBSCANSegmenter initialized with k_type: {self.config.k_type}")
+
+    def _run_dbscan(self, pixels: np.ndarray, eps: float, min_samples: int) -> Tuple[np.ndarray, int]:
+        """Private helper to run DBSCAN and return labels and cluster count."""
+        try:
+            db = DBSCAN(eps=eps, min_samples=min_samples).fit(pixels)
+            labels = db.labels_
+            n_clusters = len(np.unique(labels[labels >= 0])) # Count clusters, ignore noise (-1)
+            logger.info(f"DBSCAN(eps={eps}, min={min_samples}) found {n_clusters} clusters.")
+            return labels, n_clusters
+        except Exception as e:
+            logger.error(f"Error during DBSCAN clustering: {e}")
+            return np.full(len(pixels), -1), 0
+
+    def _find_optimal_dbscan_params(self, pixels: np.ndarray) -> Tuple[float, int]:
+        """Private helper to find best DBSCAN params (from optimal_clusters_dbscan)."""
+        logger.info("Finding optimal DBSCAN parameters...")
+        # These values could also be moved to config
+        eps_values = [10, 15, 20]
+        min_samples_values = [5, 10, 20] 
+        
+        best_silhouette = -1.1
+        best_params = (self.config.dbscan_eps, self.config.dbscan_min_samples) # Default
+
+        for eps in eps_values:
+            for min_samples in min_samples_values:
+                labels, n_clusters = self._run_dbscan(pixels, eps, min_samples)
+                
+                # Need at least 2 clusters to calculate silhouette
+                if n_clusters > 1:
+                    silhouette_avg = silhouette_score(pixels, labels)
+                    logger.info(f"DBSCAN params (eps={eps}, min={min_samples}) -> silhouette: {silhouette_avg:.3f}")
+                    if silhouette_avg > best_silhouette:
+                        best_silhouette = silhouette_avg
+                        best_params = (eps, min_samples)
+                else:
+                     logger.info(f"DBSCAN params (eps={eps}, min={min_samples}) -> found < 2 clusters. Skipping score.")
+        
+        logger.info(f"Optimal DBSCAN parameters found: eps={best_params[0]}, min_samples={best_params[1]}")
+        return best_params
+
+    def segment(self) -> SegmentationResult:
+        start_time = time.time()
+        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32)
+        
+        if self.config.k_type == 'determined':
+            eps, min_samples = self._find_optimal_dbscan_params(pixels)
+        else:
+            eps = self.config.dbscan_eps
+            min_samples = self.config.dbscan_min_samples
+            logger.info(f"Using predefined DBSCAN params: eps={eps}, min_samples={min_samples}")
+            
+        labels, n_clusters = self._run_dbscan(pixels, eps, min_samples)
+
+        if n_clusters == 0:
+            logger.warning("No clusters found in DBSCAN. Returning empty result.")
+            return SegmentationResult(method_name="dbscan", processing_time=time.time() - start_time)
+
+        # Use original preprocessed pixels for color averaging
+        original_pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
+        
+        centers = np.array([np.mean(original_pixels[labels == label], axis=0) 
+                            for label in range(n_clusters)])
+        centers = np.uint8(centers)
+        
         mask = labels >= 0
-        segmented_flat = np.zeros_like(pixels)
+        segmented_flat = np.zeros_like(original_pixels, dtype=np.uint8)
+        
+        # Map labels (0, 1, 2...) to the centers array
         segmented_flat[mask] = centers[labels[mask]]
         segmented_image = segmented_flat.reshape(self.preprocessed_image.shape)
-        avg_colors = [cv2.mean(self.preprocessed_image, mask=(labels.reshape(self.preprocessed_image.shape[:2]) == i).astype(np.uint8))[:3] for i in unique_labels]
-        return segmented_image, avg_colors, labels
+        
+        avg_colors = [tuple(c) for c in centers] # The centers are the average colors
+        
+        duration = time.time() - start_time
+        return SegmentationResult(
+            method_name="dbscan",
+            segmented_image=segmented_image,
+            avg_colors=avg_colors,
+            labels=labels,
+            n_clusters=n_clusters,
+            processing_time=duration
+        )
 
 class SOMSegmenter(SegmenterBase):
-    def __init__(self, preprocessed_image, target_colors, distance_threshold, dbn, scalers, output_dir, som_values, predefined_k, k_type='determined', cluster_strategy=None):
-        super().__init__(preprocessed_image, target_colors, distance_threshold, dbn, scalers, output_dir, k_type, cluster_strategy)
-        self.som_values = som_values
-        self.predefined_k = predefined_k
+    """Segmentation with Self-Organizing Maps (SOM)"""
+    def __init__(self, preprocessed_image, config: SegmentationConfig, models: ModelConfig, cluster_strategy: ClusterStrategy):
+        super().__init__(preprocessed_image, config, models, cluster_strategy)
+        logger.info(f"SOMSegmenter initialized with k_type: {self.config.k_type}")
 
-    def segment(self):
-        pixels = self.quantize_image().reshape(-1, 3).astype(np.float32) / 255.0
-        logging.info(f"Running SOM segmentation")
-        if self.k_type == 'determined':
-            optimal_k = self.cluster_strategy.determine_k(pixels, default_k=3, min_k=3, max_k=max(self.som_values))
-            logging.info(f"Optimal k determined: {optimal_k}")
-        else:
-            optimal_k = self.predefined_k
-            logging.info(f"Using predefined k: {optimal_k}")
-        labels = optimal_som(self.preprocessed_image, optimal_k)
-        centers = np.array([np.mean(pixels[labels == i], axis=0) for i in range(max(labels) + 1)])
-        centers = np.uint8(centers * 255)  # Scale back to [0, 255]
-        segmented_flat = np.zeros_like(pixels)
-        mask = labels >= 0
-        segmented_flat[mask] = centers[labels[mask]]
-        segmented_image = segmented_flat.reshape(self.preprocessed_image.shape)
-        avg_colors = [cv2.mean(self.preprocessed_image, mask=(labels.reshape(self.preprocessed_image.shape[:2]) == i).astype(np.uint8))[:3] for i in range(max(labels) + 1)]
-        return segmented_image, avg_colors, labels
-
-class Segmenter:
-    def __init__(self, preprocessed_image, target_colors, distance_threshold, reference_kmeans_opt, reference_som_opt, dbn, scalers, predefined_k, k_values, som_values, output_dir, k_type='determined', cluster_strategy=None):
-        self.preprocessed_image = preprocessed_image
-        self.target_colors = target_colors
-        self.distance_threshold = distance_threshold
-        self.reference_kmeans_opt = reference_kmeans_opt
-        self.reference_som_opt = reference_som_opt
-        self.dbn = dbn
-        self.scalers = scalers
-        self.predefined_k = predefined_k
-        self.k_values = k_values
-        self.som_values = som_values
-        self.output_dir = output_dir
-        self.k_type = k_type
-        self.cluster_strategy = cluster_strategy or MetricBasedStrategy()
-
-    def create_segmenter(self, method):
-        if method == 'kmeans':
-            return KMeansSegmenter(self.image, self.target_colors, self.distance_threshold, self.reference_kmeans_opt, self.scalers)
-        elif method == 'som':
-            return SOMSegmenter(self.image, self.target_colors, self.distance_threshold, self.reference_som_opt, self.scalers, k_type=self.k_type)
-        elif method == 'dbscan':
-            return DBSCANSegmenter(self.image, self.target_colors, self.distance_threshold, self.dbn, self.scalers)
-        else:
-            raise ValueError(f"Unknown segmentation method: {method}")
-
-    def process(self):
-        """Process the image with various segmentation methods."""
-        preprocessed_path = os.path.join(self.output_dir, "preprocessed_image.jpg")
-        cv2.imwrite(preprocessed_path, self.preprocessed_image)
-
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        methods = {
-            'kmeans_optimal': self.create_segmenter('kmeans_optimal'),
-            'kmeans_predefined': self.create_segmenter('kmeans_predefined'),
-            'dbscan': self.create_segmenter('dbscan'),
-            'som_optimal': self.create_segmenter('som_optimal'),
-            'som_predef': self.create_segmenter('som_predefined')
-        }
-        results = {}
-        for method_name, segmenter in methods.items():
-            results[method_name] = segmenter.segment()
-            segmented_image = results[method_name][0]
-            file_name = f"{current_date}_{method_name}_{os.path.basename(self.output_dir).split('.')[0]}_segmented.png"
-            output_path = os.path.join(self.output_dir, file_name)
-            cv2.imwrite(output_path, segmented_image)
-            logging.info(f"Saved {file_name} to {output_path}")
-
-        # Initialize ColorComparator with target colors
-        color_comparator = ColorMetricCalculator(self.target_colors)
+    def segment(self) -> SegmentationResult:
+        start_time = time.time()
+        # SOM works best on normalized pixels [0, 1]
+        pixels_normalized = self.quantize_image().reshape(-1, 3).astype(np.float32) / 255.0
         
-        kmeans_opt_results = results['kmeans_optimal']
-        sim_kmeans_opt = color_comparator.compute_similarity(kmeans_opt_results[1])  # Use avg_colors
-        best_kmeans_opt = color_comparator.find_best_matches(kmeans_opt_results[1])
+        if self.config.k_type == 'determined':
+            optimal_k = self.cluster_strategy.determine_k(pixels_normalized, self.config)
+            method_name = "som_opt"
+            logger.info(f"Optimal k determined: {optimal_k}")
+        else:
+            optimal_k = self.config.predefined_k
+            method_name = "som_predef"
+            logger.info(f"Using predefined k: {optimal_k}")
+        
+        # --- Logic from som_segmentation() is now INSIDE the class ---
+        som = MiniSom(x=1, y=optimal_k, input_len=3, sigma=0.5, learning_rate=0.25)
+        som.random_weights_init(pixels_normalized)
+        som.train_random(pixels_normalized, 100) # 100 iterations
+        
+        # Get the winning neuron (cluster index) for each pixel
+        labels_flat = np.array([som.winner(pixel)[1] for pixel in pixels_normalized])
+        
+        # Get the cluster centers (weights) from the SOM, scaling back to [0, 255]
+        centers_normalized = np.array([som.get_weights()[0, i] for i in range(optimal_k)])
+        centers = np.uint8(centers_normalized * 255.0)
 
-        kmeans_predef_results = results['kmeans_predefined']
-        sim_kmeans_predef = color_comparator.compute_similarity(kmeans_predef_results[1])
-        best_kmeans_predef = color_comparator.find_best_matches(kmeans_predef_results[1])
+        segmented_image = centers[labels_flat].reshape(self.preprocessed_image.shape)
+        labels_2d = labels_flat.reshape(self.preprocessed_image.shape[:2])
+        
+        avg_colors = []
+        for i in range(optimal_k):
+            mask = (labels_2d == i).astype(np.uint8)
+            avg_color_bgr = cv2.mean(self.preprocessed_image, mask=mask)[:3]
+            avg_colors.append(avg_color_bgr)
+        # --- End of merged logic ---
 
-        dbscan_results = results['dbscan']
-        sim_dbscan = color_comparator.compute_similarity(dbscan_results[1])
-        best_dbscan = color_comparator.find_best_matches(dbscan_results[1])
+        duration = time.time() - start_time
+        return SegmentationResult(
+            method_name=method_name,
+            segmented_image=segmented_image,
+            avg_colors=avg_colors,
+            labels=labels_flat,
+            n_clusters=optimal_k,
+            processing_time=duration
+        )
 
-        som_opt_results = results['som_optimal']
-        sim_som_opt = color_comparator.compute_similarity(som_opt_results[1])
-        best_som_opt = color_comparator.find_best_matches(som_opt_results[1])
+"""
+Main Segmenter: Facade Patters 
+"""
+class Segmenter:
+    """
+    Facade class that manages the entire segmentation workflow
+    It initializes the correct segmetnation strategies based on the config and runs them,
+    handles the result and saves.
+    """
+    def __init__(self, 
+                 preprocessed_image: np.ndarray,
+                 seg_config: SegmentationConfig,
+                 model_config: ModelConfig,
+                 output_manager: Any
+                 cluster_strategy: Optional[ClusterStrategy] = None):
+        
+        self.preprocessed_image = preprocessed_image
+        self.config = seg_config
+        self.models = model_config
+        
+        # store output manager here
+        self.output_manager = output_manager
+        
+        self.cluster_strategy = cluster_strategy or MetricBasedStrategy()
+        
+        # this dictionary will hold the specific segmenter instances
+        self.segmenters: Dict[str, SegmenterBase] = {}
+        self._initialize_segmenters()
+        logger.info(f"Segmenter (Facade) initialized for k_type='{self.config.k_type}' with methods: {list(self.segmenters.keys())}")
+    
+    def _initialize_segmenters(self):
+        """
+        Dynamically create the segmenter objects based on the config
+        """
+        common_args = {
+            "preprocessed_image": self.preprocessed_image,
+            "config": self.config,
+            "models": self.models,
+            "cluster_strategy": self.cluster_strategy
+        }
+        
+        # create instances based on k_type and allowed methods
+        if self.config.k_type == 'determined':
+            if 'kmeans_opt' in self.config.methods:
+                self.segmenters['kmeans_opt'] = KMeansSegmenter(**common_args)
+            if 'som_opt' in self.config.methods:
+                self.segmenters['som_opt'] = SOMSegmenter(**common_args)
+                
+        elif self.config.k_type == 'predefined':
+            if 'kmeans_predef' in self.config.methods:
+                self.segmenters['kmeans_predef'] = KMeansSegmenter(**common_args)
+            if 'som_predef' in self.config.methods:
+                self.segmenters['som_predef'] = SOMSegmenter(**common_args)
+                
+        if 'dbscan' in self.config.methods:
+            self.segmenters['dbscan'] = DBSCANSegmenter(**common_args)
+        
+    def process(self):
+        """
+        Run all initialized segmentation methods and collect their results.
+        This method is responsible for saving the output images.
+        """
+        if self.preprocessed_image is None:
+            raise SegmentationError("Preprocessed image is None, cannot segment.")
+            
+        # The preprocessed image is saved by main.py. We'll just create a
+        # placeholder path for the ProcessingResult object.
+        preprocessed_path = self.output_manager.get_preprocessed_image_path()
+        
+        results_dict: Dict[str, SegmentationResult] = {}
+        
+        for method_name, segmenter_instance in self.segmenters.items():
+            try:
+                logger.info(f"Running segmentation method: {method_name}")
+                result = segmenter_instance.segment()
+                
+                # REFACTOR 2: Saving is handled here, in the Facade.
+                if result.is_valid():
+                    self.output_manager.save_segmentation_result(
+                        result.segmented_image, 
+                        method_name, 
+                        self.config.k_type
+                    )
+                    results_dict[method_name] = result
+                    logger.info(f"Method {method_name} completed in {result.processing_time:.2f}s")
+                else:
+                    logger.warning(f"Method {method_name} did not produce a valid result.")
+                    results_dict[method_name] = result # Store the invalid result anyway
+                    
+            except Exception as e:
+                logger.error(f"Error processing method {method_name}: {e}", exc_info=True)
+                results_dict[method_name] = SegmentationResult(method_name=method_name) # Store empty result on failure
 
-        som_predef_results = results['som_predef']
-        sim_som_predef = color_comparator.compute_similarity(som_predef_results[1])
-        best_som_predef = color_comparator.find_best_matches(som_predef_results[1])
-
-        logging.info("Segmentation process completed")
-        return (
-            preprocessed_path,
-            (kmeans_opt_results[0], sim_kmeans_opt, best_kmeans_opt),
-            (kmeans_predef_results[0], sim_kmeans_predef, best_kmeans_predef),
-            (dbscan_results[0], sim_dbscan, best_dbscan),
-            (som_opt_results[0], sim_som_opt, best_som_opt),
-            (som_predef_results[0], sim_som_predef, best_som_predef)
+        logging.info("Segmentation process completed for all methods.")
+        return ProcessingResult(
+            preprocessed_path=preprocessed_path,
+            results=results_dict
         )
