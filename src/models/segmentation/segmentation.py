@@ -38,7 +38,7 @@ class SegmentationConfig:
     k_values: List[int]
     som_values: List[int]
     k_type: str = 'determined'
-    methods: List[str] = field(default_factory = lambda: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predefe', 'dbscan'])
+    methods: List[str] = field(default_factory = lambda: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan'])
     
     dbscan_eps: float = 10.0
     dbscan_min_samples: int = 3
@@ -63,8 +63,8 @@ class SegmentationResult:
     
     def is_valid(self) -> bool:
         """checks if result is valid"""
-        return (self.segmented_images is not None and 
-                self.avg_color is not None and
+        return (self.segmented_image is not None and 
+                self.avg_colors is not None and
                 len(self.avg_colors) > 0 and
                 self.n_clusters > 0)
     
@@ -195,7 +195,7 @@ class SegmenterBase(ABC):
 ## Concrete Segmentation Implementations
 class KMeansSegmenter(SegmenterBase):
     """Segments an fabric using KMeans clustering"""
-    def __init__(self, preprocessed_image, config: SegmentationConfig, models: ModelConfig, cluster_strategy = ClusterStrategy):
+    def __init__(self, preprocessed_image, config: SegmentationConfig, models: ModelConfig, cluster_strategy: ClusterStrategy):
         super().__init__(preprocessed_image, config, models, cluster_strategy)
         logger.info(f"KMeansSegmenter initialized with k_type: {self.config.k_type}")
     
@@ -396,7 +396,7 @@ class Segmenter:
                  preprocessed_image: np.ndarray,
                  seg_config: SegmentationConfig,
                  model_config: ModelConfig,
-                 output_manager: Any
+                 output_manager: Any,
                  cluster_strategy: Optional[ClusterStrategy] = None):
         
         self.preprocessed_image = preprocessed_image
