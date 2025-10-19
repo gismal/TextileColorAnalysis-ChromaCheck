@@ -32,7 +32,7 @@ def convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, colors):
         np.ndarray: Array of predicted LAB colors.
     """
     if not isinstance(colors, np.ndarray):
-        colors = np.array(colors, dtype=np.float32) / 255.0
+        colors = np.array(colors, dtype=np.float32) 
     scaled_input = scaler_x.transform(colors.reshape(-1, 3))
     prediction = dbn.predict(scaled_input)
     l_channel = scaler_y.inverse_transform(prediction[:, 0].reshape(-1, 1))

@@ -16,6 +16,17 @@ def exception_handler(func):
             return None
     return wrapper
 
+@dataclass
+class PreprocessingConfig:
+    initial_resize : int
+    target_size : int
+    denoise_h : int
+    max_colors : int
+    edge_enhance : bool
+    unsharp_amount : float
+    unsharp_threshold : int
+
+
 class Preprocessor:
     def __init__(self, initial_resize=512, target_size=(128, 128), denoise_h=10, max_colors=8, edge_enhance=False, unsharp_amount=0.0, unsharp_threshold=0):
         """Initialize the preprocessor with configurable parameters."""
