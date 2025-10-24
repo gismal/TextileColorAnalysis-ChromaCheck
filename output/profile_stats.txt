@@ -1,38 +1,38 @@
-         56593438 function calls (53526793 primitive calls) in 168.130 seconds
+         58087524 function calls (54976109 primitive calls) in 194.120 seconds
 
    Ordered by: cumulative time
-   List reduced from 2719 to 30 due to restriction <30>
+   List reduced from 2865 to 30 due to restriction <30>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000  158.416  158.416 c:\Users\LENOVO\Desktop\prints\src\models\dbn_trainer.py:50(train)
-        1    0.000    0.000  157.892  157.892 c:\Users\LENOVO\Desktop\prints\src\models\dbn_trainer.py:132(_run_pso_with_retries)
-        1    0.001    0.001  157.892  157.892 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:245(optimize)
-        1    0.449    0.449  157.884  157.884 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:3(pso)
-     1007    0.007    0.000  157.397    0.156 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:74(<lambda>)
-     1007    0.056    0.000  157.390    0.156 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:259(objective_function)
-1162/1064    5.878    0.005  146.832    0.138 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\utils\traceback_utils.py:110(error_handler)
-     1007    0.362    0.000  140.494    0.140 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:500(predict)
-   101969   61.961    0.001   62.177    0.001 {built-in method tensorflow.python._pywrap_tfe.TFE_Py_FastPathExecute}
-263366/140147    0.615    0.000   54.587    0.000 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\util\traceback_utils.py:138(error_handler)
-     1007    0.019    0.000   52.081    0.052 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:723(__init__)
-     1007    0.045    0.000   51.893    0.052 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\trainers\data_adapters\array_data_adapter.py:105(get_tf_dataset)
-879400/705502    0.582    0.000   49.410    0.000 {built-in method builtins.next}
-    21147    0.020    0.000   39.490    0.002 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:739(__next__)
-    21147    0.077    0.000   39.450    0.002 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\trainers\epoch_iterator.py:105(_enumerate_iterator)
-   249122    0.076    0.000   39.439    0.000 {built-in method builtins.iter}
-     2014    0.022    0.000   39.364    0.020 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\dataset_ops.py:488(__iter__)
-     2014    0.011    0.000   39.246    0.019 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\iterator_ops.py:670(__init__)
-     2014    0.047    0.000   39.235    0.019 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\iterator_ops.py:713(_create_iterator)
-    26182    0.212    0.000   38.877    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:144(trace_function)
-     2014    0.012    0.000   38.755    0.019 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\ops\gen_dataset_ops.py:3460(make_iterator)
-    26182    0.430    0.000   38.617    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:188(_maybe_define_function)
-     3021    0.087    0.000   30.536    0.010 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\structured_function.py:70(__init__)
-     3021    0.009    0.000   29.276    0.010 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:1254(get_concrete_function)
-     3021    0.039    0.000   29.266    0.010 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:1205(_get_concrete_function_garbage_collected)
-     3022    0.035    0.000   28.123    0.009 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:661(_initialize)
-    20140    0.399    0.000   27.413    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:805(__call__)
-    20140    0.183    0.000   26.371    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:852(_call)
-     3022    0.139    0.000   25.272    0.008 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:295(_create_concrete_function)
-    20139    0.190    0.000   24.858    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:125(call_function)
+        1    0.000    0.000  159.926  159.926 c:\Users\LENOVO\Desktop\prints\src\models\dbn_trainer.py:50(train)
+        1    0.000    0.000  159.561  159.561 c:\Users\LENOVO\Desktop\prints\src\models\dbn_trainer.py:132(_run_pso_with_retries)
+        1    0.001    0.001  159.560  159.560 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:245(optimize)
+        1    0.444    0.444  159.548  159.548 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:3(pso)
+     1020    0.007    0.000  159.072    0.156 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:74(<lambda>)
+     1020    0.050    0.000  159.065    0.156 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:259(objective_function)
+1199/1079    5.816    0.005  148.754    0.138 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\utils\traceback_utils.py:110(error_handler)
+     1022    0.350    0.000  142.621    0.140 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:500(predict)
+   103314   63.604    0.001   63.819    0.001 {built-in method tensorflow.python._pywrap_tfe.TFE_Py_FastPathExecute}
+267022/141988    0.628    0.000   54.777    0.000 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\util\traceback_utils.py:138(error_handler)
+     1022    0.017    0.000   52.956    0.052 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:723(__init__)
+     1022    0.044    0.000   52.770    0.052 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\trainers\data_adapters\array_data_adapter.py:105(get_tf_dataset)
+893199/716349    0.590    0.000   50.375    0.000 {built-in method builtins.next}
+    21424    0.021    0.000   40.498    0.002 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:739(__next__)
+   252463    0.073    0.000   40.464    0.000 {built-in method builtins.iter}
+    21424    0.058    0.000   40.457    0.002 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\trainers\epoch_iterator.py:105(_enumerate_iterator)
+     2044    0.021    0.000   40.391    0.020 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\dataset_ops.py:488(__iter__)
+     2044    0.016    0.000   40.273    0.020 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\iterator_ops.py:670(__init__)
+     2044    0.045    0.000   40.257    0.020 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\iterator_ops.py:713(_create_iterator)
+     2044    0.012    0.000   39.776    0.019 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\ops\gen_dataset_ops.py:3460(make_iterator)
+    26534    0.210    0.000   39.261    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:144(trace_function)
+    26534    0.428    0.000   38.996    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:188(_maybe_define_function)
+     3066    0.086    0.000   30.624    0.010 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\data\ops\structured_function.py:70(__init__)
+     3066    0.010    0.000   29.365    0.010 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:1254(get_concrete_function)
+     3066    0.037    0.000   29.353    0.010 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:1205(_get_concrete_function_garbage_collected)
+     3067    0.037    0.000   28.189    0.009 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:661(_initialize)
+    20402    0.387    0.000   27.450    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:805(__call__)
+    20402    0.174    0.000   26.434    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\polymorphic_function.py:852(_call)
+     3068    0.133    0.000   25.424    0.008 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:295(_create_concrete_function)
+    20401    0.183    0.000   24.991    0.001 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\eager\polymorphic_function\tracing_compilation.py:125(call_function)
 
 

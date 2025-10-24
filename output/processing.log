@@ -1,442 +1,1177 @@
-2025-10-20 17:35:57,612 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
-2025-10-20 17:35:57,614 - root - INFO - timer:148 - Starting: Configuration loading and validation
-2025-10-20 17:35:57,616 - src.data.load_data - WARNING - load_config:53 - Default configuration file not found at c:\Users\LENOVO\Desktop\prints\src\configurations\defaults.yaml. Proceeding without defaults.
-2025-10-20 17:35:57,624 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
-2025-10-20 17:35:57,625 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
-2025-10-20 17:35:57,625 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
-2025-10-20 17:35:57,627 - root - ERROR - validate_processing_config:238 - Configuration validation failed: Missing required segmentation keys (checked root and 'segmentation_params'): ['k_values', 'som_values']
-2025-10-20 17:35:57,627 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.01 seconds
-2025-10-20 17:35:57,628 - root - ERROR - main:565 - An unexpected error occurred in main execution: Processing configuration validation failed.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 481, in main
-    if not validate_processing_config(config): raise ValueError("Processing configuration validation failed.")
-ValueError: Processing configuration validation failed.
-2025-10-20 17:35:57,630 - root - INFO - main:572 - ================================================================================
-PROCESSING COMPLETED IN 0.02 SECONDS
+2025-10-24 22:42:56,669 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-24 22:42:56,670 - root - INFO - timer:148 - Starting: Configuration loading and validation
+2025-10-24 22:42:56,685 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-24 22:42:56,688 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-24 22:42:56,688 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-24 22:42:56,688 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-24 22:42:56,692 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
+2025-10-24 22:42:56,693 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-24 22:42:56,695 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-24 22:42:56,695 - root - INFO - main:601 - Processing dataset: block
+2025-10-24 22:42:56,696 - root - INFO - timer:148 - Starting: Loading all test images
+2025-10-24 22:42:57,411 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-24 22:42:58,298 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-24 22:42:58,758 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-24 22:42:59,277 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-24 22:42:59,791 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-24 22:42:59,792 - root - INFO - timer:154 - Completed: Loading all test images in 3.10 seconds
+2025-10-24 22:42:59,792 - root - INFO - timer:148 - Starting: Loading training data
+2025-10-24 22:42:59,792 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-24 22:43:01,764 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-24 22:43:01,764 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-24 22:43:01,768 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-24 22:43:01,768 - root - INFO - timer:154 - Completed: Loading training data in 1.98 seconds
+2025-10-24 22:43:01,769 - root - INFO - timer:148 - Starting: DBN initialization and training
+2025-10-24 22:43:01,769 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-24 22:43:01,769 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-24 22:43:01,769 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-24 22:43:01,771 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-24 22:43:01,772 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [32.00, 215.00]
+2025-10-24 22:43:01,772 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[12.16, 84.71], a[-2.00, 2.00], b[-1.00, 8.00]
+2025-10-24 22:43:01,773 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-24 22:43:01,774 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-24 22:43:01,777 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-24 22:43:01,777 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-24 22:43:01,777 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-24 22:43:01,777 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-24 22:43:02,060 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-24 22:43:02,110 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-24 22:43:02,111 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.237, 0.240]
+2025-10-24 22:43:02,111 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-24 22:43:02,111 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-24 22:43:02,111 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-24 22:43:02,111 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-24 22:43:02,111 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.283, 0.283]
+2025-10-24 22:43:02,112 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.463, 0.441]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-24 22:43:02,113 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-24 22:43:02,113 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-24 22:45:32,338 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 150.22s - Final fitness: 0.023033
+2025-10-24 22:45:32,338 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-24 22:45:32,349 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-24 22:45:32,350 - root - INFO - timer:154 - Completed: DBN initialization and training in 150.58 seconds
+2025-10-24 22:45:32,350 - root - INFO - timer:148 - Starting: Reference image loading and processing
+2025-10-24 22:45:32,351 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-24 22:45:32,743 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-24 22:45:32,743 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-24 22:45:32,771 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-24 22:45:34,079 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 22:45:34,398 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 22:45:35,131 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 22:45:35,132 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 22:45:35,132 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 22:45:35,132 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-24 22:45:35,132 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-24 22:45:35,143 - src.models.segmentation.segmentation - INFO - determine_k:107 - Unique colors: 117. Adjusted k-range for metric search: [2, 8]
+2025-10-24 22:45:35,143 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=2
+2025-10-24 22:45:37,094 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=2: Silhouette=0.969, CH=1928285.9
+2025-10-24 22:45:37,094 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=3
+2025-10-24 22:45:38,962 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=3: Silhouette=0.805, CH=1358249.9
+2025-10-24 22:45:38,962 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=4
+2025-10-24 22:45:40,835 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=4: Silhouette=0.809, CH=1753242.4
+2025-10-24 22:45:40,835 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=5
+2025-10-24 22:45:42,859 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=5: Silhouette=0.738, CH=1875234.9
+2025-10-24 22:45:42,859 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=6
+2025-10-24 22:45:44,925 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=6: Silhouette=0.869, CH=2438844.2
+2025-10-24 22:45:44,925 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=7
+2025-10-24 22:45:46,778 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=7: Silhouette=0.877, CH=3597046.2
+2025-10-24 22:45:46,778 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=8
+2025-10-24 22:45:48,620 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=8: Silhouette=0.939, CH=4479793.0
+2025-10-24 22:45:48,621 - src.models.segmentation.segmentation - INFO - determine_k:161 - Optimal k determined: 8 (based on score: 0.935)
+2025-10-24 22:45:48,621 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-24 22:45:48,621 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-24 22:45:48,631 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 117. Using dynamic_max_k: 10
+2025-10-24 22:45:48,633 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 104.590
+2025-10-24 22:45:48,635 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=372.415, std=2027.563, threshold=2399.978
+2025-10-24 22:45:48,635 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-24 22:45:48,635 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-24 22:45:48,635 - src.models.segmentation.segmentation - INFO - __init__:245 - KMeansSegmenter initialized with k_type: predefined
+2025-10-24 22:45:48,636 - src.models.segmentation.segmentation - INFO - quantize_image:192 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-24 22:45:48,833 - src.models.segmentation.segmentation - INFO - __init__:480 - SOMSegmenter initialized with k_type: predefined
+2025-10-24 22:45:48,833 - src.models.segmentation.segmentation - INFO - quantize_image:192 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-24 22:45:48,959 - src.models.segmentation.segmentation - INFO - segment:502 - Running SOM segmentation with k=8
+2025-10-24 22:45:49,428 - src.models.segmentation.segmentation - WARNING - segment:542 - SOM generated empty mask for cluster 2 (k=8). Skipping avg color.
+2025-10-24 22:45:49,428 - src.models.segmentation.segmentation - WARNING - segment:542 - SOM generated empty mask for cluster 3 (k=8). Skipping avg color.
+2025-10-24 22:45:49,429 - root - INFO - process_reference_image:346 - Reference image processing finished in 17.08 seconds.
+2025-10-24 22:45:49,681 - root - INFO - run_reference_processing:382 - Formatted K-Means reference results.
+2025-10-24 22:45:49,793 - root - INFO - run_reference_processing:418 - Formatted SOM reference results.
+2025-10-24 22:45:51,023 - src.utils.output_manager - INFO - save_reference_summary:136 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-24 22:45:51,024 - root - INFO - run_reference_processing:438 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-24 22:45:51,024 - root - INFO - timer:154 - Completed: Reference image loading and processing in 18.67 seconds
+2025-10-24 22:45:51,031 - root - INFO - timer:148 - Starting: Processing test image block1
+2025-10-24 22:45:51,032 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-24 22:45:51,058 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-24 22:45:52,393 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 22:45:52,765 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 22:45:53,211 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 22:45:53,213 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 22:45:53,213 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 22:45:53,215 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-24 22:45:53,216 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: determined
+2025-10-24 22:45:53,217 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:53,217 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: determined in 0.00 seconds
+2025-10-24 22:45:53,217 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-24 22:45:53,218 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:53,218 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: predefined in 0.00 seconds
+2025-10-24 22:45:53,218 - root - INFO - timer:154 - Completed: Processing test image block1 in 2.19 seconds
+2025-10-24 22:45:53,219 - root - INFO - timer:148 - Starting: Processing test image block2
+2025-10-24 22:45:53,219 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-24 22:45:53,255 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-24 22:45:54,643 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 22:45:54,976 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 22:45:55,406 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 22:45:55,407 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 22:45:55,407 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 22:45:55,408 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-24 22:45:55,409 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: determined
+2025-10-24 22:45:55,410 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:55,410 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: determined in 0.00 seconds
+2025-10-24 22:45:55,410 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-24 22:45:55,411 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:55,411 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: predefined in 0.00 seconds
+2025-10-24 22:45:55,411 - root - INFO - timer:154 - Completed: Processing test image block2 in 2.19 seconds
+2025-10-24 22:45:55,412 - root - INFO - timer:148 - Starting: Processing test image block3
+2025-10-24 22:45:55,412 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-24 22:45:55,436 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-24 22:45:56,739 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 22:45:57,068 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 22:45:57,491 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 22:45:57,493 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 22:45:57,493 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 22:45:57,494 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-24 22:45:57,495 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: determined
+2025-10-24 22:45:57,496 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:57,496 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: determined in 0.00 seconds
+2025-10-24 22:45:57,496 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-24 22:45:57,497 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:57,497 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: predefined in 0.00 seconds
+2025-10-24 22:45:57,498 - root - INFO - timer:154 - Completed: Processing test image block3 in 2.09 seconds
+2025-10-24 22:45:57,498 - root - INFO - timer:148 - Starting: Processing test image block4
+2025-10-24 22:45:57,499 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-24 22:45:57,523 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-24 22:45:58,937 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 22:45:59,290 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 22:45:59,712 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 22:45:59,713 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 22:45:59,713 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 22:45:59,714 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-24 22:45:59,715 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: determined
+2025-10-24 22:45:59,716 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:59,716 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: determined in 0.00 seconds
+2025-10-24 22:45:59,716 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-24 22:45:59,717 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:45:59,717 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: predefined in 0.00 seconds
+2025-10-24 22:45:59,717 - root - INFO - timer:154 - Completed: Processing test image block4 in 2.22 seconds
+2025-10-24 22:45:59,718 - root - INFO - timer:148 - Starting: Processing test image block5
+2025-10-24 22:45:59,718 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-24 22:45:59,741 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-24 22:46:00,997 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 22:46:01,313 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 22:46:01,731 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 22:46:01,732 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 22:46:01,732 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 22:46:01,733 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-24 22:46:01,734 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: determined
+2025-10-24 22:46:01,735 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:46:01,735 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: determined in 0.00 seconds
+2025-10-24 22:46:01,735 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-24 22:46:01,736 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 22:46:01,736 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: predefined in 0.00 seconds
+2025-10-24 22:46:01,737 - root - INFO - timer:154 - Completed: Processing test image block5 in 2.02 seconds
+2025-10-24 22:46:01,738 - root - INFO - main:684 - ================================================================================
+PROCESSING COMPLETED IN 185.07 SECONDS
 ================================================================================
-2025-10-20 17:35:57,638 - root - INFO - main:580 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
-2025-10-20 20:19:41,403 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
-2025-10-20 20:19:41,403 - root - INFO - timer:148 - Starting: Configuration loading and validation
-2025-10-20 20:19:41,413 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
-2025-10-20 20:19:41,417 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
-2025-10-20 20:19:41,418 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
-2025-10-20 20:19:41,420 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
-2025-10-20 20:19:41,420 - root - ERROR - validate_processing_config:238 - Configuration validation failed: Missing required keys within 'segmentation_params': ['distance_threshold', 'predefined_k', 'k_values', 'som_values']
-2025-10-20 20:19:41,420 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
-2025-10-20 20:19:41,420 - root - ERROR - main:565 - An unexpected error occurred in main execution: Processing configuration validation failed.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 481, in main
-    if not validate_processing_config(config): raise ValueError("Processing configuration validation failed.")
-ValueError: Processing configuration validation failed.
-2025-10-20 20:19:41,420 - root - INFO - main:572 - ================================================================================
-PROCESSING COMPLETED IN 0.02 SECONDS
+2025-10-24 22:46:01,787 - root - INFO - main:692 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-24 23:49:09,524 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-24 23:49:09,526 - root - INFO - timer:148 - Starting: Configuration loading and validation
+2025-10-24 23:49:09,541 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-24 23:49:09,545 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-24 23:49:09,545 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-24 23:49:09,545 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-24 23:49:09,548 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
+2025-10-24 23:49:09,548 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-24 23:49:09,553 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-24 23:49:09,553 - root - INFO - main:601 - Processing dataset: block
+2025-10-24 23:49:09,555 - root - INFO - timer:148 - Starting: Loading all test images
+2025-10-24 23:49:10,302 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-24 23:49:11,274 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-24 23:49:11,780 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-24 23:49:12,356 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-24 23:49:12,907 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-24 23:49:12,907 - root - INFO - timer:154 - Completed: Loading all test images in 3.35 seconds
+2025-10-24 23:49:12,908 - root - INFO - timer:148 - Starting: Loading training data
+2025-10-24 23:49:12,908 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-24 23:49:14,906 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-24 23:49:14,906 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-24 23:49:14,910 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-24 23:49:14,910 - root - INFO - timer:154 - Completed: Loading training data in 2.00 seconds
+2025-10-24 23:49:14,911 - root - INFO - timer:148 - Starting: DBN initialization and training
+2025-10-24 23:49:14,911 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-24 23:49:14,911 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-24 23:49:14,911 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-24 23:49:14,915 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-24 23:49:14,915 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [31.00, 214.00]
+2025-10-24 23:49:14,915 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[12.16, 84.31], a[-2.00, 2.00], b[-1.00, 9.00]
+2025-10-24 23:49:14,916 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-24 23:49:14,917 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-24 23:49:14,920 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-24 23:49:14,920 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-24 23:49:14,920 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-24 23:49:14,921 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-24 23:49:15,240 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-24 23:49:15,300 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-24 23:49:15,301 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.241, 0.241]
+2025-10-24 23:49:15,301 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-24 23:49:15,301 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-24 23:49:15,301 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-24 23:49:15,302 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-24 23:49:15,303 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.283, 0.282]
+2025-10-24 23:49:15,303 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-24 23:49:15,303 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-24 23:49:15,303 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-24 23:49:15,303 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-24 23:49:15,303 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-24 23:49:15,304 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.453, 0.453]
+2025-10-24 23:49:15,304 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-24 23:49:15,304 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-24 23:49:15,304 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-24 23:51:59,432 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 164.12s - Final fitness: 0.037198
+2025-10-24 23:51:59,432 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-24 23:51:59,442 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-24 23:51:59,442 - root - INFO - timer:154 - Completed: DBN initialization and training in 164.53 seconds
+2025-10-24 23:51:59,443 - root - INFO - timer:148 - Starting: Reference image loading and processing
+2025-10-24 23:51:59,443 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-24 23:51:59,830 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-24 23:51:59,830 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-24 23:51:59,864 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-24 23:52:01,178 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 23:52:01,496 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 23:52:02,201 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 23:52:02,202 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 23:52:02,202 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 23:52:02,203 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-24 23:52:02,203 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-24 23:52:02,214 - src.models.segmentation.segmentation - INFO - determine_k:107 - Unique colors: 124. Adjusted k-range for metric search: [2, 8]
+2025-10-24 23:52:02,214 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=2
+2025-10-24 23:52:04,165 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=2: Silhouette=0.970, CH=1971910.2
+2025-10-24 23:52:04,165 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=3
+2025-10-24 23:52:06,067 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=3: Silhouette=0.943, CH=1529733.1
+2025-10-24 23:52:06,067 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=4
+2025-10-24 23:52:07,966 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=4: Silhouette=0.791, CH=1666435.5
+2025-10-24 23:52:07,966 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=5
+2025-10-24 23:52:09,817 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=5: Silhouette=0.792, CH=1598665.2
+2025-10-24 23:52:09,817 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=6
+2025-10-24 23:52:11,678 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=6: Silhouette=0.906, CH=1821789.6
+2025-10-24 23:52:11,678 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=7
+2025-10-24 23:52:13,499 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=7: Silhouette=0.866, CH=3243690.8
+2025-10-24 23:52:13,499 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=8
+2025-10-24 23:52:15,330 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=8: Silhouette=0.895, CH=3657136.2
+2025-10-24 23:52:15,330 - src.models.segmentation.segmentation - INFO - determine_k:161 - Optimal k determined: 8 (based on score: 0.790)
+2025-10-24 23:52:15,331 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-24 23:52:15,331 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-24 23:52:15,341 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 124. Using dynamic_max_k: 10
+2025-10-24 23:52:15,343 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 108.042
+2025-10-24 23:52:15,345 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=370.008, std=2041.488, threshold=2411.497
+2025-10-24 23:52:15,345 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-24 23:52:15,346 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-24 23:52:15,346 - src.models.segmentation.segmentation - INFO - __init__:245 - KMeansSegmenter initialized with k_type: predefined
+2025-10-24 23:52:15,346 - src.models.segmentation.segmentation - INFO - quantize_image:192 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-24 23:52:15,522 - src.models.segmentation.segmentation - INFO - __init__:480 - SOMSegmenter initialized with k_type: predefined
+2025-10-24 23:52:15,522 - src.models.segmentation.segmentation - INFO - quantize_image:192 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-24 23:52:15,652 - src.models.segmentation.segmentation - INFO - segment:502 - Running SOM segmentation with k=8
+2025-10-24 23:52:16,119 - src.models.segmentation.segmentation - WARNING - segment:542 - SOM generated empty mask for cluster 4 (k=8). Skipping avg color.
+2025-10-24 23:52:16,119 - root - INFO - process_reference_image:346 - Reference image processing finished in 16.68 seconds.
+2025-10-24 23:52:16,379 - root - INFO - run_reference_processing:382 - Formatted K-Means reference results.
+2025-10-24 23:52:16,499 - root - INFO - run_reference_processing:418 - Formatted SOM reference results.
+2025-10-24 23:52:17,711 - src.utils.output_manager - INFO - save_reference_summary:136 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-24 23:52:17,711 - root - INFO - run_reference_processing:438 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-24 23:52:17,711 - root - INFO - timer:154 - Completed: Reference image loading and processing in 18.27 seconds
+2025-10-24 23:52:17,719 - root - INFO - timer:148 - Starting: Processing test image block1
+2025-10-24 23:52:17,719 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-24 23:52:17,746 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-24 23:52:19,055 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 23:52:19,392 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 23:52:19,843 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 23:52:19,844 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 23:52:19,844 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 23:52:19,845 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-24 23:52:19,846 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: determined
+2025-10-24 23:52:19,847 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:19,847 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: determined in 0.00 seconds
+2025-10-24 23:52:19,847 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-24 23:52:19,848 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:19,848 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: predefined in 0.00 seconds
+2025-10-24 23:52:19,849 - root - INFO - timer:154 - Completed: Processing test image block1 in 2.13 seconds
+2025-10-24 23:52:19,849 - root - INFO - timer:148 - Starting: Processing test image block2
+2025-10-24 23:52:19,849 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-24 23:52:19,882 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-24 23:52:21,197 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 23:52:21,522 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 23:52:21,946 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 23:52:21,947 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 23:52:21,947 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 23:52:21,949 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-24 23:52:21,949 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: determined
+2025-10-24 23:52:21,950 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:21,950 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: determined in 0.00 seconds
+2025-10-24 23:52:21,950 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-24 23:52:21,951 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:21,951 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: predefined in 0.00 seconds
+2025-10-24 23:52:21,952 - root - INFO - timer:154 - Completed: Processing test image block2 in 2.10 seconds
+2025-10-24 23:52:21,952 - root - INFO - timer:148 - Starting: Processing test image block3
+2025-10-24 23:52:21,953 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-24 23:52:21,975 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-24 23:52:23,255 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 23:52:23,572 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 23:52:24,004 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 23:52:24,006 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 23:52:24,006 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 23:52:24,008 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-24 23:52:24,008 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: determined
+2025-10-24 23:52:24,009 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:24,009 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: determined in 0.00 seconds
+2025-10-24 23:52:24,009 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-24 23:52:24,010 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:24,010 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: predefined in 0.00 seconds
+2025-10-24 23:52:24,011 - root - INFO - timer:154 - Completed: Processing test image block3 in 2.06 seconds
+2025-10-24 23:52:24,011 - root - INFO - timer:148 - Starting: Processing test image block4
+2025-10-24 23:52:24,012 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-24 23:52:24,032 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-24 23:52:25,291 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 23:52:25,633 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 23:52:26,057 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 23:52:26,059 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 23:52:26,059 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 23:52:26,060 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-24 23:52:26,061 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: determined
+2025-10-24 23:52:26,061 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:26,061 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: determined in 0.00 seconds
+2025-10-24 23:52:26,062 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-24 23:52:26,063 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:26,063 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: predefined in 0.00 seconds
+2025-10-24 23:52:26,063 - root - INFO - timer:154 - Completed: Processing test image block4 in 2.05 seconds
+2025-10-24 23:52:26,064 - root - INFO - timer:148 - Starting: Processing test image block5
+2025-10-24 23:52:26,065 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-24 23:52:26,087 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-24 23:52:27,388 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-24 23:52:27,760 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-24 23:52:28,189 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-24 23:52:28,190 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-24 23:52:28,191 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-24 23:52:28,192 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-24 23:52:28,192 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: determined
+2025-10-24 23:52:28,193 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:28,193 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: determined in 0.00 seconds
+2025-10-24 23:52:28,193 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-24 23:52:28,194 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-24 23:52:28,194 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: predefined in 0.00 seconds
+2025-10-24 23:52:28,194 - root - INFO - timer:154 - Completed: Processing test image block5 in 2.13 seconds
+2025-10-24 23:52:28,196 - root - INFO - main:684 - ================================================================================
+PROCESSING COMPLETED IN 198.67 SECONDS
 ================================================================================
-2025-10-20 20:19:41,431 - root - INFO - main:580 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
-2025-10-20 20:21:47,638 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
-2025-10-20 20:21:47,639 - root - INFO - timer:148 - Starting: Configuration loading and validation
-2025-10-20 20:21:47,652 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
-2025-10-20 20:21:47,655 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
-2025-10-20 20:21:47,656 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
-2025-10-20 20:21:47,657 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
-2025-10-20 20:21:47,660 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
-2025-10-20 20:21:47,661 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
-2025-10-20 20:21:47,666 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
-2025-10-20 20:21:47,666 - root - INFO - main:489 - Processing dataset: block
-2025-10-20 20:21:47,667 - root - INFO - timer:148 - Starting: Loading all test images
-2025-10-20 20:21:48,328 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
-2025-10-20 20:21:49,296 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
-2025-10-20 20:21:49,775 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
-2025-10-20 20:21:50,311 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
-2025-10-20 20:21:50,845 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
-2025-10-20 20:21:50,849 - root - INFO - timer:154 - Completed: Loading all test images in 3.18 seconds
-2025-10-20 20:21:50,849 - root - INFO - timer:148 - Starting: Loading training data
-2025-10-20 20:21:50,849 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
-2025-10-20 20:21:52,810 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
-2025-10-20 20:21:52,810 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
-2025-10-20 20:21:52,810 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
-2025-10-20 20:21:52,810 - root - INFO - timer:154 - Completed: Loading training data in 1.97 seconds
-2025-10-20 20:21:52,825 - root - INFO - timer:148 - Starting: DBN initialization and training
-2025-10-20 20:21:52,825 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
-2025-10-20 20:21:52,825 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
-2025-10-20 20:21:52,826 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
-2025-10-20 20:21:52,831 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
-2025-10-20 20:21:52,832 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [32.00, 214.00]
-2025-10-20 20:21:52,833 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[12.16, 84.71], a[-2.00, 3.00], b[-1.00, 8.00]
-2025-10-20 20:21:52,836 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
-2025-10-20 20:21:52,837 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
-2025-10-20 20:21:52,838 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
-2025-10-20 20:21:52,838 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
-2025-10-20 20:21:52,838 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
-2025-10-20 20:21:52,843 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
-2025-10-20 20:21:53,226 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.239, 0.237]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.282, 0.283]
-2025-10-20 20:21:53,311 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
-2025-10-20 20:21:53,322 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
-2025-10-20 20:21:53,322 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
-2025-10-20 20:21:53,322 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
-2025-10-20 20:21:53,323 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
-2025-10-20 20:21:53,323 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.458, 0.434]
-2025-10-20 20:21:53,323 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
-2025-10-20 20:21:53,324 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
-2025-10-20 20:21:53,324 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
-2025-10-20 20:24:26,036 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 152.71s - Final fitness: 0.014764
-2025-10-20 20:24:26,036 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
-2025-10-20 20:24:26,059 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
-2025-10-20 20:24:26,060 - root - INFO - timer:154 - Completed: DBN initialization and training in 153.24 seconds
-2025-10-20 20:24:26,061 - root - INFO - timer:148 - Starting: Reference image loading and processing
-2025-10-20 20:24:27,600 - src.utils.output_manager - INFO - save_reference_image:67 - Saved reference image copy to datasets\block\inputs\reference_image\reference.png
-2025-10-20 20:24:27,600 - root - INFO - process_reference_image:204 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
-2025-10-20 20:24:27,600 - root - INFO - timer:154 - Completed: Reference image loading and processing in 1.54 seconds
-2025-10-20 20:24:27,600 - root - ERROR - main:565 - An unexpected error occurred in main execution: __init__() got an unexpected keyword argument 'initial_resize'
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 522, in main
-    target_colors_lab, ref_kmeans, ref_som = run_reference_processing(
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 337, in run_reference_processing
-    reference_results = process_reference_image(
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 207, in process_reference_image
-    preprocessor = Preprocessor(
-TypeError: __init__() got an unexpected keyword argument 'initial_resize'
-2025-10-20 20:24:27,613 - root - INFO - main:572 - ================================================================================
-PROCESSING COMPLETED IN 159.98 SECONDS
+2025-10-24 23:52:28,258 - root - INFO - main:692 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-25 00:06:06,177 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-25 00:06:06,178 - root - INFO - timer:148 - Starting: Configuration loading and validation
+2025-10-25 00:06:06,188 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-25 00:06:06,190 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-25 00:06:06,190 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-25 00:06:06,190 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-25 00:06:06,190 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
+2025-10-25 00:06:06,196 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-25 00:06:06,198 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-25 00:06:06,198 - root - INFO - main:601 - Processing dataset: block
+2025-10-25 00:06:06,199 - root - INFO - timer:148 - Starting: Loading all test images
+2025-10-25 00:06:06,885 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-25 00:06:07,711 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-25 00:06:08,165 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-25 00:06:08,682 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-25 00:06:09,199 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-25 00:06:09,199 - root - INFO - timer:154 - Completed: Loading all test images in 3.00 seconds
+2025-10-25 00:06:09,199 - root - INFO - timer:148 - Starting: Loading training data
+2025-10-25 00:06:09,199 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-25 00:06:11,238 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-25 00:06:11,238 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-25 00:06:11,238 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-25 00:06:11,238 - root - INFO - timer:154 - Completed: Loading training data in 2.04 seconds
+2025-10-25 00:06:11,238 - root - INFO - timer:148 - Starting: DBN initialization and training
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-25 00:06:11,238 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-25 00:06:11,238 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-25 00:06:11,238 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [31.00, 214.00]
+2025-10-25 00:06:11,238 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[11.76, 84.31], a[-2.00, 3.00], b[-1.00, 8.00]
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-25 00:06:11,238 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-25 00:06:11,238 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-25 00:06:11,554 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.241, 0.240]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.282, 0.283]
+2025-10-25 00:06:11,601 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.463, 0.461]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-25 00:06:11,617 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-25 00:06:11,617 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-25 00:08:48,331 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 156.71s - Final fitness: 0.046775
+2025-10-25 00:08:48,331 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-25 00:08:48,353 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-25 00:08:48,353 - root - INFO - timer:154 - Completed: DBN initialization and training in 157.11 seconds
+2025-10-25 00:08:48,353 - root - INFO - timer:148 - Starting: Reference image loading and processing
+2025-10-25 00:08:48,353 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-25 00:08:48,758 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-25 00:08:48,758 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:08:48,785 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:08:50,099 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:08:50,415 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:08:51,185 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:08:51,185 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:08:51,185 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:08:51,185 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-25 00:08:51,185 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-25 00:08:51,185 - src.models.segmentation.segmentation - INFO - determine_k:107 - Unique colors: 102. Adjusted k-range for metric search: [2, 8]
+2025-10-25 00:08:51,185 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=2
+2025-10-25 00:08:53,120 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=2: Silhouette=0.971, CH=2036843.9
+2025-10-25 00:08:53,120 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=3
+2025-10-25 00:08:54,994 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=3: Silhouette=0.806, CH=1422099.1
+2025-10-25 00:08:54,994 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=4
+2025-10-25 00:08:56,828 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=4: Silhouette=0.798, CH=1916255.9
+2025-10-25 00:08:56,828 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=5
+2025-10-25 00:08:58,694 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=5: Silhouette=0.761, CH=2180757.0
+2025-10-25 00:08:58,694 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=6
+2025-10-25 00:09:00,510 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=6: Silhouette=0.909, CH=2959141.5
+2025-10-25 00:09:00,510 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=7
+2025-10-25 00:09:02,385 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=7: Silhouette=0.915, CH=4183990.0
+2025-10-25 00:09:02,385 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=8
+2025-10-25 00:09:04,220 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=8: Silhouette=0.917, CH=5306122.5
+2025-10-25 00:09:04,220 - src.models.segmentation.segmentation - INFO - determine_k:161 - Optimal k determined: 8 (based on score: 0.871)
+2025-10-25 00:09:04,220 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-25 00:09:04,220 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-25 00:09:04,235 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 102. Using dynamic_max_k: 10
+2025-10-25 00:09:04,235 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 110.368
+2025-10-25 00:09:04,235 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=376.637, std=1925.684, threshold=2302.321
+2025-10-25 00:09:04,235 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-25 00:09:04,235 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-25 00:09:04,235 - src.models.segmentation.segmentation - INFO - __init__:247 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 00:09:04,235 - src.models.segmentation.segmentation - INFO - quantize_image:194 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:09:04,432 - src.models.segmentation.segmentation - INFO - __init__:482 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 00:09:04,432 - src.models.segmentation.segmentation - INFO - quantize_image:194 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:09:04,575 - src.models.segmentation.segmentation - INFO - segment:504 - Running SOM segmentation with k=8
+2025-10-25 00:09:05,041 - src.models.segmentation.segmentation - WARNING - segment:544 - SOM generated empty mask for cluster 2 (k=8). Skipping avg color.
+2025-10-25 00:09:05,041 - src.models.segmentation.segmentation - WARNING - segment:544 - SOM generated empty mask for cluster 3 (k=8). Skipping avg color.
+2025-10-25 00:09:05,041 - src.models.segmentation.segmentation - WARNING - segment:544 - SOM generated empty mask for cluster 4 (k=8). Skipping avg color.
+2025-10-25 00:09:05,041 - root - INFO - process_reference_image:346 - Reference image processing finished in 16.69 seconds.
+2025-10-25 00:09:05,300 - root - INFO - run_reference_processing:382 - Formatted K-Means reference results.
+2025-10-25 00:09:05,430 - root - INFO - run_reference_processing:418 - Formatted SOM reference results.
+2025-10-25 00:09:06,641 - src.utils.output_manager - INFO - save_reference_summary:136 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-25 00:09:06,641 - root - INFO - run_reference_processing:438 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-25 00:09:06,641 - root - INFO - timer:154 - Completed: Reference image loading and processing in 18.29 seconds
+2025-10-25 00:09:06,641 - root - INFO - timer:148 - Starting: Processing test image block1
+2025-10-25 00:09:06,654 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-25 00:09:06,678 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-25 00:09:08,030 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:09:08,368 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:09:08,809 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:09:08,810 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:09:08,810 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:09:08,810 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-25 00:09:08,810 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: determined
+2025-10-25 00:09:08,810 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:08,810 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: determined in 0.00 seconds
+2025-10-25 00:09:08,810 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-25 00:09:08,810 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:08,810 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: predefined in 0.00 seconds
+2025-10-25 00:09:08,810 - root - INFO - timer:154 - Completed: Processing test image block1 in 2.16 seconds
+2025-10-25 00:09:08,810 - root - INFO - timer:148 - Starting: Processing test image block2
+2025-10-25 00:09:08,810 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:09:08,850 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:09:10,254 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:09:10,604 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:09:11,059 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:09:11,059 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:09:11,059 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:09:11,059 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-25 00:09:11,059 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: determined
+2025-10-25 00:09:11,059 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:11,059 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: determined in 0.00 seconds
+2025-10-25 00:09:11,059 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-25 00:09:11,059 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:11,059 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: predefined in 0.00 seconds
+2025-10-25 00:09:11,059 - root - INFO - timer:154 - Completed: Processing test image block2 in 2.25 seconds
+2025-10-25 00:09:11,059 - root - INFO - timer:148 - Starting: Processing test image block3
+2025-10-25 00:09:11,059 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-25 00:09:11,093 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-25 00:09:12,445 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:09:12,815 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:09:13,248 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:09:13,250 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:09:13,250 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:09:13,250 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-25 00:09:13,250 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: determined
+2025-10-25 00:09:13,250 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:13,250 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: determined in 0.00 seconds
+2025-10-25 00:09:13,250 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-25 00:09:13,250 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:13,250 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: predefined in 0.00 seconds
+2025-10-25 00:09:13,250 - root - INFO - timer:154 - Completed: Processing test image block3 in 2.19 seconds
+2025-10-25 00:09:13,250 - root - INFO - timer:148 - Starting: Processing test image block4
+2025-10-25 00:09:13,250 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-25 00:09:13,280 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-25 00:09:14,736 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:09:15,108 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:09:15,593 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:09:15,593 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:09:15,593 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:09:15,593 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-25 00:09:15,593 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: determined
+2025-10-25 00:09:15,593 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:15,593 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: determined in 0.00 seconds
+2025-10-25 00:09:15,593 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-25 00:09:15,593 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:15,593 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: predefined in 0.00 seconds
+2025-10-25 00:09:15,593 - root - INFO - timer:154 - Completed: Processing test image block4 in 2.35 seconds
+2025-10-25 00:09:15,593 - root - INFO - timer:148 - Starting: Processing test image block5
+2025-10-25 00:09:15,593 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-25 00:09:15,632 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-25 00:09:16,942 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:09:17,272 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:09:17,710 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:09:17,710 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:09:17,710 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:09:17,710 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-25 00:09:17,710 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: determined
+2025-10-25 00:09:17,710 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:17,710 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: determined in 0.00 seconds
+2025-10-25 00:09:17,710 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-25 00:09:17,710 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:09:17,710 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: predefined in 0.00 seconds
+2025-10-25 00:09:17,710 - root - INFO - timer:154 - Completed: Processing test image block5 in 2.11 seconds
+2025-10-25 00:09:17,710 - root - INFO - main:684 - ================================================================================
+PROCESSING COMPLETED IN 191.55 SECONDS
 ================================================================================
-2025-10-20 20:24:27,658 - root - INFO - main:580 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
-2025-10-20 21:03:15,264 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
-2025-10-20 21:03:15,265 - root - INFO - timer:148 - Starting: Configuration loading and validation
-2025-10-20 21:03:15,283 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
-2025-10-20 21:03:15,288 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
-2025-10-20 21:03:15,289 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
-2025-10-20 21:03:15,289 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
-2025-10-20 21:03:15,292 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
-2025-10-20 21:03:15,293 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.03 seconds
-2025-10-20 21:03:15,296 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
-2025-10-20 21:03:15,297 - root - INFO - main:500 - Processing dataset: block
-2025-10-20 21:03:15,297 - root - INFO - timer:148 - Starting: Loading all test images
-2025-10-20 21:03:15,983 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
-2025-10-20 21:03:16,802 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
-2025-10-20 21:03:17,249 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
-2025-10-20 21:03:17,751 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
-2025-10-20 21:03:18,251 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
-2025-10-20 21:03:18,251 - root - INFO - timer:154 - Completed: Loading all test images in 2.95 seconds
-2025-10-20 21:03:18,252 - root - INFO - timer:148 - Starting: Loading training data
-2025-10-20 21:03:18,252 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
-2025-10-20 21:03:20,185 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
-2025-10-20 21:03:20,185 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
-2025-10-20 21:03:20,189 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
-2025-10-20 21:03:20,189 - root - INFO - timer:154 - Completed: Loading training data in 1.94 seconds
-2025-10-20 21:03:20,189 - root - INFO - timer:148 - Starting: DBN initialization and training
-2025-10-20 21:03:20,189 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
-2025-10-20 21:03:20,190 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
-2025-10-20 21:03:20,190 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
-2025-10-20 21:03:20,192 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
-2025-10-20 21:03:20,192 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [30.00, 213.00]
-2025-10-20 21:03:20,192 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[10.98, 84.31], a[-2.00, 3.00], b[-1.00, 8.00]
-2025-10-20 21:03:20,194 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
-2025-10-20 21:03:20,194 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
-2025-10-20 21:03:20,197 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
-2025-10-20 21:03:20,197 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
-2025-10-20 21:03:20,197 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
-2025-10-20 21:03:20,197 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
-2025-10-20 21:03:20,475 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
-2025-10-20 21:03:20,524 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
-2025-10-20 21:03:20,524 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.241, 0.239]
-2025-10-20 21:03:20,524 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
-2025-10-20 21:03:20,524 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
-2025-10-20 21:03:20,524 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
-2025-10-20 21:03:20,525 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.282, 0.283]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.463, 0.443]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
-2025-10-20 21:03:20,526 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
-2025-10-20 21:03:20,527 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
-2025-10-20 21:05:53,818 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 153.29s - Final fitness: 0.048023
-2025-10-20 21:05:53,819 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
-2025-10-20 21:05:53,828 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
-2025-10-20 21:05:53,828 - root - INFO - timer:154 - Completed: DBN initialization and training in 153.64 seconds
-2025-10-20 21:05:53,829 - root - INFO - timer:148 - Starting: Reference image loading and processing
-2025-10-20 21:05:55,386 - src.utils.output_manager - INFO - save_reference_image:67 - Saved reference image copy to datasets\block\inputs\reference_image\reference.png
-2025-10-20 21:05:55,387 - root - INFO - process_reference_image:149 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
-2025-10-20 21:05:55,807 - root - INFO - process_reference_image:160 - Starting preprocessing for reference image
-2025-10-20 21:05:55,807 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
-2025-10-20 21:05:55,834 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
-2025-10-20 21:05:57,163 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
-2025-10-20 21:05:57,478 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
-2025-10-20 21:05:58,342 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
-2025-10-20 21:05:58,344 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
-2025-10-20 21:05:58,344 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
-2025-10-20 21:05:58,345 - root - INFO - process_reference_image:166 - Preprocessing completed for reference image
-2025-10-20 21:05:58,345 - root - INFO - process_reference_image:173 - Determining optimal number of clusters for reference image
-2025-10-20 21:05:58,356 - src.models.segmentation.segmentation - INFO - determine_k:100 - Unique colors: 111. Adjusted k-range: [2, 5]
-2025-10-20 21:05:58,356 - src.models.segmentation.segmentation - INFO - determine_k:114 - Testing k=2
-2025-10-20 21:06:00,262 - src.models.segmentation.segmentation - INFO - determine_k:128 - Metrics for k=2: Silhouette=0.970, CH=1840960.0
-2025-10-20 21:06:00,262 - src.models.segmentation.segmentation - INFO - determine_k:114 - Testing k=3
-2025-10-20 21:06:02,131 - src.models.segmentation.segmentation - INFO - determine_k:128 - Metrics for k=3: Silhouette=0.946, CH=1520209.9
-2025-10-20 21:06:02,131 - src.models.segmentation.segmentation - INFO - determine_k:114 - Testing k=4
-2025-10-20 21:06:03,992 - src.models.segmentation.segmentation - INFO - determine_k:128 - Metrics for k=4: Silhouette=0.804, CH=1911022.0
-2025-10-20 21:06:03,993 - src.models.segmentation.segmentation - INFO - determine_k:114 - Testing k=5
-2025-10-20 21:06:05,894 - src.models.segmentation.segmentation - INFO - determine_k:128 - Metrics for k=5: Silhouette=0.801, CH=2083692.1
-2025-10-20 21:06:05,896 - src.models.segmentation.segmentation - INFO - determine_k:152 - Optimal k determined: 2 (scores: [0.7846142  0.43003193 0.35451055 0.5       ])
-2025-10-20 21:06:05,896 - root - INFO - process_reference_image:195 - Optimal number of clusters determined for reference: 2
-2025-10-20 21:06:05,896 - root - INFO - process_reference_image:201 - Determining the number of clusters using DPC (for reference info)
-2025-10-20 21:06:05,911 - root - INFO - optimal_clusters_dpc:92 - Number of unique colors: 111. Adjusting max_k to: 10
-2025-10-20 21:06:05,912 - root - ERROR - optimal_clusters_dpc:117 - Error in calculating optimal clusters using DPC: unsupported operand type(s) for /: 'generator' and 'int'. Falling back to default k: 2
-2025-10-20 21:06:05,912 - root - INFO - process_reference_image:209 - Performing reference segmentation with k=2
-2025-10-20 21:06:05,912 - src.models.segmentation.segmentation - INFO - __init__:201 - KMeansSegmenter initialized with k_type: predefined
-2025-10-20 21:06:05,912 - root - ERROR - process_reference_image:275 - Error during reference segmentation execution: name 'time' is not defined
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 231, in process_reference_image
-    kmeans_result: SegmentationResult = kmeans_segmenter.segment()
-  File "c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py", line 204, in segment
-    start_time = time.time()
-NameError: name 'time' is not defined
-2025-10-20 21:06:05,917 - root - INFO - process_reference_image:282 - Reference image processing finished in 10.53 seconds.
-2025-10-20 21:06:05,924 - root - INFO - timer:154 - Completed: Reference image loading and processing in 12.09 seconds
-2025-10-20 21:06:05,925 - root - ERROR - main:576 - An unexpected error occurred in main execution: Failed to process reference image or received unexpected result format.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 533, in main
-    target_colors_lab, ref_kmeans, ref_som = run_reference_processing(
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 354, in run_reference_processing
-    raise ValueError("Failed to process reference image or received unexpected result format.")
-ValueError: Failed to process reference image or received unexpected result format.
-2025-10-20 21:06:05,938 - root - INFO - main:583 - ================================================================================
-PROCESSING COMPLETED IN 170.68 SECONDS
+2025-10-25 00:09:17,773 - root - INFO - main:692 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-25 00:15:45,595 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-25 00:15:45,596 - root - INFO - timer:148 - Starting: Configuration loading and validation
+2025-10-25 00:15:45,610 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-25 00:15:45,618 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-25 00:15:45,618 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-25 00:15:45,618 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-25 00:15:45,620 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
+2025-10-25 00:15:45,621 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-25 00:15:45,623 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-25 00:15:45,623 - root - INFO - main:601 - Processing dataset: block
+2025-10-25 00:15:45,624 - root - INFO - timer:148 - Starting: Loading all test images
+2025-10-25 00:15:46,327 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-25 00:15:47,277 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-25 00:15:47,921 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-25 00:15:48,545 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-25 00:15:49,208 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-25 00:15:49,208 - root - INFO - timer:154 - Completed: Loading all test images in 3.58 seconds
+2025-10-25 00:15:49,210 - root - INFO - timer:148 - Starting: Loading training data
+2025-10-25 00:15:49,211 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-25 00:15:51,519 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-25 00:15:51,519 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-25 00:15:51,519 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-25 00:15:51,519 - root - INFO - timer:154 - Completed: Loading training data in 2.31 seconds
+2025-10-25 00:15:51,525 - root - INFO - timer:148 - Starting: DBN initialization and training
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-25 00:15:51,525 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-25 00:15:51,525 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-25 00:15:51,525 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [30.00, 215.00]
+2025-10-25 00:15:51,525 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[10.98, 84.71], a[-2.00, 2.00], b[-1.00, 8.00]
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-25 00:15:51,525 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-25 00:15:51,525 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-25 00:15:51,878 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.241, 0.241]
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-25 00:15:51,933 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-25 00:15:51,934 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.282, 0.283]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.429, 0.461]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-25 00:15:51,935 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-25 00:15:51,936 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-25 00:18:27,948 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 156.00s - Final fitness: 0.055569
+2025-10-25 00:18:27,949 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-25 00:18:27,965 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-25 00:18:27,965 - root - INFO - timer:154 - Completed: DBN initialization and training in 156.44 seconds
+2025-10-25 00:18:27,966 - root - INFO - timer:148 - Starting: Reference image loading and processing
+2025-10-25 00:18:27,966 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-25 00:18:28,391 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-25 00:18:28,391 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:18:28,419 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:18:29,730 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:18:30,053 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:18:30,787 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:18:30,788 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:18:30,788 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:18:30,788 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-25 00:18:30,788 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-25 00:18:30,799 - src.models.segmentation.segmentation - INFO - determine_k:107 - Unique colors: 111. Adjusted k-range for metric search: [2, 8]
+2025-10-25 00:18:30,799 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=2
+2025-10-25 00:18:32,720 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=2: Silhouette=0.970, CH=2006920.4
+2025-10-25 00:18:32,721 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=3
+2025-10-25 00:18:34,641 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=3: Silhouette=0.947, CH=1561473.8
+2025-10-25 00:18:34,641 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=4
+2025-10-25 00:18:36,487 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=4: Silhouette=0.811, CH=1956011.8
+2025-10-25 00:18:36,487 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=5
+2025-10-25 00:18:38,347 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=5: Silhouette=0.943, CH=2074669.1
+2025-10-25 00:18:38,347 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=6
+2025-10-25 00:18:40,180 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=6: Silhouette=0.913, CH=2845203.5
+2025-10-25 00:18:40,181 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=7
+2025-10-25 00:18:42,005 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=7: Silhouette=0.920, CH=4300413.5
+2025-10-25 00:18:42,005 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=8
+2025-10-25 00:18:43,817 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=8: Silhouette=0.924, CH=5046774.5
+2025-10-25 00:18:43,818 - src.models.segmentation.segmentation - INFO - determine_k:161 - Optimal k determined: 8 (based on score: 0.856)
+2025-10-25 00:18:43,818 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-25 00:18:43,818 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-25 00:18:43,828 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 111. Using dynamic_max_k: 10
+2025-10-25 00:18:43,830 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 106.963
+2025-10-25 00:18:43,833 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=365.698, std=1921.040, threshold=2286.738
+2025-10-25 00:18:43,833 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-25 00:18:43,833 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-25 00:18:43,834 - src.models.segmentation.segmentation - INFO - __init__:248 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 00:18:43,834 - src.models.segmentation.segmentation - INFO - quantize_image:194 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:18:44,025 - src.models.segmentation.segmentation - INFO - __init__:493 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 00:18:44,025 - src.models.segmentation.segmentation - INFO - quantize_image:194 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:18:44,149 - src.models.segmentation.segmentation - INFO - segment:519 - Running SOM segmentation with k=8
+2025-10-25 00:18:44,623 - src.models.segmentation.segmentation - WARNING - segment:559 - SOM generated empty mask for cluster 2 (k=8). Skipping avg color.
+2025-10-25 00:18:44,624 - src.models.segmentation.segmentation - WARNING - segment:559 - SOM generated empty mask for cluster 3 (k=8). Skipping avg color.
+2025-10-25 00:18:44,624 - root - INFO - process_reference_image:346 - Reference image processing finished in 16.66 seconds.
+2025-10-25 00:18:44,953 - root - INFO - run_reference_processing:382 - Formatted K-Means reference results.
+2025-10-25 00:18:45,069 - root - INFO - run_reference_processing:418 - Formatted SOM reference results.
+2025-10-25 00:18:46,280 - src.utils.output_manager - INFO - save_reference_summary:136 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-25 00:18:46,280 - root - INFO - run_reference_processing:438 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-25 00:18:46,280 - root - INFO - timer:154 - Completed: Reference image loading and processing in 18.31 seconds
+2025-10-25 00:18:46,287 - root - INFO - timer:148 - Starting: Processing test image block1
+2025-10-25 00:18:46,288 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-25 00:18:46,316 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-25 00:18:47,637 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:18:47,958 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:18:48,383 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:18:48,384 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:18:48,384 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:18:48,386 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-25 00:18:48,386 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: determined
+2025-10-25 00:18:48,387 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:48,387 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: determined in 0.00 seconds
+2025-10-25 00:18:48,387 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-25 00:18:48,388 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:48,388 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: predefined in 0.00 seconds
+2025-10-25 00:18:48,389 - root - INFO - timer:154 - Completed: Processing test image block1 in 2.10 seconds
+2025-10-25 00:18:48,389 - root - INFO - timer:148 - Starting: Processing test image block2
+2025-10-25 00:18:48,389 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:18:48,420 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:18:49,728 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:18:50,046 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:18:50,441 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:18:50,442 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:18:50,442 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:18:50,443 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-25 00:18:50,444 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: determined
+2025-10-25 00:18:50,445 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:50,445 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: determined in 0.00 seconds
+2025-10-25 00:18:50,445 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-25 00:18:50,446 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:50,446 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: predefined in 0.00 seconds
+2025-10-25 00:18:50,446 - root - INFO - timer:154 - Completed: Processing test image block2 in 2.06 seconds
+2025-10-25 00:18:50,447 - root - INFO - timer:148 - Starting: Processing test image block3
+2025-10-25 00:18:50,447 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-25 00:18:50,471 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-25 00:18:51,727 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:18:52,060 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:18:52,458 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:18:52,460 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:18:52,460 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:18:52,461 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-25 00:18:52,461 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: determined
+2025-10-25 00:18:52,462 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:52,462 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: determined in 0.00 seconds
+2025-10-25 00:18:52,462 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-25 00:18:52,463 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:52,463 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: predefined in 0.00 seconds
+2025-10-25 00:18:52,464 - root - INFO - timer:154 - Completed: Processing test image block3 in 2.02 seconds
+2025-10-25 00:18:52,464 - root - INFO - timer:148 - Starting: Processing test image block4
+2025-10-25 00:18:52,465 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-25 00:18:52,489 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-25 00:18:53,783 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:18:54,105 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:18:54,521 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:18:54,522 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:18:54,522 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:18:54,523 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-25 00:18:54,524 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: determined
+2025-10-25 00:18:54,525 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:54,525 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: determined in 0.00 seconds
+2025-10-25 00:18:54,525 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-25 00:18:54,526 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:54,526 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: predefined in 0.00 seconds
+2025-10-25 00:18:54,527 - root - INFO - timer:154 - Completed: Processing test image block4 in 2.06 seconds
+2025-10-25 00:18:54,527 - root - INFO - timer:148 - Starting: Processing test image block5
+2025-10-25 00:18:54,527 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-25 00:18:54,544 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-25 00:18:55,826 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:18:56,136 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:18:56,551 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:18:56,552 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:18:56,553 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:18:56,554 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-25 00:18:56,554 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: determined
+2025-10-25 00:18:56,555 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:56,555 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: determined in 0.00 seconds
+2025-10-25 00:18:56,555 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-25 00:18:56,556 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:18:56,556 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: predefined in 0.00 seconds
+2025-10-25 00:18:56,557 - root - INFO - timer:154 - Completed: Processing test image block5 in 2.03 seconds
+2025-10-25 00:18:56,558 - root - INFO - main:684 - ================================================================================
+PROCESSING COMPLETED IN 190.97 SECONDS
 ================================================================================
-2025-10-20 21:06:05,992 - root - INFO - main:591 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
-2025-10-20 21:12:00,050 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
-2025-10-20 21:12:00,051 - root - INFO - timer:148 - Starting: Configuration loading and validation
-2025-10-20 21:12:00,062 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
-2025-10-20 21:12:00,067 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
-2025-10-20 21:12:00,067 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
-2025-10-20 21:12:00,067 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
-2025-10-20 21:12:00,070 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
-2025-10-20 21:12:00,071 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
-2025-10-20 21:12:00,073 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
-2025-10-20 21:12:00,073 - root - INFO - main:500 - Processing dataset: block
-2025-10-20 21:12:00,074 - root - INFO - timer:148 - Starting: Loading all test images
-2025-10-20 21:12:00,712 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
-2025-10-20 21:12:01,524 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
-2025-10-20 21:12:01,967 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
-2025-10-20 21:12:02,470 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
-2025-10-20 21:12:03,005 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
-2025-10-20 21:12:03,005 - root - INFO - timer:154 - Completed: Loading all test images in 2.93 seconds
-2025-10-20 21:12:03,006 - root - INFO - timer:148 - Starting: Loading training data
-2025-10-20 21:12:03,006 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
-2025-10-20 21:12:04,920 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
-2025-10-20 21:12:04,920 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
-2025-10-20 21:12:04,924 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
-2025-10-20 21:12:04,925 - root - INFO - timer:154 - Completed: Loading training data in 1.92 seconds
-2025-10-20 21:12:04,925 - root - INFO - timer:148 - Starting: DBN initialization and training
-2025-10-20 21:12:04,925 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
-2025-10-20 21:12:04,926 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
-2025-10-20 21:12:04,926 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
-2025-10-20 21:12:04,929 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
-2025-10-20 21:12:04,929 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [31.00, 213.00]
-2025-10-20 21:12:04,930 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[12.16, 84.31], a[-2.00, 2.00], b[-1.00, 8.00]
-2025-10-20 21:12:04,931 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
-2025-10-20 21:12:04,931 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
-2025-10-20 21:12:04,936 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
-2025-10-20 21:12:04,936 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
-2025-10-20 21:12:04,937 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
-2025-10-20 21:12:04,937 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
-2025-10-20 21:12:05,212 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
-2025-10-20 21:12:05,265 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
-2025-10-20 21:12:05,265 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.241, 0.241]
-2025-10-20 21:12:05,265 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
-2025-10-20 21:12:05,265 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
-2025-10-20 21:12:05,265 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
-2025-10-20 21:12:05,265 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
-2025-10-20 21:12:05,266 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.283, 0.282]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.455, 0.454]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
-2025-10-20 21:12:05,267 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
-2025-10-20 21:12:05,268 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
-2025-10-20 21:14:35,833 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 150.56s - Final fitness: 0.051713
-2025-10-20 21:14:35,834 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
-2025-10-20 21:14:35,844 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
-2025-10-20 21:14:35,844 - root - INFO - timer:154 - Completed: DBN initialization and training in 150.92 seconds
-2025-10-20 21:14:35,845 - root - INFO - timer:148 - Starting: Reference image loading and processing
-2025-10-20 21:14:37,385 - src.utils.output_manager - INFO - save_reference_image:67 - Saved reference image copy to datasets\block\inputs\reference_image\reference.png
-2025-10-20 21:14:37,386 - root - INFO - process_reference_image:255 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
-2025-10-20 21:14:37,782 - root - INFO - process_reference_image:266 - Starting preprocessing for reference image
-2025-10-20 21:14:37,782 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
-2025-10-20 21:14:37,812 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
-2025-10-20 21:14:39,085 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
-2025-10-20 21:14:39,401 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
-2025-10-20 21:14:40,113 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
-2025-10-20 21:14:40,114 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
-2025-10-20 21:14:40,115 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
-2025-10-20 21:14:40,115 - root - INFO - process_reference_image:273 - Preprocessing completed for reference image, shape: (128, 128, 3)
-2025-10-20 21:14:40,115 - root - INFO - process_reference_image:283 - Determining optimal number of clusters for reference image
-2025-10-20 21:14:40,115 - root - ERROR - process_reference_image:302 - Failed to determine optimal clusters for reference: name 'config' is not defined. Falling back to default_k=2
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 288, in process_reference_image
-    k_val_default = list(range(2, config.get('segmentation_params', {}).get('max_clusters', 8) + 1))
-NameError: name 'config' is not defined
-2025-10-20 21:14:40,116 - root - INFO - process_reference_image:306 - Determining the number of clusters using DPC (for reference info)
-2025-10-20 21:14:40,119 - root - ERROR - process_reference_image:312 - Failed to calculate DPC k: local variable 'pixels_subsample' referenced before assignment. Setting dpc_k to None.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 310, in process_reference_image
-    dpc_k = optimal_clusters_dpc(pixels_subsample, min_k=2, max_k=10)
-UnboundLocalError: local variable 'pixels_subsample' referenced before assignment
-2025-10-20 21:14:40,119 - root - INFO - process_reference_image:315 - Performing reference segmentation with k=2
-2025-10-20 21:14:40,120 - root - ERROR - process_reference_image:394 - Error during reference segmentation execution: local variable 'cluster_strategy' referenced before assignment
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 332, in process_reference_image
-    kmeans_segmenter = KMeansSegmenter(image_to_segment, seg_config_ref, model_config_ref, cluster_strategy)
-UnboundLocalError: local variable 'cluster_strategy' referenced before assignment
-2025-10-20 21:14:40,120 - root - INFO - process_reference_image:400 - Reference image processing finished in 2.73 seconds.
-2025-10-20 21:14:40,121 - root - INFO - timer:154 - Completed: Reference image loading and processing in 4.28 seconds
-2025-10-20 21:14:40,121 - root - ERROR - main:576 - An unexpected error occurred in main execution: Failed to process reference image or received unexpected result format.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 533, in main
-    target_colors_lab, ref_kmeans, ref_som = run_reference_processing(
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 354, in run_reference_processing
-    raise ValueError("Failed to process reference image or received unexpected result format.")
-ValueError: Failed to process reference image or received unexpected result format.
-2025-10-20 21:14:40,122 - root - INFO - main:583 - ================================================================================
-PROCESSING COMPLETED IN 160.07 SECONDS
+2025-10-25 00:18:56,611 - root - INFO - main:692 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-25 00:36:45,599 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-25 00:36:45,600 - root - INFO - timer:148 - Starting: Configuration loading and validation
+2025-10-25 00:36:45,612 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-25 00:36:45,614 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-25 00:36:45,614 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-25 00:36:45,615 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-25 00:36:45,617 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
+2025-10-25 00:36:45,617 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-25 00:36:45,622 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-25 00:36:45,622 - root - INFO - main:601 - Processing dataset: block
+2025-10-25 00:36:45,623 - root - INFO - timer:148 - Starting: Loading all test images
+2025-10-25 00:36:46,317 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-25 00:36:47,204 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-25 00:36:47,699 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-25 00:36:48,249 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-25 00:36:48,830 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-25 00:36:48,830 - root - INFO - timer:154 - Completed: Loading all test images in 3.21 seconds
+2025-10-25 00:36:48,830 - root - INFO - timer:148 - Starting: Loading training data
+2025-10-25 00:36:48,831 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-25 00:36:50,946 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-25 00:36:50,947 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-25 00:36:50,953 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-25 00:36:50,953 - root - INFO - timer:154 - Completed: Loading training data in 2.12 seconds
+2025-10-25 00:36:50,954 - root - INFO - timer:148 - Starting: DBN initialization and training
+2025-10-25 00:36:50,954 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-25 00:36:50,954 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-25 00:36:50,955 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-25 00:36:50,961 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-25 00:36:50,962 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [30.00, 214.00]
+2025-10-25 00:36:50,962 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[10.98, 84.31], a[-2.00, 2.00], b[-1.00, 8.00]
+2025-10-25 00:36:50,963 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-25 00:36:50,963 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-25 00:36:50,968 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-25 00:36:50,968 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-25 00:36:50,968 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-25 00:36:50,968 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-25 00:36:51,317 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-25 00:36:51,382 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-25 00:36:51,382 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.240, 0.241]
+2025-10-25 00:36:51,382 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-25 00:36:51,383 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-25 00:36:51,383 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-25 00:36:51,383 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-25 00:36:51,383 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-25 00:36:51,383 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-25 00:36:51,383 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-25 00:36:51,384 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-25 00:36:51,384 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-25 00:36:51,384 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-25 00:36:51,384 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-25 00:36:51,384 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.283, 0.282]
+2025-10-25 00:36:51,384 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-25 00:36:51,385 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-25 00:36:51,385 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-25 00:36:51,385 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-25 00:36:51,385 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-25 00:36:51,385 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.450, 0.454]
+2025-10-25 00:36:51,386 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-25 00:36:51,386 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-25 00:36:51,386 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-25 00:39:22,033 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 150.64s - Final fitness: 0.016699
+2025-10-25 00:39:22,033 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-25 00:39:22,049 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-25 00:39:22,050 - root - INFO - timer:154 - Completed: DBN initialization and training in 151.10 seconds
+2025-10-25 00:39:22,052 - root - INFO - timer:148 - Starting: Reference image loading and processing
+2025-10-25 00:39:22,053 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-25 00:39:22,442 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-25 00:39:22,442 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:39:22,471 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:39:23,702 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:39:24,017 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:39:24,780 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:39:24,781 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:39:24,781 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:39:24,782 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-25 00:39:24,782 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-25 00:39:24,783 - src.models.segmentation.segmentation - WARNING - determine_k:106 - Using default k-range [2, 3, 4, 5, 6, 7, 8] for k-determination.
+2025-10-25 00:39:24,793 - src.models.segmentation.segmentation - INFO - determine_k:116 - Unique colors: 117. Adjusted k-range for metric search: [2, 8]
+2025-10-25 00:39:24,793 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=2
+2025-10-25 00:39:26,604 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=2: Silhouette=0.970, CH=1914175.8
+2025-10-25 00:39:26,604 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=3
+2025-10-25 00:39:28,369 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=3: Silhouette=0.799, CH=1319986.8
+2025-10-25 00:39:28,370 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=4
+2025-10-25 00:39:30,111 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=4: Silhouette=0.804, CH=1866615.9
+2025-10-25 00:39:30,111 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=5
+2025-10-25 00:39:31,886 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=5: Silhouette=0.753, CH=1995735.9
+2025-10-25 00:39:31,886 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=6
+2025-10-25 00:39:33,601 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=6: Silhouette=0.891, CH=2666565.8
+2025-10-25 00:39:33,601 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=7
+2025-10-25 00:39:35,309 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=7: Silhouette=0.899, CH=4165659.0
+2025-10-25 00:39:35,309 - src.models.segmentation.segmentation - INFO - determine_k:144 - Testing k=8
+2025-10-25 00:39:37,023 - src.models.segmentation.segmentation - INFO - determine_k:156 - Metrics for k=8: Silhouette=0.943, CH=4786717.0
+2025-10-25 00:39:37,023 - src.models.segmentation.segmentation - INFO - determine_k:177 - Optimal k determined: 8 (score: 0.937)
+2025-10-25 00:39:37,023 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-25 00:39:37,024 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-25 00:39:37,033 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 117. Using dynamic_max_k: 10
+2025-10-25 00:39:37,035 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 104.580
+2025-10-25 00:39:37,037 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=366.369, std=1982.490, threshold=2348.860
+2025-10-25 00:39:37,037 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-25 00:39:37,037 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-25 00:39:37,039 - src.models.segmentation.segmentation - INFO - __init__:260 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 00:39:37,039 - src.models.segmentation.segmentation - INFO - quantize_image:212 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:39:37,211 - src.models.segmentation.segmentation - INFO - __init__:430 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 00:39:37,212 - src.models.segmentation.segmentation - INFO - quantize_image:212 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:39:37,337 - src.models.segmentation.segmentation - INFO - segment:450 - Running SOM segmentation with k=8
+2025-10-25 00:39:37,775 - src.models.segmentation.segmentation - WARNING - segment:470 - SOM empty mask cluster 2 (k=8).
+2025-10-25 00:39:37,775 - src.models.segmentation.segmentation - WARNING - segment:470 - SOM empty mask cluster 3 (k=8).
+2025-10-25 00:39:37,776 - root - INFO - process_reference_image:346 - Reference image processing finished in 15.72 seconds.
+2025-10-25 00:39:38,023 - root - INFO - run_reference_processing:382 - Formatted K-Means reference results.
+2025-10-25 00:39:38,138 - root - INFO - run_reference_processing:418 - Formatted SOM reference results.
+2025-10-25 00:39:39,340 - src.utils.output_manager - INFO - save_reference_summary:136 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-25 00:39:39,340 - root - INFO - run_reference_processing:438 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-25 00:39:39,340 - root - INFO - timer:154 - Completed: Reference image loading and processing in 17.29 seconds
+2025-10-25 00:39:39,347 - root - INFO - timer:148 - Starting: Processing test image block1
+2025-10-25 00:39:39,348 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-25 00:39:39,372 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-25 00:39:40,638 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:39:40,978 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:39:41,402 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:39:41,403 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:39:41,403 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:39:41,405 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-25 00:39:41,406 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: determined
+2025-10-25 00:39:41,407 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:41,407 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: determined in 0.00 seconds
+2025-10-25 00:39:41,407 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-25 00:39:41,408 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:41,408 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: predefined in 0.00 seconds
+2025-10-25 00:39:41,409 - root - INFO - timer:154 - Completed: Processing test image block1 in 2.06 seconds
+2025-10-25 00:39:41,409 - root - INFO - timer:148 - Starting: Processing test image block2
+2025-10-25 00:39:41,410 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:39:41,445 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:39:42,747 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:39:43,070 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:39:43,477 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:39:43,479 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:39:43,479 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:39:43,480 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-25 00:39:43,480 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: determined
+2025-10-25 00:39:43,482 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:43,482 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: determined in 0.00 seconds
+2025-10-25 00:39:43,482 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-25 00:39:43,483 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:43,483 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: predefined in 0.00 seconds
+2025-10-25 00:39:43,483 - root - INFO - timer:154 - Completed: Processing test image block2 in 2.07 seconds
+2025-10-25 00:39:43,484 - root - INFO - timer:148 - Starting: Processing test image block3
+2025-10-25 00:39:43,484 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-25 00:39:43,503 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-25 00:39:44,729 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:39:45,056 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:39:45,459 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:39:45,460 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:39:45,460 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:39:45,462 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-25 00:39:45,462 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: determined
+2025-10-25 00:39:45,463 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:45,463 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: determined in 0.00 seconds
+2025-10-25 00:39:45,463 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-25 00:39:45,464 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:45,464 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: predefined in 0.00 seconds
+2025-10-25 00:39:45,465 - root - INFO - timer:154 - Completed: Processing test image block3 in 1.98 seconds
+2025-10-25 00:39:45,465 - root - INFO - timer:148 - Starting: Processing test image block4
+2025-10-25 00:39:45,466 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-25 00:39:45,485 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-25 00:39:46,764 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:39:47,094 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:39:47,543 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:39:47,544 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:39:47,545 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:39:47,546 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-25 00:39:47,546 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: determined
+2025-10-25 00:39:47,547 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:47,548 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: determined in 0.00 seconds
+2025-10-25 00:39:47,548 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-25 00:39:47,549 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:47,549 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: predefined in 0.00 seconds
+2025-10-25 00:39:47,549 - root - INFO - timer:154 - Completed: Processing test image block4 in 2.08 seconds
+2025-10-25 00:39:47,550 - root - INFO - timer:148 - Starting: Processing test image block5
+2025-10-25 00:39:47,550 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-25 00:39:47,574 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-25 00:39:48,854 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:39:49,170 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:39:49,602 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:39:49,603 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:39:49,603 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:39:49,604 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-25 00:39:49,604 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: determined
+2025-10-25 00:39:49,605 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:49,605 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: determined in 0.00 seconds
+2025-10-25 00:39:49,605 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-25 00:39:49,606 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:39:49,606 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: predefined in 0.00 seconds
+2025-10-25 00:39:49,607 - root - INFO - timer:154 - Completed: Processing test image block5 in 2.06 seconds
+2025-10-25 00:39:49,608 - root - INFO - main:684 - ================================================================================
+PROCESSING COMPLETED IN 184.01 SECONDS
 ================================================================================
-2025-10-20 21:14:40,186 - root - INFO - main:591 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
-2025-10-24 16:02:29,303 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
-2025-10-24 16:02:29,304 - root - INFO - timer:148 - Starting: Configuration loading and validation
-2025-10-24 16:02:29,316 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
-2025-10-24 16:02:29,324 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
-2025-10-24 16:02:29,325 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
-2025-10-24 16:02:29,325 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
-2025-10-24 16:02:29,328 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
-2025-10-24 16:02:29,328 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
-2025-10-24 16:02:29,330 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
-2025-10-24 16:02:29,330 - root - INFO - main:500 - Processing dataset: block
-2025-10-24 16:02:29,331 - root - INFO - timer:148 - Starting: Loading all test images
-2025-10-24 16:02:30,039 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
-2025-10-24 16:02:30,899 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
-2025-10-24 16:02:31,382 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
-2025-10-24 16:02:31,916 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
-2025-10-24 16:02:32,508 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
-2025-10-24 16:02:32,508 - root - INFO - timer:154 - Completed: Loading all test images in 3.18 seconds
-2025-10-24 16:02:32,508 - root - INFO - timer:148 - Starting: Loading training data
-2025-10-24 16:02:32,508 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
-2025-10-24 16:02:34,499 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
-2025-10-24 16:02:34,499 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
-2025-10-24 16:02:34,508 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
-2025-10-24 16:02:34,508 - root - INFO - timer:154 - Completed: Loading training data in 2.00 seconds
-2025-10-24 16:02:34,508 - root - INFO - timer:148 - Starting: DBN initialization and training
-2025-10-24 16:02:34,508 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
-2025-10-24 16:02:34,508 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
-2025-10-24 16:02:34,508 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
-2025-10-24 16:02:34,520 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
-2025-10-24 16:02:34,520 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [31.00, 213.00]
-2025-10-24 16:02:34,520 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[11.76, 84.31], a[-2.00, 2.00], b[-1.00, 8.00]
-2025-10-24 16:02:34,524 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
-2025-10-24 16:02:34,524 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
-2025-10-24 16:02:34,529 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
-2025-10-24 16:02:34,529 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
-2025-10-24 16:02:34,530 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
-2025-10-24 16:02:34,530 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
-2025-10-24 16:02:34,924 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.241, 0.240]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
-2025-10-24 16:02:35,019 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.282, 0.283]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.435, 0.446]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
-2025-10-24 16:02:35,024 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
-2025-10-24 16:02:35,024 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
-2025-10-24 16:05:12,915 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 157.89s - Final fitness: 0.019466
-2025-10-24 16:05:12,915 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
-2025-10-24 16:05:12,928 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
-2025-10-24 16:05:12,929 - root - INFO - timer:154 - Completed: DBN initialization and training in 158.42 seconds
-2025-10-24 16:05:12,929 - root - INFO - timer:148 - Starting: Reference image loading and processing
-2025-10-24 16:05:14,595 - src.utils.output_manager - INFO - save_reference_image:67 - Saved reference image copy to datasets\block\inputs\reference_image\reference.png
-2025-10-24 16:05:14,595 - root - INFO - process_reference_image:255 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
-2025-10-24 16:05:15,000 - root - INFO - process_reference_image:266 - Starting preprocessing for reference image
-2025-10-24 16:05:15,000 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
-2025-10-24 16:05:15,029 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
-2025-10-24 16:05:16,372 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
-2025-10-24 16:05:16,685 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
-2025-10-24 16:05:17,527 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
-2025-10-24 16:05:17,531 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
-2025-10-24 16:05:17,531 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
-2025-10-24 16:05:17,531 - root - INFO - process_reference_image:273 - Preprocessing completed for reference image, shape: (128, 128, 3)
-2025-10-24 16:05:17,531 - root - INFO - process_reference_image:283 - Determining optimal number of clusters for reference image
-2025-10-24 16:05:17,531 - root - ERROR - process_reference_image:302 - Failed to determine optimal clusters for reference: name 'config' is not defined. Falling back to default_k=2
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 288, in process_reference_image
-    k_val_default = list(range(2, config.get('segmentation_params', {}).get('max_clusters', 8) + 1))
-NameError: name 'config' is not defined
-2025-10-24 16:05:17,531 - root - INFO - process_reference_image:306 - Determining the number of clusters using DPC (for reference info)
-2025-10-24 16:05:17,531 - root - ERROR - process_reference_image:312 - Failed to calculate DPC k: local variable 'pixels_subsample' referenced before assignment. Setting dpc_k to None.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 310, in process_reference_image
-    dpc_k = optimal_clusters_dpc(pixels_subsample, min_k=2, max_k=10)
-UnboundLocalError: local variable 'pixels_subsample' referenced before assignment
-2025-10-24 16:05:17,531 - root - INFO - process_reference_image:315 - Performing reference segmentation with k=2
-2025-10-24 16:05:17,531 - root - ERROR - process_reference_image:394 - Error during reference segmentation execution: local variable 'cluster_strategy' referenced before assignment
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\utils\image_utils.py", line 332, in process_reference_image
-    kmeans_segmenter = KMeansSegmenter(image_to_segment, seg_config_ref, model_config_ref, cluster_strategy)
-UnboundLocalError: local variable 'cluster_strategy' referenced before assignment
-2025-10-24 16:05:17,531 - root - INFO - process_reference_image:400 - Reference image processing finished in 2.94 seconds.
-2025-10-24 16:05:17,535 - root - INFO - timer:154 - Completed: Reference image loading and processing in 4.61 seconds
-2025-10-24 16:05:17,535 - root - ERROR - main:576 - An unexpected error occurred in main execution: Failed to process reference image or received unexpected result format.
-Traceback (most recent call last):
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 533, in main
-    target_colors_lab, ref_kmeans, ref_som = run_reference_processing(
-  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 354, in run_reference_processing
-    raise ValueError("Failed to process reference image or received unexpected result format.")
-ValueError: Failed to process reference image or received unexpected result format.
-2025-10-24 16:05:17,535 - root - INFO - main:583 - ================================================================================
-PROCESSING COMPLETED IN 168.24 SECONDS
+2025-10-25 00:39:49,662 - root - INFO - main:692 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-25 00:46:44,412 - root - INFO - setup_logging:135 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-25 00:46:44,413 - root - INFO - timer:148 - Starting: Configuration loading and validation
+2025-10-25 00:46:44,424 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-25 00:46:44,427 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-25 00:46:44,427 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-25 00:46:44,427 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-25 00:46:44,429 - root - INFO - validate_processing_config:232 - Processing configuration validation passed
+2025-10-25 00:46:44,429 - root - INFO - timer:154 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-25 00:46:44,431 - src.utils.output_manager - INFO - __init__:28 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-25 00:46:44,431 - root - INFO - main:601 - Processing dataset: block
+2025-10-25 00:46:44,431 - root - INFO - timer:148 - Starting: Loading all test images
+2025-10-25 00:46:45,055 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-25 00:46:45,873 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-25 00:46:46,321 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-25 00:46:46,806 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-25 00:46:47,307 - src.utils.output_manager - INFO - save_test_image:77 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-25 00:46:47,307 - root - INFO - timer:154 - Completed: Loading all test images in 2.89 seconds
+2025-10-25 00:46:47,307 - root - INFO - timer:148 - Starting: Loading training data
+2025-10-25 00:46:47,307 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-25 00:46:49,156 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-25 00:46:49,156 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-25 00:46:49,156 - root - INFO - validate_loaded_data:267 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-25 00:46:49,156 - root - INFO - timer:154 - Completed: Loading training data in 1.85 seconds
+2025-10-25 00:46:49,156 - root - INFO - timer:148 - Starting: DBN initialization and training
+2025-10-25 00:46:49,156 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-25 00:46:49,156 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-25 00:46:49,156 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-25 00:46:49,172 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-25 00:46:49,172 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [32.00, 213.00]
+2025-10-25 00:46:49,172 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[12.16, 84.31], a[-2.00, 3.00], b[-2.00, 8.00]
+2025-10-25 00:46:49,172 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-25 00:46:49,172 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-25 00:46:49,172 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-25 00:46:49,172 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-25 00:46:49,172 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-25 00:46:49,172 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-25 00:46:49,456 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.239, 0.240]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.283, 0.283]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.454, 0.457]
+2025-10-25 00:46:49,519 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-25 00:46:49,525 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-25 00:46:49,525 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-25 00:49:29,084 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 159.56s - Final fitness: 0.013018
+2025-10-25 00:49:29,085 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-25 00:49:29,095 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-25 00:49:29,095 - root - INFO - timer:154 - Completed: DBN initialization and training in 159.93 seconds
+2025-10-25 00:49:29,096 - root - INFO - timer:148 - Starting: Reference image loading and processing
+2025-10-25 00:49:29,096 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-25 00:49:29,466 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-25 00:49:29,466 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:49:29,508 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:49:30,769 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:49:31,101 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:49:31,864 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:49:31,866 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:49:31,866 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:49:31,866 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-25 00:49:31,866 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-25 00:49:31,877 - src.models.segmentation.segmentation - INFO - determine_k:107 - Unique colors: 116. Adjusted k-range for metric search: [2, 8]
+2025-10-25 00:49:31,877 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=2
+2025-10-25 00:49:33,712 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=2: Silhouette=0.971, CH=2081761.2
+2025-10-25 00:49:33,712 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=3
+2025-10-25 00:49:35,986 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=3: Silhouette=0.948, CH=1623853.1
+2025-10-25 00:49:35,986 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=4
+2025-10-25 00:49:38,004 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=4: Silhouette=0.779, CH=1844533.4
+2025-10-25 00:49:38,004 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=5
+2025-10-25 00:49:39,782 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=5: Silhouette=0.717, CH=1933258.6
+2025-10-25 00:49:39,782 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=6
+2025-10-25 00:49:41,603 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=6: Silhouette=0.718, CH=2198404.2
+2025-10-25 00:49:41,603 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=7
+2025-10-25 00:49:43,359 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=7: Silhouette=0.820, CH=3455211.0
+2025-10-25 00:49:43,359 - src.models.segmentation.segmentation - INFO - determine_k:131 - Testing k=8
+2025-10-25 00:49:45,166 - src.models.segmentation.segmentation - INFO - determine_k:145 - Metrics for k=8: Silhouette=0.824, CH=4178938.8
+2025-10-25 00:49:45,166 - src.models.segmentation.segmentation - INFO - determine_k:161 - Optimal k determined: 8 (based on score: 0.711)
+2025-10-25 00:49:45,166 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-25 00:49:45,166 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-25 00:49:45,176 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 116. Using dynamic_max_k: 10
+2025-10-25 00:49:45,178 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 108.042
+2025-10-25 00:49:45,181 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=369.966, std=1978.999, threshold=2348.965
+2025-10-25 00:49:45,181 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-25 00:49:45,181 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-25 00:49:45,183 - src.models.segmentation.segmentation - INFO - __init__:255 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 00:49:45,183 - src.models.segmentation.segmentation - INFO - quantize_image:194 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:49:45,484 - src.models.segmentation.segmentation - INFO - __init__:515 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 00:49:45,485 - src.models.segmentation.segmentation - INFO - quantize_image:194 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 00:49:45,620 - src.models.segmentation.segmentation - INFO - segment:541 - Running SOM segmentation with k=8
+2025-10-25 00:49:46,061 - src.models.segmentation.segmentation - WARNING - segment:581 - SOM generated empty mask for cluster 2 (k=8). Skipping avg color.
+2025-10-25 00:49:46,061 - src.models.segmentation.segmentation - WARNING - segment:581 - SOM generated empty mask for cluster 3 (k=8). Skipping avg color.
+2025-10-25 00:49:46,061 - root - INFO - process_reference_image:346 - Reference image processing finished in 16.97 seconds.
+2025-10-25 00:49:46,313 - root - INFO - run_reference_processing:382 - Formatted K-Means reference results.
+2025-10-25 00:49:46,452 - root - INFO - run_reference_processing:418 - Formatted SOM reference results.
+2025-10-25 00:49:47,788 - src.utils.output_manager - INFO - save_reference_summary:136 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-25 00:49:47,788 - root - INFO - run_reference_processing:438 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-25 00:49:47,789 - root - INFO - timer:154 - Completed: Reference image loading and processing in 18.69 seconds
+2025-10-25 00:49:47,797 - root - INFO - timer:148 - Starting: Processing test image block1
+2025-10-25 00:49:47,797 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-25 00:49:47,826 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-25 00:49:49,259 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:49:49,657 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:49:50,099 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:49:50,100 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:49:50,101 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:49:50,102 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-25 00:49:50,102 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: determined
+2025-10-25 00:49:50,103 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:50,104 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: determined in 0.00 seconds
+2025-10-25 00:49:50,104 - root - INFO - timer:148 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-25 00:49:50,104 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:50,105 - root - INFO - timer:154 - Completed: Segmentation (block1) with k_type: predefined in 0.00 seconds
+2025-10-25 00:49:50,105 - root - INFO - timer:154 - Completed: Processing test image block1 in 2.31 seconds
+2025-10-25 00:49:50,106 - root - INFO - timer:148 - Starting: Processing test image block2
+2025-10-25 00:49:50,106 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 00:49:50,136 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 00:49:51,606 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:49:51,936 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:49:52,346 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:49:52,346 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:49:52,346 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:49:52,346 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-25 00:49:52,346 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: determined
+2025-10-25 00:49:52,346 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:52,346 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: determined in 0.00 seconds
+2025-10-25 00:49:52,346 - root - INFO - timer:148 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-25 00:49:52,346 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:52,346 - root - INFO - timer:154 - Completed: Segmentation (block2) with k_type: predefined in 0.00 seconds
+2025-10-25 00:49:52,346 - root - INFO - timer:154 - Completed: Processing test image block2 in 2.25 seconds
+2025-10-25 00:49:52,360 - root - INFO - timer:148 - Starting: Processing test image block3
+2025-10-25 00:49:52,361 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-25 00:49:52,380 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-25 00:49:53,649 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:49:53,965 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:49:54,390 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:49:54,392 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:49:54,392 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:49:54,393 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-25 00:49:54,394 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: determined
+2025-10-25 00:49:54,395 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:54,395 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: determined in 0.00 seconds
+2025-10-25 00:49:54,395 - root - INFO - timer:148 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-25 00:49:54,396 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:54,396 - root - INFO - timer:154 - Completed: Segmentation (block3) with k_type: predefined in 0.00 seconds
+2025-10-25 00:49:54,397 - root - INFO - timer:154 - Completed: Processing test image block3 in 2.04 seconds
+2025-10-25 00:49:54,397 - root - INFO - timer:148 - Starting: Processing test image block4
+2025-10-25 00:49:54,398 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-25 00:49:54,419 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-25 00:49:55,806 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:49:56,146 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:49:56,589 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:49:56,589 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:49:56,589 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:49:56,589 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-25 00:49:56,589 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: determined
+2025-10-25 00:49:56,589 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:56,589 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: determined in 0.00 seconds
+2025-10-25 00:49:56,589 - root - INFO - timer:148 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-25 00:49:56,589 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:56,589 - root - INFO - timer:154 - Completed: Segmentation (block4) with k_type: predefined in 0.00 seconds
+2025-10-25 00:49:56,589 - root - INFO - timer:154 - Completed: Processing test image block4 in 2.21 seconds
+2025-10-25 00:49:56,605 - root - INFO - timer:148 - Starting: Processing test image block5
+2025-10-25 00:49:56,605 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-25 00:49:56,623 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-25 00:49:57,908 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 00:49:58,222 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 00:49:58,634 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 00:49:58,635 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 00:49:58,635 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 00:49:58,636 - src.utils.output_manager - INFO - save_preprocessed_image:87 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-25 00:49:58,637 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: determined
+2025-10-25 00:49:58,638 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:58,638 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: determined in 0.00 seconds
+2025-10-25 00:49:58,638 - root - INFO - timer:148 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-25 00:49:58,639 - root - ERROR - process_single_test_image:549 - Ellipsis
+2025-10-25 00:49:58,639 - root - INFO - timer:154 - Completed: Segmentation (block5) with k_type: predefined in 0.00 seconds
+2025-10-25 00:49:58,640 - root - INFO - timer:154 - Completed: Processing test image block5 in 2.03 seconds
+2025-10-25 00:49:58,641 - root - INFO - main:684 - ================================================================================
+PROCESSING COMPLETED IN 194.23 SECONDS
 ================================================================================
-2025-10-24 16:05:17,604 - root - INFO - main:591 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-25 00:49:58,695 - root - INFO - main:692 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt

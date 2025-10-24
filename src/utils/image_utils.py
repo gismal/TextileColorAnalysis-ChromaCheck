@@ -1,402 +1,360 @@
+# src/utils/image_utils.py (DEBUG PRINTS ADDED)
+
 import os
 import numpy as np
 import cv2
 import logging
 import pandas as pd
-from skimage.color import deltaE_ciede2000
 from sklearn.metrics import pairwise_distances_chunked
+import time # Zamanlama için eklendi
+from pathlib import Path # Path objeleriyle çalışmak için eklendi
+from typing import Dict, Any, Tuple, Optional, List # Type hinting için eklendi
 
-from src.data.preprocess import Preprocessor
-from src.models.pso_dbn import convert_colors_to_cielab_dbn
-from src.utils.color.color_conversion import convert_colors_to_cielab
+# --- Gerekli Importlar ---
+from src.data.preprocess import Preprocessor, PreprocessingConfig
+from src.models.segmentation.segmentation import (
+    MetricBasedStrategy, KMeansSegmenter, SOMSegmenter, 
+    SegmentationConfig, ModelConfig, SegmentationResult # SegmentationResult da lazım
+)
+from src.models.pso_dbn import DBN
+from sklearn.preprocessing import MinMaxScaler
+from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Logging instance
+logger = logging.getLogger(__name__)
 
-def ciede2000_distance(color1, color2):
-    """Calculate CIEDE2000 color difference between two CIELAB colors.
-    
-    Args:
-        color1 (tuple): First CIELAB color (L, a, b).
-        color2 (tuple): Second CIELAB color (L, a, b).
-    
-    Returns:
-        float: Delta E value.
-    """
-    return deltaE_ciede2000(np.array([color1]), np.array([color2]))[0]
-
-def calculate_similarity(segmentation_data, target_colors):
-    """Calculate similarity scores for segmented colors against target colors.
-    
-    Args:
-        segmentation_data (dict): Contains 'avg_colors_lab' key with CIELAB colors.
-        target_colors (list): List of target CIELAB colors.
-    
-    Returns:
-        list: Similarity scores.
-    """
-    logging.info("Calculating similarity scores")
-    similarity_scores = []
-    avg_colors_lab = segmentation_data['avg_colors_lab']
-    for color_lab in avg_colors_lab:
-        if np.all(np.array(color_lab) <= np.array([5, 130, 130])):  # Check for nearly black segment
-            similarity_scores.append(0)
-            continue
-        min_distance = float('inf')
-        for target_color in target_colors:
-            distance = ciede2000_distance(color_lab, target_color)
-            if distance < min_distance:
-                min_distance = distance
-        similarity_score = max(0, 100 - min_distance)
-        similarity_scores.append(similarity_score)
-    logging.info("Similarity scores calculation completed")
-    return similarity_scores
-
-def find_best_matches(segmentation_data, reference_segmentation_data):
-    """Find best matching segments between test and reference images.
-    
-    Args:
-        segmentation_data (dict): Contains 'avg_colors_lab' for test image.
-        reference_segmentation_data (dict): Contains 'avg_colors_lab' for reference.
-    
-    Returns:
-        list: Tuple of (test_idx, ref_idx) pairs.
-    """
-    logging.info("Finding best matches for segments")
-    avg_colors_lab = segmentation_data['avg_colors_lab']
-    ref_avg_colors_lab = reference_segmentation_data['avg_colors_lab']
-
-    best_matches = []
-    for i, color_lab in enumerate(avg_colors_lab):
-        if np.all(np.array(color_lab) <= np.array([5, 130, 130])):  # Ignore nearly black segments
-            best_matches.append((i, -1))
-            continue
-        min_distance = float('inf')
-        best_match_idx = -1
-        for j, ref_color_lab in enumerate(ref_avg_colors_lab):
-            distance = ciede2000_distance(color_lab, ref_color_lab)
-            if distance < min_distance:
-                min_distance = distance
-                best_match_idx = j
-        best_matches.append((i, best_match_idx))
-    logging.info("Best matches found")
-    return best_matches
-
-def downsample_image(image, scale_factor=0.5):
-    """Downsample an image by a given scale factor.
-    
-    Args:
-        image (numpy.ndarray): Input image in BGR format.
-        scale_factor (float): Factor to downsample (default: 0.5).
-    
-    Returns:
-        numpy.ndarray: Downsampled image.
-    """
-    width = int(image.shape[1] * scale_factor)
-    height = int(image.shape[0] * scale_factor)
-    return cv2.resize(image, (width, height), interpolation=cv2.INTER_LINEAR)
+# --- Helper Functions (gaussian_kernel, dpc_clustering, optimal_clusters_dpc) ---
+# (Bu fonksiyonlar aynı kalıyor)
 
 def gaussian_kernel(distance, bandwidth):
-    """Compute Gaussian kernel for density estimation.
-    
-    Args:
-        distance (float): Distance value.
-        bandwidth (float): Bandwidth parameter.
-    
-    Returns:
-        float: Kernel value.
-    """
+    """Compute Gaussian kernel for density estimation."""
+    # Add a small epsilon to prevent division by zero if bandwidth is tiny
+    bandwidth = max(bandwidth, 1e-9)
     return np.exp(-0.5 * (distance / bandwidth) ** 2)
 
 def dpc_clustering(pixels, num_clusters, bandwidth=1.0):
-    """Perform Density Peak Clustering on pixel data.
-    
-    Args:
-        pixels (numpy.ndarray): Pixel data (n_samples, 3).
-        num_clusters (int): Number of clusters.
-        bandwidth (float): Bandwidth for Gaussian kernel.
-    
-    Returns:
-        numpy.ndarray: Cluster labels.
-    """
-    logging.info("Starting Density Peak Clustering")
-    distances = pairwise_distances_chunked(pixels)
-    distances = np.vstack(list(distances))
-    rho = np.zeros(len(pixels))
-    delta = np.zeros(len(pixels))
+    """Perform Density Peak Clustering on pixel data."""
+    logging.info(f"Starting Density Peak Clustering with num_clusters={num_clusters}, bandwidth={bandwidth}")
+    n_samples = len(pixels)
+    if n_samples == 0:
+        logging.warning("DPC Clustering: Input pixels array is empty.")
+        return np.array([], dtype=int)
 
-    def compute_rho(distances_chunk):
-        return np.sum(gaussian_kernel(distances_chunk, bandwidth), axis=1)
+    # Calculate distances more robustly
+    try:
+        # Using generator with vstack might be memory intensive for large datasets
+        # Consider alternatives if memory becomes an issue
+        distances_gen = pairwise_distances_chunked(pixels, working_memory=256) # Smaller memory chunk
+        distances = np.vstack(list(distances_gen))
+    except MemoryError:
+         logging.error("DPC Clustering: MemoryError calculating pairwise distances.")
+         # Fallback or simplified approach might be needed here
+         return np.full(n_samples, -1, dtype=int) # Return noise labels
+    except Exception as e:
+        logging.error(f"DPC Clustering: Error calculating pairwise distances: {e}", exc_info=True)
+        return np.full(n_samples, -1, dtype=int)
 
-    for distances_chunk in pairwise_distances_chunked(pixels, working_memory=1024):
-        rho_chunk = compute_rho(distances_chunk)
-        rho[:len(rho_chunk)] += rho_chunk
+    rho = np.zeros(n_samples)
+    delta = np.zeros(n_samples)
 
-    for i in range(len(rho)):
-        mask = (rho > rho[i])
-        if np.any(mask):
-            delta[i] = np.min(distances[i, mask])
-        else:
-            delta[i] = np.max(distances[i])
+    # Compute rho (local density)
+    try:
+        # Avoid iterating again if distances matrix fits in memory
+        rho = np.sum(gaussian_kernel(distances, bandwidth), axis=1)
+        # Handle cases where rho might be zero or very small if bandwidth is inappropriate
+        rho[rho < 1e-9] = 1e-9 # Prevent division by zero later if used
+    except Exception as e:
+        logging.error(f"DPC Clustering: Error computing rho: {e}", exc_info=True)
+        return np.full(n_samples, -1, dtype=int)
 
+    # Compute delta (distance to nearest higher density point)
+    try:
+        # Sort points by density in descending order
+        rho_sorted_indices = np.argsort(-rho)
+
+        delta[rho_sorted_indices[0]] = -1.0 # Highest density point has no delta initially
+        max_dist = np.max(distances) if distances.size > 0 else 0 # Find max distance for later
+        
+        for i in range(1, n_samples):
+            current_point_idx = rho_sorted_indices[i]
+            # Consider only points with higher density
+            higher_density_indices = rho_sorted_indices[:i]
+            if len(higher_density_indices) == 0:
+                 # Should not happen if i > 0, but as safety
+                 delta[current_point_idx] = max_dist
+                 continue
+                 
+            # Find distance to the *nearest* point with higher density
+            delta[current_point_idx] = np.min(distances[current_point_idx, higher_density_indices])
+
+        # Set delta for the highest density point
+        delta[rho_sorted_indices[0]] = max_dist # Often set to max distance among all points
+        
+    except Exception as e:
+         logging.error(f"DPC Clustering: Error computing delta: {e}", exc_info=True)
+         return np.full(n_samples, -1, dtype=int)
+
+    # Identify cluster centers (high rho and high delta)
     gamma = rho * delta
-    centers = np.argsort(gamma)[-num_clusters:]
-    labels = np.full(len(pixels), -1, dtype=int)
+    # Ensure num_clusters is not more than available samples
+    actual_num_clusters = min(num_clusters, n_samples)
+    if actual_num_clusters <=0 :
+         logging.warning("DPC Clustering: num_clusters is zero or negative. Cannot find centers.")
+         return np.full(n_samples, -1, dtype=int)
+         
+    # Indices of cluster centers (highest gamma values)
+    center_indices = np.argsort(-gamma)[:actual_num_clusters]
 
-    for center in centers:
-        labels[center] = center
+    # Assign labels
+    labels = np.full(n_samples, -1, dtype=int) # Initialize all as noise/unassigned
 
-    for i in np.argsort(-rho):
-        if labels[i] == -1:
-            labels[i] = labels[np.argmin(distances[i, centers])]
+    # Assign centers their own label (using their index as label ID for now)
+    for k, center_idx in enumerate(center_indices):
+        labels[center_idx] = k # Assign 0, 1, 2... as labels
 
-    logging.info("Density Peak Clustering completed")
+    # Assign remaining points to the same cluster as their nearest higher density point
+    # Iterate in order of density (highest first)
+    for i in range(n_samples):
+        point_idx = rho_sorted_indices[i]
+        if labels[point_idx] == -1: # If not already a center or assigned
+             # Find the nearest point with *higher* density
+             higher_density_indices = rho_sorted_indices[:i]
+             if len(higher_density_indices) == 0:
+                  # This point has the highest density, should already be a center
+                  # If not, assign it noise or handle as error? Assign noise for now.
+                  labels[point_idx] = -1 
+                  continue
+                  
+             nearest_higher_density_neighbor_idx = higher_density_indices[np.argmin(distances[point_idx, higher_density_indices])]
+             
+             # Assign the label of the nearest higher density neighbor
+             if labels[nearest_higher_density_neighbor_idx] != -1:
+                 labels[point_idx] = labels[nearest_higher_density_neighbor_idx]
+             else:
+                 # Should not happen if logic is correct, indicates an issue
+                 # Assign noise for safety
+                 labels[point_idx] = -1
+                 logging.warning(f"DPC: Point {point_idx} could not be assigned label from neighbor {nearest_higher_density_neighbor_idx}")
+
+
+    logging.info(f"Density Peak Clustering completed. Found {len(np.unique(labels[labels>=0]))} clusters.")
     return labels
 
-def optimal_clusters_dpc(pixels, min_k=2, max_k=10, subsample_threshold=1000, bandwidth=None):
-    """Determine optimal number of clusters using DPC.
+
+def optimal_clusters_dpc(pixels, min_k=2, max_k=10, subsample_threshold=1000, bandwidth=None) -> Optional[int]:
+    """Determine optimal number of clusters using DPC based on gamma thresholding (heuristic)."""
     
-    Args:
-        pixels (numpy.ndarray): Pixel data.
-        min_k (int): Minimum number of clusters.
-        max_k (int): Maximum number of clusters.
-        subsample_threshold (int): Threshold for subsampling.
-        bandwidth (float): Bandwidth parameter (optional).
-    
-    Returns:
-        int: Optimal number of clusters.
-    """
+    n_samples = pixels.shape[0]
+    if n_samples == 0:
+        logging.warning("Cannot determine DPC clusters: Input pixels array is empty.")
+        return None # Return None to indicate failure
+
     unique_colors = np.unique(pixels, axis=0)
-    dynamic_max_k = min(max_k, len(unique_colors))
+    n_unique = len(unique_colors)
+    # Adjust max_k dynamically but ensure it's at least min_k
+    dynamic_max_k = max(min_k, min(max_k, n_unique)) 
 
-    logging.info(f"Number of unique colors: {len(unique_colors)}. Adjusting max_k to: {dynamic_max_k}")
+    logging.info(f"Number of unique colors: {n_unique}. Using dynamic_max_k: {dynamic_max_k}")
 
-    if len(unique_colors) > subsample_threshold:
-        logging.info(f"Subsampling unique colors from {len(unique_colors)} to {subsample_threshold}")
-        subsample_indices = np.random.choice(len(unique_colors), subsample_threshold, replace=False)
+    # Subsample if necessary
+    if n_unique > subsample_threshold:
+        logging.info(f"Subsampling unique colors from {n_unique} to {subsample_threshold} for DPC analysis")
+        subsample_indices = np.random.choice(n_unique, subsample_threshold, replace=False)
         subsampled_colors = unique_colors[subsample_indices]
     else:
         subsampled_colors = unique_colors
+        
+    n_subsample = subsampled_colors.shape[0]
+    if n_subsample < min_k: # Not enough points even after subsampling
+         logging.warning(f"Number of unique points ({n_subsample}) is less than min_k ({min_k}). Cannot reliably determine DPC clusters. Falling back to min_k.")
+         return min_k
 
     try:
+        # Calculate distances on subsampled points
+        distances_gen = pairwise_distances_chunked(subsampled_colors, working_memory=256)
+        distances = np.vstack(list(distances_gen))
+
+        # Estimate bandwidth if not provided (e.g., using median distance)
         if bandwidth is None:
-            pairwise_dists = pairwise_distances_chunked(subsampled_colors)
-            bandwidth = np.median(pairwise_dists)
-            logging.info(f"Calculated bandwidth: {bandwidth}")
+            if distances.size > 0:
+                 # Calculate median of non-zero distances
+                 non_zero_dists = distances[distances > 1e-9]
+                 bandwidth = np.median(non_zero_dists) if non_zero_dists.size > 0 else 1.0
+            else:
+                 bandwidth = 1.0 # Default if no distances calculated
+            logging.info(f"Calculated DPC bandwidth: {bandwidth:.3f}")
+            
+        bandwidth = max(bandwidth, 1e-9) # Ensure positive bandwidth
 
-        dpc_labels = dpc_clustering(subsampled_colors, dynamic_max_k, bandwidth=1.0 if bandwidth is None else bandwidth)
-        n_clusters = len(np.unique(dpc_labels))
-        logging.info(f"Optimal number of clusters determined by DPC: {n_clusters}")
+        # Calculate rho and delta on subsampled points
+        rho = np.sum(gaussian_kernel(distances, bandwidth), axis=1)
+        rho[rho < 1e-9] = 1e-9
+        delta = np.zeros(n_subsample)
+        rho_sorted_indices = np.argsort(-rho)
+        delta[rho_sorted_indices[0]] = -1.0
+        max_dist = np.max(distances) if distances.size > 0 else 0
 
-        if n_clusters > max_k:
-            n_clusters = max_k
-            logging.info(f"Number of clusters exceeds max_k. Limiting to max_k: {max_k}")
+        for i in range(1, n_subsample):
+            current_point_idx = rho_sorted_indices[i]
+            higher_density_indices = rho_sorted_indices[:i]
+            if len(higher_density_indices) == 0:
+                 delta[current_point_idx] = max_dist
+                 continue
+            delta[current_point_idx] = np.min(distances[current_point_idx, higher_density_indices])
+        delta[rho_sorted_indices[0]] = max_dist
 
+        # Calculate gamma
+        gamma = rho * delta
+
+        # --- Heuristic to determine number of clusters ---
+        # Look for points with significantly high gamma (potential centers)
+        # A simple heuristic: points with gamma > mean(gamma) + std(gamma)
+        if gamma.size > 1: # Need at least 2 points to calculate mean/std
+             gamma_mean = np.mean(gamma)
+             gamma_std = np.std(gamma)
+             threshold = gamma_mean + gamma_std 
+             potential_centers_mask = gamma > threshold
+             n_clusters = int(np.sum(potential_centers_mask))
+             logging.info(f"DPC gamma analysis: mean={gamma_mean:.3f}, std={gamma_std:.3f}, threshold={threshold:.3f}")
+        elif gamma.size == 1:
+             n_clusters = 1
+        else: # gamma.size == 0
+             n_clusters = 0
+             
+        # Ensure n_clusters is within the desired range [min_k, dynamic_max_k]
+        n_clusters = max(min_k, min(n_clusters, dynamic_max_k))
+        # Handle case where threshold finds 0 clusters but we need at least min_k
+        if n_clusters < min_k: n_clusters = min_k 
+        
+        logging.info(f"Optimal number of clusters estimated by DPC gamma heuristic: {n_clusters}")
         return n_clusters
+
+    except MemoryError:
+        logging.error("MemoryError during optimal_clusters_dpc. Falling back to min_k.")
+        return min_k
     except Exception as e:
-        logging.error(f"Error in calculating optimal clusters using DPC: {str(e)}. Falling back to default k: {min_k}")
+        logging.error(f"Error in calculating optimal clusters using DPC: {e}. Falling back to min_k={min_k}", exc_info=True)
         return min_k
 
-def create_output_folders(base_path, techniques):
-    """Create output folders for each segmentation technique.
-    
-    Args:
-        base_path (str): Base directory for output.
-        techniques (list): List of segmentation techniques.
+
+# --- process_reference_image Function (UPDATED with Debug Prints) ---
+
+# src/utils/image_utils.py İÇİNDE SADECE BU FONKSİYONU DEĞİŞTİR
+
+# src/utils/image_utils.py İÇİNDE SADECE BU FONKSİYONU DEĞİŞTİR
+
+def process_reference_image(
+    reference_image_path: str,
+    dbn: DBN,
+    scaler_x: MinMaxScaler,
+    scaler_y: MinMaxScaler,
+    scaler_y_ab: MinMaxScaler,
+    default_k: int,
+    preprocess_config: PreprocessingConfig
+# --- YENİ DÖNÜŞ TİPİ ---
+) -> Tuple[Optional[SegmentationResult], Optional[SegmentationResult], Optional[np.ndarray], Optional[int]]:
     """
-    for technique in techniques:
-        technique_path = os.path.join(base_path, technique)
-        os.makedirs(os.path.join(technique_path, 'optimal'), exist_ok=True)
-        os.makedirs(os.path.join(technique_path, 'predefined'), exist_ok=True)
-        os.makedirs(os.path.join(technique_path, 'summary'), exist_ok=True)
-
-def save_delta_e_results(delta_e_results, output_path):
-    """Save Delta E results to a CSV file.
-    
-    Args:
-        delta_e_results (dict): Dictionary of Delta E values.
-        output_path (str): Directory to save the CSV.
-    """
-    df = pd.DataFrame(delta_e_results)
-    df.to_csv(os.path.join(output_path, 'overall_delta_e_results.csv'), index=False)
-
-def save_results(segmentation_data, similarity_scores, method, output_dir):
-    """Save segmentation results including images and data.
-    
-    Args:
-        segmentation_data (dict): Segmentation data.
-        similarity_scores (list): Similarity scores.
-        method (str): Segmentation method.
-        output_dir (str): Output directory.
-    """
-    os.makedirs(output_dir, exist_ok=True)
-
-    cv2.imwrite(os.path.join(output_dir, f'segmented_image_{method}.png'), segmentation_data['segmented_image'])
-
-    avg_colors_lab_df = pd.DataFrame(segmentation_data['avg_colors_lab'], columns=['L', 'a', 'b'])
-    avg_colors_lab_dbn_df = pd.DataFrame(segmentation_data['avg_colors_lab_dbn'], columns=['L', 'a', 'b'])
-    avg_colors_lab_df.to_csv(os.path.join(output_dir, f'average_colors_lab_{method}.csv'), index=False)
-    avg_colors_lab_dbn_df.to_csv(os.path.join(output_dir, f'average_colors_lab_dbn_{method}.csv'), index=False)
-
-    similarity_scores_df = pd.DataFrame(similarity_scores, columns=['Similarity_Score'])
-    similarity_scores_df.to_csv(os.path.join(output_dir, f'similarity_scores_{method}.csv'), index=False)
-
-    from src.utils.visualization import save_segmentation_summary_plot
-    save_segmentation_summary_plot(segmentation_data, similarity_scores, method, output_dir=output_dir)
-
-def compare_cielab_colors(test_avg_colors_lab, reference_avg_colors_lab):
-    """Compare test and reference CIELAB colors to find best matches.
-    
-    Args:
-        test_avg_colors_lab (list): Test image CIELAB colors.
-        reference_avg_colors_lab (list): Reference image CIELAB colors.
-    
-    Returns:
-        list: Tuple of (test_idx, ref_idx, distance) for each comparison.
-    """
-    comparisons = []
-    for i, test_color in enumerate(test_avg_colors_lab):
-        min_distance = float('inf')
-        best_match_idx = -1
-        for j, ref_color in enumerate(reference_avg_colors_lab):
-            distance = deltaE_ciede2000(np.array([test_color]), np.array([ref_color]))[0]
-            if distance < min_distance:
-                min_distance = distance
-                best_match_idx = j
-        comparisons.append((i, best_match_idx, min_distance))
-    return comparisons
-
-def load_and_preprocess_image(image_path, preprocessor):
-    """Load and preprocess the image.
-    
-    Args:
-        image_path (str): Path to the image.
-        preprocessor (ImagePreprocessor): Preprocessor instance.
-    
-    Returns:
-        numpy.ndarray: Preprocessed image, or None if failed.
-    """
-    logging.info(f"Loading image from {image_path}")
-    image = cv2.imread(image_path)
-    if image is None:
-        logging.error(f"Failed to load image: {image_path}")
-        return None
-    logging.info("Starting preprocessing")
-    preprocessed_image = preprocessor.preprocess(image)
-    if preprocessed_image is None:
-        logging.error("Preprocessing failed")
-        return None
-    logging.info("Preprocessing completed")
-    return preprocessed_image
-
-def determine_optimal_clusters(pixels_subsample, default_k, min_k=3, max_k=10):
-    """Determine the optimal number of clusters.
-    
-    Args:
-        pixels_subsample (numpy.ndarray): Subsampled pixel data.
-        default_k (int): Default number of clusters.
-        min_k (int): Minimum number of clusters.
-        max_k (int): Maximum number of clusters.
-    
-    Returns:
-        int: Optimal number of clusters.
-    """
-    logging.info("Determining optimal number of clusters")
-    unique_colors = np.unique(pixels_subsample, axis=0)
-    logging.info(f"Number of unique colors after quantization: {len(unique_colors)}")
-    n_clusters = optimal_clusters(pixels_subsample, default_k, min_k=min_k, max_k=max_k)
-    logging.info(f"Optimal number of clusters determined: {n_clusters}")
-    return n_clusters
-
-def perform_segmentation(image, n_clusters, dbn, scaler_x, scaler_y, scaler_y_ab):
-    """Perform K-means and SOM segmentation on the image.
-    
-    Args:
-        image (numpy.ndarray): Preprocessed image.
-        n_clusters (int): Number of clusters.
-        dbn (DBN): Trained DBN model.
-        scaler_x (StandardScaler): Scaler for RGB input.
-        scaler_y (MinMaxScaler): Scaler for CIELAB L channel.
-        scaler_y_ab (MinMaxScaler): Scaler for CIELAB a, b channels.
-    
-    Returns:
-        tuple: K-means and SOM segmentation data.
-    """
-    logging.info("Performing K-means segmentation with optimal k")
-    segmented_image_kmeans_opt, avg_colors_kmeans_opt, labels_kmeans_opt = k_mean_segmentation(image, n_clusters)
-    avg_colors_lab_kmeans_opt = convert_colors_to_cielab(avg_colors_kmeans_opt)
-    avg_colors_lab_dbn_kmeans_opt = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors_kmeans_opt)
-    reference_kmeans_opt = {
-        'original_image': image,
-        'segmented_image': segmented_image_kmeans_opt,
-        'avg_colors': avg_colors_kmeans_opt,
-        'avg_colors_lab': avg_colors_lab_kmeans_opt,
-        'avg_colors_lab_dbn': avg_colors_lab_dbn_kmeans_opt,
-        'labels': labels_kmeans_opt
-    }
-
-    logging.info("Performing SOM segmentation with optimal k")
-    segmented_image_som_opt, avg_colors_som_opt, labels_som_opt = som_segmentation(image, n_clusters)
-    avg_colors_lab_som_opt = convert_colors_to_cielab(avg_colors_som_opt)
-    avg_colors_lab_dbn_som_opt = convert_colors_to_cielab_dbn(dbn, scaler_x, scaler_y, scaler_y_ab, avg_colors_som_opt)
-    reference_som_opt = {
-        'original_image': image,
-        'segmented_image': segmented_image_som_opt,
-        'avg_colors': avg_colors_som_opt,
-        'avg_colors_lab': avg_colors_som_opt,  # [FIXED] Corrected to avg_colors_lab_som_opt
-        'avg_colors_lab_dbn': avg_colors_lab_dbn_som_opt,
-        'labels': labels_som_opt
-    }
-
-    return reference_kmeans_opt, reference_som_opt
-
-def process_reference_image(reference_image_path, dbn, scaler_x, scaler_y, scaler_y_ab, default_k):
-    """Process the reference image to generate segmentation data.
-    
-    Args:
-        reference_image_path (str): Path to reference image.
-        dbn (DBN): Trained DBN model.
-        scaler_x (StandardScaler): Scaler for RGB input.
-        scaler_y (MinMaxScaler): Scaler for CIELAB L channel.
-        scaler_y_ab (MinMaxScaler): Scaler for CIELAB a, b channels.
-        default_k (int): Default number of clusters.
-    
-    Returns:
-        tuple: Reference K-means and SOM segmentation data, original image, DPC cluster count.
+    Processes reference image, returns RAW SegmentationResult objects.
     """
     logging.info(f"Processing reference image: {reference_image_path}")
-    
-    # Load and preprocess the image
-    preprocessor = Preprocessor(
-        initial_resize=512,
-        target_size=(256, 256),  # Adjusted to match intended size
-        denoise_h=10,
-        max_colors=8,
-        edge_enhance=False,
-        unsharp_amount=0.0,
-        unsharp_threshold=0
-    )
-    preprocessed_image = load_and_preprocess_image(reference_image_path, preprocessor)
-    if preprocessed_image is None:
-        return None, None, None, None
-    
-    original_image = preprocessed_image.copy()
-    
-    # Resize the preprocessed image
-    logging.info("Resizing preprocessed image to 256x256")
-    resized_image = preprocessed_image
-    
-    # Subsample pixels for cluster determination
-    logging.info("Subsampling pixels for cluster determination")
-    pixels_subsample = resized_image.reshape(-1, 3).astype(np.float32)[np.random.choice(resized_image.shape[0] * resized_image.shape[1], 2048, replace=False)]
-    
-    # Determine optimal number of clusters
-    n_clusters = determine_optimal_clusters(pixels_subsample, default_k)
-    
-    # Determine the number of clusters using DPC
-    logging.info("Determining the number of clusters using DPC")
-    dpc_k = optimal_clusters_dpc(pixels_subsample, min_k=2, max_k=10, subsample_threshold=1000, bandwidth=1.0)
-    
-    # Perform segmentation
-    reference_kmeans_opt, reference_som_opt = perform_segmentation(resized_image, n_clusters, dbn, scaler_x, scaler_y, scaler_y_ab)
-    
-    return reference_kmeans_opt, reference_som_opt, original_image, dpc_k
+    start_time = time.perf_counter()
+
+    kmeans_result_obj: Optional[SegmentationResult] = None # Sonuç nesnesini tutacak
+    som_result_obj: Optional[SegmentationResult] = None    # Sonuç nesnesini tutacak
+    original_image_copy: Optional[np.ndarray] = None
+    dpc_k_result: Optional[int] = None
+
+    try:
+        # 1. Load Image
+        reference_image = cv2.imread(reference_image_path)
+        if reference_image is None: raise ValueError('Failed to load reference image')
+        original_image_copy = reference_image.copy()
+
+        # 2. Preprocess Image
+        logging.info("Starting preprocessing for reference image")
+        preprocessor = Preprocessor(config=preprocess_config)
+        preprocessed_image = preprocessor.preprocess(reference_image)
+        if preprocessed_image is None: raise ValueError("Preprocessing failed")
+        logging.info(f"Preprocessing completed, shape: {preprocessed_image.shape}")
+
+        image_to_segment = preprocessed_image
+        pixels_flat = image_to_segment.reshape(-1, 3).astype(np.float32)
+        num_pixels = pixels_flat.shape[0]
+        if num_pixels == 0: raise ValueError("Image has zero pixels after preprocessing.")
+
+        # 3. Determine Optimal K
+        logging.info("Determining optimal number of clusters for reference")
+        n_clusters = default_k
+        try:
+            fixed_k_range = list(range(2, 9))
+            temp_seg_config = SegmentationConfig(
+                target_colors=np.array([]), distance_threshold=0, predefined_k=default_k,
+                k_values=fixed_k_range, som_values=fixed_k_range
+            )
+            cluster_strategy = MetricBasedStrategy()
+            sample_size = min(10000, num_pixels)
+            pixels_subsample = pixels_flat[np.random.choice(num_pixels, sample_size, replace=False)]
+            determined_k = cluster_strategy.determine_k(pixels_subsample, temp_seg_config)
+            if determined_k >= 2: n_clusters = determined_k
+            logging.info(f"Optimal clusters determined: {n_clusters}")
+        except Exception as e:
+            logging.warning(f"Failed to determine optimal clusters: {e}. Falling back...", exc_info=True)
+            n_clusters = default_k
+
+        # 4. Determine DPC K
+        logging.info("Determining DPC clusters")
+        try:
+             dpc_k_result = optimal_clusters_dpc(pixels_subsample, min_k=2, max_k=10)
+        except Exception as e:
+             logging.warning(f"Failed to calculate DPC k: {e}. Setting to None.", exc_info=True)
+             dpc_k_result = None
+
+        # 5. Perform Segmentation (İç try bloğu KALDIRILDI, ana try yeterli)
+        logging.info(f"Performing reference segmentation with k={n_clusters}")
+        seg_config_ref = SegmentationConfig(
+            target_colors=np.array([]), distance_threshold=0, predefined_k=n_clusters,
+            k_values=[n_clusters], som_values=[n_clusters], k_type='predefined',
+            methods=['kmeans_predef', 'som_predef'], dbscan_eps=10.0, dbscan_min_samples=5
+        )
+        model_config_ref = ModelConfig(
+            dbn=dbn, scalers=[scaler_x, scaler_y, scaler_y_ab],
+            reference_kmeans_opt={}, reference_som_opt={}
+        )
+
+        # Run KMeans
+        kmeans_segmenter = KMeansSegmenter(image_to_segment, seg_config_ref, model_config_ref, cluster_strategy)
+        kmeans_result_obj = kmeans_segmenter.segment() # Dışarıdaki değişkene ata
+        print(f"DEBUG: [Ref Img] kmeans_result_obj.is_valid(): {kmeans_result_obj.is_valid() if kmeans_result_obj else 'Result is None'}")
+
+        # Run SOM
+        som_segmenter = SOMSegmenter(image_to_segment, seg_config_ref, model_config_ref, cluster_strategy)
+        som_result_obj = som_segmenter.segment() # Dışarıdaki değişkene ata
+        print(f"DEBUG: [Ref Img] som_result_obj.is_valid(): {som_result_obj.is_valid() if som_result_obj else 'Result is None'}")
+
+        # 6. Format Results - BU KISIM KALDIRILDI. Sözlük oluşturmuyoruz.
+
+    except Exception as e_outer:
+        logging.error(f"Critical error in process_reference_image: {e_outer}", exc_info=True)
+        # Hata durumunda sonuçları None yap (Zaten None olarak başlamışlardı)
+        kmeans_result_obj = None
+        som_result_obj = None
+        original_image_copy = None # Orijinal resim de kaybolmuş olabilir
+        dpc_k_result = None
+
+    # --- Fonksiyonun Sonu ---
+    duration = time.perf_counter() - start_time
+    logging.info(f"Reference image processing finished in {duration:.2f} seconds.")
+
+    # Final Check Prints (using the variables defined outside try)
+    print(f"DEBUG: [Ref Img] FINAL check before return:")
+    print(f"DEBUG: [Ref Img]   type(kmeans_result_obj): {type(kmeans_result_obj)}")
+    print(f"DEBUG: [Ref Img]   kmeans_result_obj is None: {kmeans_result_obj is None}")
+    print(f"DEBUG: [Ref Img]   type(som_result_obj): {type(som_result_obj)}")
+    print(f"DEBUG: [Ref Img]   type(original_image_copy): {type(original_image_copy)}")
+    print(f"DEBUG: [Ref Img]   dpc_k_result: {dpc_k_result}")
+
+    # Sözlük yerine doğrudan SegmentationResult nesnelerini döndür
+    return kmeans_result_obj, som_result_obj, original_image_copy, dpc_k_result
+
+# --- DPC Functions remain the same ---
+# ...

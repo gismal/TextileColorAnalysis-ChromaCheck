@@ -37,10 +37,10 @@ def load_config(specific_config_path: str) -> Optional[Dict[str, Any]]:
     """
     try:
         specific_path_obj = Path(specific_config_path)
-        # Assume defaults.yaml is one level up from pattern_configs
-        # Adjust if your structure is different
         # config_base_dir = specific_path_obj.parent.parent / "configurations" # Old assumption?
-        config_base_dir = Path(__file__).parent.parent / "configurations" # Assuming configurations dir is at src level
+        script_dir = Path(__file__).parent.absolute()
+        project_root_guess = script_dir.parent.parent
+        config_base_dir = project_root_guess / "configurations" # Assuming configurations dir is at src level
         default_config_path = config_base_dir / "defaults.yaml"
 
         # 1. Load defaults
