@@ -445,42 +445,43 @@ def run_reference_processing(config: Dict[str, Any],
 
 # --- main() fonksiyonu içindeki çağırma aynı ---
 # target_colors_lab, ref_kmeans, ref_som = run_reference_processing(...)
+# src/main.py İÇİNDE SADECE BU FONKSİYONU DEĞİŞTİR
 
 def process_single_test_image(
-    image_path: str,
-    image_data: np.ndarray,
-    config: Dict[str, Any],
-    preprocess_config: PreprocessingConfig, # Use the config object
-    dbn: DBN,
-    scalers: Dict[str, MinMaxScaler],
-    target_colors_lab: np.ndarray,
-    reference_kmeans_opt: Dict,
-    reference_som_opt: Dict,
+    image_path: str, 
+    image_data: np.ndarray, 
+    config: Dict[str, Any], 
+    preprocess_config: PreprocessingConfig, 
+    dbn: DBN, 
+    scalers: Dict[str, MinMaxScaler], 
+    target_colors_lab: np.ndarray, 
+    reference_kmeans_opt: Dict, 
+    reference_som_opt: Dict, 
     output_manager: OutputManager,
-    lab_traditional_converter,
-    lab_dbn_converter
+    lab_traditional_converter, # Renk dönüştürücüleri dışarıdan al
+    lab_dbn_converter         # Renk dönüştürücüleri dışarıdan al
 ) -> List[Dict[str, Any]]:
-
+    """Handles preprocessing, segmentation (both k-types), and Delta E calculation for one image."""
+    
     image_name = Path(image_path).stem
-    print(f"DEBUG: Processing single test image: {image_name}")
-    single_image_delta_e_results = []
+    single_image_delta_e_results = [] # Bu görüntü için sonuçları topla
+    
     with timer(f"Processing test image {image_name}"):
-        print(f"DEBUG: Preprocessing image: {image_name}") # <-- EKLENDİ
-        preprocessor = Preprocessor(preprocess_config) # Pass the config object
+        # Preprocess
+        preprocessor = Preprocessor(config=preprocess_config) # Pass the config object
         try:
             preprocessed_image = preprocessor.preprocess(image_data)
             if preprocessed_image is None:
                 logging.error(f"Preprocessing returned None for {image_name}. Skipping.")
-                return single_image_delta_e_results
+                return single_image_delta_e_results # Boş liste döndür
             output_manager.save_preprocessed_image(image_name, preprocessed_image)
-            # unique_colors = len(np.unique(preprocessed_image.reshape(-1, 3), axis=0))
-            # logging.info(f"Preprocessing completed for {image_name} - unique colors: {unique_colors}")
-            print(f"DEBUG: Preprocessing finished for {image_name}") # <-- EKLENDİ
+            unique_colors = len(np.unique(preprocessed_image.reshape(-1, 3), axis=0))
+            logging.info(f"Preprocessing completed for {image_name} - unique colors: {unique_colors}")
         except Exception as e:
             logging.error(f"Preprocessing failed for {image_name}: {e}", exc_info=True)
             return single_image_delta_e_results
 
-        # Extract segmentation params
+        # Extract common segmentation params
         seg_params = config.get('segmentation_params', {})
         distance_threshold = seg_params.get('distance_threshold', 0.7)
         predefined_k = seg_params.get('predefined_k', 2)
@@ -490,65 +491,110 @@ def process_single_test_image(
         dbscan_min_samples = seg_params.get('dbscan_min_samples', 5)
         segmentation_methods = seg_params.get('methods', ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan'])
 
-        print(f"DEBUG: Starting segmentation loop for {image_name}") # <-- EKLENDİ
+        print(f"DEBUG: Starting segmentation loop for {image_name}") 
         for k_type in ['determined', 'predefined']:
             with timer(f"Segmentation ({image_name}) with k_type: {k_type}"):
                 try:
                     print(f"DEBUG: Values before SegmentationConfig init: k_type={k_type}, "
-                              f"dist_thresh={distance_threshold}, predef_k={predefined_k}, "
-                              f"k_vals={k_values}, som_vals={som_values}, methods={segmentation_methods}, "
-                              f"db_eps={dbscan_eps}, db_min={dbscan_min_samples}")
-                    
-                    print(f"DEBUG: Creating SegmentationConfig for k_type={k_type}") # <-- EKLENDİ
-                    
+                          f"dist_thresh={distance_threshold}, predef_k={predefined_k}, "
+                          f"k_vals={k_values}, som_vals={som_values}, methods={segmentation_methods}, "
+                          f"db_eps={dbscan_eps}, db_min={dbscan_min_samples}")
+                    print(f"DEBUG: Creating SegmentationConfig for k_type={k_type}") 
                     seg_config = SegmentationConfig(
-                            target_colors=target_colors_lab, # Use LAB colors
-                            distance_threshold=distance_threshold,
-                            predefined_k=predefined_k,
-                            k_values=k_values,
-                            som_values=som_values,
-                            k_type=k_type,
-                            methods=segmentation_methods, # Use methods from config
-                            dbscan_eps=dbscan_eps,
-                            dbscan_min_samples=dbscan_min_samples
-                        )
+                        target_colors=target_colors_lab, # Use LAB colors
+                        distance_threshold=distance_threshold,
+                        predefined_k=predefined_k,
+                        k_values=k_values,
+                        som_values=som_values,
+                        k_type=k_type,
+                        methods=segmentation_methods, # Use methods from config
+                        dbscan_eps=dbscan_eps,
+                        dbscan_min_samples=dbscan_min_samples
+                    )
                     
+                    # --- HATA BURADAYDI, AŞAĞIDA DÜZELTİLDİ ---
+                    print(f"DEBUG: Creating ModelConfig for k_type={k_type}") # <-- YENİ DEBUG
                     model_config = ModelConfig(
                         dbn=dbn,
-                        scalers=[scalers['scaler_x'], scalers['scaler_y'], scalers['s']], # Pass as list
+                        scalers=[scalers['scaler_x'], scalers['scaler_y'], scalers['scaler_y_ab']], # <-- DOĞRU
                         reference_kmeans_opt=reference_kmeans_opt,
                         reference_som_opt=reference_som_opt
                     )
-                    print(f"DEBUG: Creating Segmenter for k_type={k_type}") # <-- EKLENDİ
+                    # --- DÜZELTME SONU ---
+
+                    print(f"DEBUG: Creating Segmenter for k_type={k_type}") 
                     segmenter = Segmenter(preprocessed_image, seg_config, model_config, output_manager)
-                    print(f"DEBUG: Calling segmenter.process() for k_type={k_type}") # <-- EKLENDİ
-                    processing_result = segmenter.process()
-                    print(f"DEBUG: segmenter.process() finished for k_type={k_type}") # <-- EKLENDİ
+                    
+                    print(f"DEBUG: Calling segmenter.process() for k_type={k_type}")
+                    processing_result = segmenter.process() 
 
-                    # ... (results check) ...
+                    if not processing_result.results:
+                        logging.warning(f"No segmentation results returned for {image_name} with k_type={k_type}")
+                        continue
 
-                    print(f"DEBUG: Creating ColorMetricCalculator") # <-- EKLENDİ
-                    color_metric_calculator = ColorMetricCalculator(target_colors_lab)
+                    print(f"DEBUG: Creating ColorMetricCalculator")
+                    color_metric_calculator = ColorMetricCalculator(target_colors_lab) 
 
-                    print(f"DEBUG: Looping through segmentation results for k_type={k_type}") # <-- EKLENDİ
+                    print(f"DEBUG: Looping through segmentation results for k_type={k_type}")
                     for method_name, result in processing_result.results.items():
-                        # ... (validation) ...
-                        print(f"DEBUG: Calculating DeltaE for method: {method_name}") # <-- EKLENDİ
+                        if not result.is_valid():
+                            logging.warning(f"Invalid result object for {method_name} on {image_name}")
+                            continue
+                            
+                        segmented_rgb_colors = result.avg_colors 
+                        if not segmented_rgb_colors: 
+                            logging.warning(f"No average RGB colors found for {method_name} on {image_name}")
+                            continue
+                        
+                        print(f"DEBUG: Calculating DeltaE for method: {method_name}")
                         try:
-                            # ... (color conversion) ...
-                            # ... (delta e calculation) ...
-                            single_image_delta_e_results.append({...}) # İçerik aynı
-                            print(f"DEBUG: DeltaE calculated and appended for method: {method_name}") # <-- EKLENDİ
+                            segmented_lab_traditional = convert_colors_to_cielab(segmented_rgb_colors)
+                            segmented_lab_dbn = convert_colors_to_cielab_dbn(
+                                dbn, scalers['scaler_x'], scalers['scaler_y'], scalers['scaler_y_ab'], segmented_rgb_colors
+                            )
+
+                            if segmented_lab_traditional.size == 0 or segmented_lab_dbn.size == 0:
+                                 logging.warning(f"Color conversion failed for {method_name} on {image_name}. Skipping Delta E.")
+                                 continue
+
+                            delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+                            delta_e_dbn_list = color_metric_calculator.compute_all_delta_e(segmented_lab_dbn)
+
+                            avg_delta_e_traditional = np.mean([d for d in delta_e_traditional_list if d != float('inf')]) if any(d != float('inf') for d in delta_e_traditional_list) else float('nan')
+                            avg_delta_e_dbn = np.mean([d for d in delta_e_dbn_list if d != float('inf')]) if any(d != float('inf') for d in delta_e_dbn_list) else float('nan')
+
+                            single_image_delta_e_results.append({
+                                'dataset': output_manager.dataset_name, 
+                                'image': image_name,
+                                'method': method_name.replace('_opt', '').replace('_predef', ''),
+                                'k_type': k_type,
+                                'n_clusters': result.n_clusters,
+                                'traditional_avg_delta_e': avg_delta_e_traditional,
+                                'pso_dbn_avg_delta_e': avg_delta_e_dbn,
+                                'processing_time': result.processing_time
+                            })
+                            print(f"DEBUG: DeltaE calculated and appended for method: {method_name}")
+                            logging.info(f"{method_name} ({k_type}) on {image_name}: "
+                                       f"Avg ΔE Trad={avg_delta_e_traditional:.2f}, "
+                                       f"Avg ΔE DBN={avg_delta_e_dbn:.2f}, "
+                                       f"k={result.n_clusters}")
+
                         except Exception as e:
-                             print(f"DEBUG: *** Exception during DeltaE calc for {method_name}: {e} ***") # <-- EKLENDİ
-                             logging.error(...)
-                             continue
-                    print(f"DEBUG: Finished loop through segmentation results for k_type={k_type}") # <-- EKLENDİ
+                            print(f"DEBUG: [process_single_test_image] *** EXCEPTION caught during DeltaE calc for {method_name}: {type(e).__name__}: {e} ***")
+                            logging.error(f"Delta E calculation failed for {method_name} on {image_name}: {e}", exc_info=True)
+                            continue
+                    print(f"DEBUG: Finished loop through segmentation results for k_type={k_type}")
+                
+                # --- GÜNCELLENMİŞ HATA YAKALAMA BLOĞU ---
                 except Exception as e:
-                     print(f"DEBUG: *** Exception during segmentation for k_type={k_type}: {e} ***") # <-- EKLENDİ
-                     logging.error(...)
-                     continue
-        print(f"DEBUG: Finished segmentation loop for {image_name}") # <-- EKLENDİ
+                    # 's' hatası yerine tam hatayı yazdır
+                    print(f"DEBUG: [process_single_test_image] *** EXCEPTION caught: {type(e).__name__}: {e} ***")
+                    print(f"DEBUG: [process_single_test_image] Traceback:")
+                    traceback.print_exc(file=sys.stdout) # Traceback'i konsola yazdır
+                    logging.error(f"Segmentation failed for {image_name} with {k_type}: {type(e).__name__}: {e}", exc_info=True)
+                    continue 
+        print(f"DEBUG: Finished segmentation loop for {image_name}") 
+                    
     print(f"DEBUG: Finished processing single test image: {image_name}")
     return single_image_delta_e_results
 

@@ -1,5 +1,6 @@
 # src/models/segmentation/segmentation.py (REFACTORED FINAL + DEBUG PRINTS)
 
+print("DEBUG: >>> LOADING segmentation.py (VERSION: 2) <<<")
 import logging
 import os
 import cv2
