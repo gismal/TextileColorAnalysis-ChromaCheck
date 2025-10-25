@@ -3293,3 +3293,723 @@ AttributeError: 'list' object has no attribute 'size'
 PROCESSING COMPLETED IN 605.46 SECONDS
 ================================================================================
 2025-10-25 01:57:03,117 - root - INFO - main:739 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
+2025-10-25 13:04:03,892 - root - INFO - setup_logging:76 - Logging setup complete. Log file: C:\Users\LENOVO\Desktop\prints\output\processing.log
+2025-10-25 13:04:03,894 - root - INFO - main:522 - ================================================================================
+TEXTILE COLOR ANALYSIS SYSTEM - PROCESSING START
+================================================================================
+2025-10-25 13:04:03,894 - root - INFO - main:523 - Project Root: c:\Users\LENOVO\Desktop\prints
+2025-10-25 13:04:03,894 - root - INFO - main:524 - Output directory: C:\Users\LENOVO\Desktop\prints\output
+2025-10-25 13:04:03,894 - root - INFO - main:525 - Using configuration file: C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml
+2025-10-25 13:04:03,894 - root - INFO - timer:84 - Starting: Configuration loading and validation
+2025-10-25 13:04:03,908 - src.data.load_data - INFO - load_config:51 - Loaded default configuration from c:\Users\LENOVO\Desktop\prints\configurations\defaults.yaml
+2025-10-25 13:04:03,912 - src.data.load_data - INFO - load_config:61 - Loading specific configuration from C:\Users\LENOVO\Desktop\prints\configurations\pattern_configs\block_config.yaml...
+2025-10-25 13:04:03,912 - src.data.load_data - INFO - load_config:66 - Merged specific configuration over defaults.
+2025-10-25 13:04:03,912 - src.data.load_data - INFO - load_config:77 - Configuration loaded successfully.
+2025-10-25 13:04:03,913 - root - INFO - validate_processing_config:156 - Processing configuration validation passed
+2025-10-25 13:04:03,913 - root - INFO - timer:89 - Completed: Configuration loading and validation in 0.02 seconds
+2025-10-25 13:04:03,915 - src.utils.output_manager - INFO - __init__:19 - OutputManager initialized for dataset 'block' at C:\Users\LENOVO\Desktop\prints\output\datasets\block
+2025-10-25 13:04:03,915 - root - INFO - main:535 - Processing dataset: block
+2025-10-25 13:04:03,915 - root - INFO - timer:84 - Starting: Loading all test images
+2025-10-25 13:04:04,621 - src.utils.output_manager - INFO - save_test_image:66 - Saved test image copy to datasets\block\inputs\test_images\block1.jpg
+2025-10-25 13:04:05,558 - src.utils.output_manager - INFO - save_test_image:66 - Saved test image copy to datasets\block\inputs\test_images\block2.jpg
+2025-10-25 13:04:06,012 - src.utils.output_manager - INFO - save_test_image:66 - Saved test image copy to datasets\block\inputs\test_images\block3.jpg
+2025-10-25 13:04:06,576 - src.utils.output_manager - INFO - save_test_image:66 - Saved test image copy to datasets\block\inputs\test_images\block4.jpg
+2025-10-25 13:04:07,120 - src.utils.output_manager - INFO - save_test_image:66 - Saved test image copy to datasets\block\inputs\test_images\block5.jpg
+2025-10-25 13:04:07,120 - root - INFO - timer:89 - Completed: Loading all test images in 3.21 seconds
+2025-10-25 13:04:07,120 - root - INFO - main:550 - Successfully loaded 5 test images.
+2025-10-25 13:04:07,120 - root - INFO - timer:84 - Starting: Loading training data
+2025-10-25 13:04:07,120 - src.data.load_data - INFO - load_data:150 - Processing 5 images for training data...
+2025-10-25 13:04:09,038 - src.data.load_data - INFO - load_data:184 - Successfully loaded and processed 5/5 images.
+2025-10-25 13:04:09,038 - src.data.load_data - INFO - load_data:185 - rgb_data shape: (5, 30000), lab_data shape: (5, 30000)
+2025-10-25 13:04:09,038 - root - INFO - validate_loaded_data:180 - Data validation passed: 50000 total pixels available from 5 images.
+2025-10-25 13:04:09,038 - root - INFO - timer:89 - Completed: Loading training data in 1.92 seconds
+2025-10-25 13:04:09,038 - root - INFO - timer:84 - Starting: DBN initialization and training
+2025-10-25 13:04:09,038 - src.models.dbn_trainer - INFO - __init__:48 - DBNTrainer initialized.
+2025-10-25 13:04:09,038 - src.models.dbn_trainer - INFO - train:64 - Starting DBN training and PSO optimization process...
+2025-10-25 13:04:09,038 - src.data.preprocess - INFO - efficient_data_sampling:207 - Sampling 800 total samples from flattened data, max 160 per image
+2025-10-25 13:04:09,038 - src.data.preprocess - INFO - efficient_data_sampling:282 - Sampling completed: 800 samples extracted.
+2025-10-25 13:04:09,038 - src.data.preprocess - INFO - efficient_data_sampling:283 - RGB range: [31.00, 214.00]
+2025-10-25 13:04:09,038 - src.data.preprocess - INFO - efficient_data_sampling:284 - LAB ranges: L[11.76, 84.31], a[-2.00, 2.00], b[-1.00, 8.00]
+2025-10-25 13:04:09,054 - src.models.dbn_trainer - INFO - train:77 - Training set: (640, 3), Test set: (160, 3)
+2025-10-25 13:04:09,054 - src.models.dbn_trainer - INFO - _prepare_scalers:109 - Preparing and fitting scalers...
+2025-10-25 13:04:09,054 - src.models.dbn_trainer - INFO - _prepare_scalers:128 - Scaled training data - X: (640, 3), Y: (640, 3)
+2025-10-25 13:04:09,054 - src.models.dbn_trainer - INFO - _prepare_scalers:129 - X range: [0.000, 1.000]
+2025-10-25 13:04:09,054 - src.models.dbn_trainer - INFO - _prepare_scalers:130 - Y range: [0.000, 1.000]
+2025-10-25 13:04:09,054 - src.models.pso_dbn - INFO - __init__:89 - Initializing DBN with architecture: 3 -> [100, 50, 25] -> 3
+2025-10-25 13:04:09,392 - src.models.pso_dbn - INFO - _build_model:141 - DBN model built with 7503 parameters
+2025-10-25 13:04:09,455 - src.models.dbn_trainer - INFO - train:88 - Initial model has 20 weight layers
+2025-10-25 13:04:09,455 - src.models.dbn_trainer - INFO - train:90 - Layer 0: shape (3, 100), range [-0.240, 0.237]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 1: shape (100,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 2: shape (100,), range [1.000, 1.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 3: shape (100,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 4: shape (100,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 5: shape (100,), range [1.000, 1.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 6: shape (100, 50), range [-0.200, 0.200]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 7: shape (50,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 8: shape (50,), range [1.000, 1.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 9: shape (50,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 10: shape (50,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 11: shape (50,), range [1.000, 1.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 12: shape (50, 25), range [-0.282, 0.283]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 13: shape (25,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 14: shape (25,), range [1.000, 1.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 15: shape (25,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 16: shape (25,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 17: shape (25,), range [1.000, 1.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 18: shape (25, 3), range [-0.462, 0.463]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - train:90 - Layer 19: shape (3,), range [0.000, 0.000]
+2025-10-25 13:04:09,470 - src.models.dbn_trainer - INFO - _run_pso_with_retries:139 - PSO optimization attempt 1/3
+2025-10-25 13:04:09,470 - src.models.pso_dbn - INFO - optimize:253 - Starting PSO optimization with config: {'swarmsize': 20, 'maxiter': 50, 'w': 0.7, 'c1': 2.0, 'c2': 2.0}
+2025-10-25 13:07:03,822 - src.models.pso_dbn - INFO - optimize:326 - PSO optimization completed in 174.35s - Final fitness: 0.059685
+2025-10-25 13:07:03,822 - src.models.dbn_trainer - INFO - _run_pso_with_retries:154 - PSO optimization completed successfully
+2025-10-25 13:07:03,837 - src.models.dbn_trainer - INFO - train:96 - DBN training and PSO optimization complete.
+2025-10-25 13:07:03,837 - root - INFO - timer:89 - Completed: DBN initialization and training in 174.80 seconds
+2025-10-25 13:07:03,837 - root - INFO - timer:84 - Starting: Reference image loading and processing
+2025-10-25 13:07:03,837 - root - INFO - process_reference_image:259 - Processing reference image: C:\Users\LENOVO\Desktop\prints\dataset\block\reference.jpg
+2025-10-25 13:07:04,285 - root - INFO - process_reference_image:274 - Starting preprocessing for reference image
+2025-10-25 13:07:04,285 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 13:07:04,322 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 13:07:05,842 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 13:07:06,215 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 299 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 13:07:07,201 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 13:07:07,201 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 13:07:07,201 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 13:07:07,201 - root - INFO - process_reference_image:278 - Preprocessing completed, shape: (128, 128, 3)
+2025-10-25 13:07:07,201 - root - INFO - process_reference_image:286 - Determining optimal number of clusters for reference
+2025-10-25 13:07:07,213 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 118. Adjusted k-range: [2, 8]
+2025-10-25 13:07:07,213 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:07:09,434 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.972, CH=1905594.6
+2025-10-25 13:07:09,434 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:07:11,572 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.951, CH=1706930.4
+2025-10-25 13:07:11,572 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:07:13,628 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.946, CH=1403150.8
+2025-10-25 13:07:13,628 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:07:15,649 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.808, CH=2076144.5
+2025-10-25 13:07:15,649 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:07:17,669 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.941, CH=2527950.5
+2025-10-25 13:07:17,669 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=7
+2025-10-25 13:07:19,632 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=7: Sil=0.951, CH=4450625.5
+2025-10-25 13:07:19,632 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=8
+2025-10-25 13:07:21,624 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=8: Sil=0.957, CH=6006635.0
+2025-10-25 13:07:21,624 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 8 (score: 0.955)
+2025-10-25 13:07:21,624 - root - INFO - process_reference_image:299 - Optimal clusters determined: 8
+2025-10-25 13:07:21,624 - root - INFO - process_reference_image:305 - Determining DPC clusters
+2025-10-25 13:07:21,639 - root - INFO - optimal_clusters_dpc:157 - Number of unique colors: 118. Using dynamic_max_k: 10
+2025-10-25 13:07:21,655 - root - INFO - optimal_clusters_dpc:185 - Calculated DPC bandwidth: 99.985
+2025-10-25 13:07:21,655 - root - INFO - optimal_clusters_dpc:218 - DPC gamma analysis: mean=365.802, std=2013.502, threshold=2379.305
+2025-10-25 13:07:21,655 - root - INFO - optimal_clusters_dpc:229 - Optimal number of clusters estimated by DPC gamma heuristic: 2
+2025-10-25 13:07:21,655 - root - INFO - process_reference_image:313 - Performing reference segmentation with k=8
+2025-10-25 13:07:21,655 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 13:07:21,655 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:07:21,777 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 8
+2025-10-25 13:07:21,840 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 13:07:21,840 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:07:21,995 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=8
+2025-10-25 13:07:22,524 - src.models.segmentation.segmentation - WARNING - segment:395 - SOM empty mask cluster 2 (k=8).
+2025-10-25 13:07:22,524 - src.models.segmentation.segmentation - WARNING - segment:395 - SOM empty mask cluster 3 (k=8).
+2025-10-25 13:07:22,524 - src.models.segmentation.segmentation - WARNING - segment:395 - SOM empty mask cluster 4 (k=8).
+2025-10-25 13:07:22,524 - root - INFO - process_reference_image:346 - Reference image processing finished in 18.69 seconds.
+2025-10-25 13:07:22,826 - root - INFO - run_reference_processing:282 - Formatted K-Means reference results.
+2025-10-25 13:07:22,958 - root - INFO - run_reference_processing:309 - Formatted SOM reference results.
+2025-10-25 13:07:24,301 - src.utils.output_manager - INFO - save_reference_summary:108 - Saved reference summary image to datasets\block\summaries\reference_summary.png
+2025-10-25 13:07:24,301 - root - INFO - run_reference_processing:322 - Reference processed - Target LAB colors shape: (8, 3), DPC k: 2
+2025-10-25 13:07:24,301 - root - INFO - timer:89 - Completed: Reference image loading and processing in 20.46 seconds
+2025-10-25 13:07:24,313 - root - INFO - timer:84 - Starting: Processing test image block1
+2025-10-25 13:07:24,313 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3950, 3950, 3)
+2025-10-25 13:07:24,343 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3950x3950 to 512x512
+2025-10-25 13:07:25,803 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 13:07:26,153 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 332 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 13:07:26,608 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 13:07:26,608 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 13:07:26,608 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 13:07:26,608 - src.utils.output_manager - INFO - save_preprocessed_image:75 - Saved preprocessed image to datasets\block\processed\preprocessed\block1_preprocessed.png
+2025-10-25 13:07:26,623 - root - INFO - process_single_test_image:359 - Preprocessing completed for block1 - unique colors: 134
+2025-10-25 13:07:26,623 - root - INFO - timer:84 - Starting: Segmentation (block1) with k_type: determined
+2025-10-25 13:07:26,623 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: determined
+2025-10-25 13:07:26,623 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: determined
+2025-10-25 13:07:26,623 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: determined
+2025-10-25 13:07:26,623 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='determined' with methods: ['kmeans_opt', 'som_opt', 'dbscan']
+2025-10-25 13:07:26,623 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_opt
+2025-10-25 13:07:26,623 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:07:26,777 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:07:26,777 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:07:26,777 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:07:28,933 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.987, CH=3002191.2
+2025-10-25 13:07:28,933 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:07:31,120 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.979, CH=4370115.5
+2025-10-25 13:07:31,120 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:07:33,161 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.967, CH=3799184.0
+2025-10-25 13:07:33,161 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:07:35,181 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.950, CH=3871854.2
+2025-10-25 13:07:35,181 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:07:37,224 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.883, CH=3913402.2
+2025-10-25 13:07:37,224 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 3 (score: 0.964)
+2025-10-25 13:07:37,224 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 3
+2025-10-25 13:07:37,240 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_opt completed in 10.62s with 3 clusters.
+2025-10-25 13:07:37,240 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_opt
+2025-10-25 13:07:37,240 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:07:37,425 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:07:37,425 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:07:37,425 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:07:39,421 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.987, CH=3096140.2
+2025-10-25 13:07:39,421 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:07:41,373 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.979, CH=4274207.0
+2025-10-25 13:07:41,373 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:07:43,322 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.970, CH=3828054.8
+2025-10-25 13:07:43,322 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:07:45,315 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.961, CH=4415574.5
+2025-10-25 13:07:45,315 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:07:47,341 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.905, CH=5072412.5
+2025-10-25 13:07:47,341 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 3 (score: 0.749)
+2025-10-25 13:07:47,341 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=3
+2025-10-25 13:07:47,776 - src.models.segmentation.segmentation - INFO - process:496 - Method som_opt completed in 10.53s with 3 clusters.
+2025-10-25 13:07:47,776 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:07:47,776 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:07:47,887 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:295 - Finding optimal DBSCAN parameters...
+2025-10-25 13:08:29,764 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:309 - Optimal DBSCAN parameters: eps=20, min=20
+2025-10-25 13:08:31,557 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 43.78s with 3 clusters.
+2025-10-25 13:08:31,557 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='determined'.
+2025-10-25 13:08:31,670 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_opt on block1: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:08:31,781 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_opt on block1: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:08:31,881 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block1: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:08:31,881 - root - INFO - timer:89 - Completed: Segmentation (block1) with k_type: determined in 65.26 seconds
+2025-10-25 13:08:31,881 - root - INFO - timer:84 - Starting: Segmentation (block1) with k_type: predefined
+2025-10-25 13:08:31,881 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 13:08:31,881 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 13:08:31,881 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: predefined
+2025-10-25 13:08:31,881 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='predefined' with methods: ['kmeans_predef', 'som_predef', 'dbscan']
+2025-10-25 13:08:31,881 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_predef
+2025-10-25 13:08:31,881 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:08:32,012 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:08:32,012 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_predef completed in 0.13s with 2 clusters.
+2025-10-25 13:08:32,012 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_predef
+2025-10-25 13:08:32,012 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:08:32,182 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:08:32,636 - src.models.segmentation.segmentation - INFO - process:496 - Method som_predef completed in 0.61s with 2 clusters.
+2025-10-25 13:08:32,636 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:08:32,636 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:08:32,745 - src.models.segmentation.segmentation - INFO - segment:321 - Using predefined DBSCAN.
+2025-10-25 13:08:34,456 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 1.82s with 8 clusters.
+2025-10-25 13:08:34,456 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='predefined'.
+2025-10-25 13:08:34,567 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_predef on block1: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:08:34,676 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_predef on block1: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:08:34,780 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block1: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:08:34,787 - root - INFO - timer:89 - Completed: Segmentation (block1) with k_type: predefined in 2.90 seconds
+2025-10-25 13:08:34,787 - root - INFO - timer:89 - Completed: Processing test image block1 in 70.47 seconds
+2025-10-25 13:08:34,787 - root - INFO - timer:84 - Starting: Processing test image block2
+2025-10-25 13:08:34,787 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (4480, 4480, 3)
+2025-10-25 13:08:34,802 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 4480x4480 to 512x512
+2025-10-25 13:08:36,048 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 13:08:36,402 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 316 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 13:08:36,807 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 13:08:36,815 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 13:08:36,815 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 13:08:36,815 - src.utils.output_manager - INFO - save_preprocessed_image:75 - Saved preprocessed image to datasets\block\processed\preprocessed\block2_preprocessed.png
+2025-10-25 13:08:36,825 - root - INFO - process_single_test_image:359 - Preprocessing completed for block2 - unique colors: 123
+2025-10-25 13:08:36,825 - root - INFO - timer:84 - Starting: Segmentation (block2) with k_type: determined
+2025-10-25 13:08:36,825 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: determined
+2025-10-25 13:08:36,825 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: determined
+2025-10-25 13:08:36,825 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: determined
+2025-10-25 13:08:36,825 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='determined' with methods: ['kmeans_opt', 'som_opt', 'dbscan']
+2025-10-25 13:08:36,825 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_opt
+2025-10-25 13:08:36,825 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:08:36,966 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:08:36,966 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:08:36,966 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:08:38,784 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.981, CH=2685975.0
+2025-10-25 13:08:38,784 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:08:40,589 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.967, CH=3060050.5
+2025-10-25 13:08:40,589 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:08:42,405 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.952, CH=2790079.5
+2025-10-25 13:08:42,405 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:08:44,157 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.922, CH=2971583.5
+2025-10-25 13:08:44,157 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:08:45,903 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.861, CH=4003891.8
+2025-10-25 13:08:45,903 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 3 (score: 0.585)
+2025-10-25 13:08:45,903 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 3
+2025-10-25 13:08:45,934 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_opt completed in 9.10s with 3 clusters.
+2025-10-25 13:08:45,934 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_opt
+2025-10-25 13:08:45,934 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:08:46,072 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:08:46,072 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:08:46,072 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:08:47,874 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.981, CH=2912361.0
+2025-10-25 13:08:47,874 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:08:49,721 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.967, CH=3001462.8
+2025-10-25 13:08:49,721 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:08:51,541 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.952, CH=2739232.5
+2025-10-25 13:08:51,541 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:08:53,393 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.892, CH=2799587.8
+2025-10-25 13:08:53,393 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:08:55,155 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.857, CH=3811385.0
+2025-10-25 13:08:55,155 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 2 (score: 0.581)
+2025-10-25 13:08:55,155 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:08:55,540 - src.models.segmentation.segmentation - INFO - process:496 - Method som_opt completed in 9.62s with 2 clusters.
+2025-10-25 13:08:55,540 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:08:55,540 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:08:55,656 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:295 - Finding optimal DBSCAN parameters...
+2025-10-25 13:09:43,633 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:309 - Optimal DBSCAN parameters: eps=15, min=10
+2025-10-25 13:09:45,475 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 49.93s with 3 clusters.
+2025-10-25 13:09:45,475 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='determined'.
+2025-10-25 13:09:45,587 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_opt on block2: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:09:45,695 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_opt on block2: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:09:45,806 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block2: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:09:45,806 - root - INFO - timer:89 - Completed: Segmentation (block2) with k_type: determined in 68.99 seconds
+2025-10-25 13:09:45,806 - root - INFO - timer:84 - Starting: Segmentation (block2) with k_type: predefined
+2025-10-25 13:09:45,806 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 13:09:45,806 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 13:09:45,806 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: predefined
+2025-10-25 13:09:45,806 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='predefined' with methods: ['kmeans_predef', 'som_predef', 'dbscan']
+2025-10-25 13:09:45,806 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_predef
+2025-10-25 13:09:45,806 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:09:45,922 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:09:45,937 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_predef completed in 0.13s with 2 clusters.
+2025-10-25 13:09:45,937 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_predef
+2025-10-25 13:09:45,937 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:09:46,100 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:09:46,540 - src.models.segmentation.segmentation - INFO - process:496 - Method som_predef completed in 0.60s with 2 clusters.
+2025-10-25 13:09:46,540 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:09:46,540 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:09:46,656 - src.models.segmentation.segmentation - INFO - segment:321 - Using predefined DBSCAN.
+2025-10-25 13:09:48,517 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 1.97s with 4 clusters.
+2025-10-25 13:09:48,517 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='predefined'.
+2025-10-25 13:09:48,628 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_predef on block2: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:09:48,738 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_predef on block2: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:09:48,841 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block2: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:09:48,841 - root - INFO - timer:89 - Completed: Segmentation (block2) with k_type: predefined in 3.03 seconds
+2025-10-25 13:09:48,841 - root - INFO - timer:89 - Completed: Processing test image block2 in 74.06 seconds
+2025-10-25 13:09:48,841 - root - INFO - timer:84 - Starting: Processing test image block3
+2025-10-25 13:09:48,841 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3477, 3477, 3)
+2025-10-25 13:09:48,863 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3477x3477 to 511x511
+2025-10-25 13:09:50,136 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 13:09:50,441 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 358 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 13:09:50,834 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 13:09:50,834 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 13:09:50,834 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 13:09:50,842 - src.utils.output_manager - INFO - save_preprocessed_image:75 - Saved preprocessed image to datasets\block\processed\preprocessed\block3_preprocessed.png
+2025-10-25 13:09:50,853 - root - INFO - process_single_test_image:359 - Preprocessing completed for block3 - unique colors: 178
+2025-10-25 13:09:50,853 - root - INFO - timer:84 - Starting: Segmentation (block3) with k_type: determined
+2025-10-25 13:09:50,853 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: determined
+2025-10-25 13:09:50,853 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: determined
+2025-10-25 13:09:50,853 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: determined
+2025-10-25 13:09:50,853 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='determined' with methods: ['kmeans_opt', 'som_opt', 'dbscan']
+2025-10-25 13:09:50,853 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_opt
+2025-10-25 13:09:50,853 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:09:50,996 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:09:50,996 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:09:50,996 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:09:52,779 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.966, CH=1734820.8
+2025-10-25 13:09:52,779 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:09:54,627 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.933, CH=1020910.1
+2025-10-25 13:09:54,627 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:09:56,435 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.926, CH=1014539.2
+2025-10-25 13:09:56,435 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:09:58,226 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.727, CH=1201684.6
+2025-10-25 13:09:58,226 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:09:59,970 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.823, CH=2128289.2
+2025-10-25 13:09:59,970 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 2 (score: 0.823)
+2025-10-25 13:09:59,970 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:09:59,980 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_opt completed in 9.12s with 2 clusters.
+2025-10-25 13:09:59,980 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_opt
+2025-10-25 13:09:59,980 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:10:00,140 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:10:00,140 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:10:00,140 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:10:01,931 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.967, CH=1921613.9
+2025-10-25 13:10:01,931 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:10:03,722 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.939, CH=1251210.0
+2025-10-25 13:10:03,722 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:10:05,516 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.788, CH=1514113.0
+2025-10-25 13:10:05,516 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:10:07,264 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.795, CH=1671371.6
+2025-10-25 13:10:07,264 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:10:09,023 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.795, CH=1849026.0
+2025-10-25 13:10:09,023 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 2 (score: 1.000)
+2025-10-25 13:10:09,023 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:10:09,467 - src.models.segmentation.segmentation - INFO - process:496 - Method som_opt completed in 9.49s with 2 clusters.
+2025-10-25 13:10:09,467 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:10:09,467 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:10:09,574 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:295 - Finding optimal DBSCAN parameters...
+2025-10-25 13:10:59,571 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:309 - Optimal DBSCAN parameters: eps=15, min=5
+2025-10-25 13:11:01,068 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 51.60s with 3 clusters.
+2025-10-25 13:11:01,068 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='determined'.
+2025-10-25 13:11:01,184 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_opt on block3: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:11:01,284 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_opt on block3: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:11:01,400 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block3: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:11:01,400 - root - INFO - timer:89 - Completed: Segmentation (block3) with k_type: determined in 70.54 seconds
+2025-10-25 13:11:01,400 - root - INFO - timer:84 - Starting: Segmentation (block3) with k_type: predefined
+2025-10-25 13:11:01,400 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 13:11:01,400 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 13:11:01,400 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: predefined
+2025-10-25 13:11:01,400 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='predefined' with methods: ['kmeans_predef', 'som_predef', 'dbscan']
+2025-10-25 13:11:01,400 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_predef
+2025-10-25 13:11:01,400 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:11:01,516 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:11:01,516 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_predef completed in 0.12s with 2 clusters.
+2025-10-25 13:11:01,516 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_predef
+2025-10-25 13:11:01,516 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:11:01,647 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:11:02,070 - src.models.segmentation.segmentation - INFO - process:496 - Method som_predef completed in 0.55s with 2 clusters.
+2025-10-25 13:11:02,070 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:11:02,070 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:11:02,186 - src.models.segmentation.segmentation - INFO - segment:321 - Using predefined DBSCAN.
+2025-10-25 13:11:03,684 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 1.61s with 6 clusters.
+2025-10-25 13:11:03,684 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='predefined'.
+2025-10-25 13:11:03,793 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_predef on block3: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:11:03,904 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_predef on block3: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:11:04,004 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block3: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:11:04,004 - root - INFO - timer:89 - Completed: Segmentation (block3) with k_type: predefined in 2.61 seconds
+2025-10-25 13:11:04,004 - root - INFO - timer:89 - Completed: Processing test image block3 in 75.16 seconds
+2025-10-25 13:11:04,004 - root - INFO - timer:84 - Starting: Processing test image block4
+2025-10-25 13:11:04,004 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3622, 3622, 3)
+2025-10-25 13:11:04,035 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3622x3622 to 512x512
+2025-10-25 13:11:05,316 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 13:11:05,664 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 258 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 13:11:06,073 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 13:11:06,075 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 13:11:06,075 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 13:11:06,075 - src.utils.output_manager - INFO - save_preprocessed_image:75 - Saved preprocessed image to datasets\block\processed\preprocessed\block4_preprocessed.png
+2025-10-25 13:11:06,093 - root - INFO - process_single_test_image:359 - Preprocessing completed for block4 - unique colors: 131
+2025-10-25 13:11:06,093 - root - INFO - timer:84 - Starting: Segmentation (block4) with k_type: determined
+2025-10-25 13:11:06,093 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: determined
+2025-10-25 13:11:06,093 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: determined
+2025-10-25 13:11:06,093 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: determined
+2025-10-25 13:11:06,093 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='determined' with methods: ['kmeans_opt', 'som_opt', 'dbscan']
+2025-10-25 13:11:06,093 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_opt
+2025-10-25 13:11:06,093 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:11:06,235 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:11:06,235 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:11:06,235 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:11:08,025 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.981, CH=2550503.2
+2025-10-25 13:11:08,025 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:11:09,799 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.967, CH=2762126.0
+2025-10-25 13:11:09,799 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:11:11,620 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.953, CH=2744149.5
+2025-10-25 13:11:11,620 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:11:13,444 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.899, CH=3666181.8
+2025-10-25 13:11:13,444 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:11:15,264 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.963, CH=3705868.8
+2025-10-25 13:11:15,264 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 6 (score: 0.889)
+2025-10-25 13:11:15,264 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 6
+2025-10-25 13:11:15,327 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_opt completed in 9.23s with 6 clusters.
+2025-10-25 13:11:15,327 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_opt
+2025-10-25 13:11:15,327 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:11:15,624 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 50. Adjusted k-range: [2, 6]
+2025-10-25 13:11:15,624 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:11:15,627 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:11:17,597 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.981, CH=2721752.8
+2025-10-25 13:11:17,597 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:11:19,571 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.967, CH=2829620.8
+2025-10-25 13:11:19,571 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:11:21,557 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.898, CH=2742789.2
+2025-10-25 13:11:21,557 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:11:23,584 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.898, CH=3708923.5
+2025-10-25 13:11:23,584 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:11:25,984 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.963, CH=3774740.5
+2025-10-25 13:11:25,984 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 6 (score: 0.889)
+2025-10-25 13:11:25,984 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=6
+2025-10-25 13:11:26,497 - src.models.segmentation.segmentation - WARNING - segment:395 - SOM empty mask cluster 1 (k=6).
+2025-10-25 13:11:26,497 - src.models.segmentation.segmentation - WARNING - segment:395 - SOM empty mask cluster 2 (k=6).
+2025-10-25 13:11:26,497 - src.models.segmentation.segmentation - INFO - process:496 - Method som_opt completed in 11.18s with 6 clusters.
+2025-10-25 13:11:26,497 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:11:26,497 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:11:26,615 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:295 - Finding optimal DBSCAN parameters...
+2025-10-25 13:12:20,832 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:309 - Optimal DBSCAN parameters: eps=15, min=5
+2025-10-25 13:12:22,572 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 56.07s with 2 clusters.
+2025-10-25 13:12:22,572 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='determined'.
+2025-10-25 13:12:22,703 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_opt on block4: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:12:22,819 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_opt on block4: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:12:22,932 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block4: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:12:22,932 - root - INFO - timer:89 - Completed: Segmentation (block4) with k_type: determined in 76.85 seconds
+2025-10-25 13:12:22,932 - root - INFO - timer:84 - Starting: Segmentation (block4) with k_type: predefined
+2025-10-25 13:12:22,932 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 13:12:22,932 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 13:12:22,932 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: predefined
+2025-10-25 13:12:22,932 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='predefined' with methods: ['kmeans_predef', 'som_predef', 'dbscan']
+2025-10-25 13:12:22,932 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_predef
+2025-10-25 13:12:22,932 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:12:23,047 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:12:23,063 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_predef completed in 0.12s with 2 clusters.
+2025-10-25 13:12:23,063 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_predef
+2025-10-25 13:12:23,063 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:12:23,174 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:12:23,637 - src.models.segmentation.segmentation - INFO - process:496 - Method som_predef completed in 0.58s with 2 clusters.
+2025-10-25 13:12:23,637 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:12:23,637 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:12:23,753 - src.models.segmentation.segmentation - INFO - segment:321 - Using predefined DBSCAN.
+2025-10-25 13:12:25,421 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 1.78s with 6 clusters.
+2025-10-25 13:12:25,421 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='predefined'.
+2025-10-25 13:12:25,543 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_predef on block4: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:12:25,653 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_predef on block4: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:12:25,769 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block4: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:12:25,769 - root - INFO - timer:89 - Completed: Segmentation (block4) with k_type: predefined in 2.83 seconds
+2025-10-25 13:12:25,769 - root - INFO - timer:89 - Completed: Processing test image block4 in 81.76 seconds
+2025-10-25 13:12:25,769 - root - INFO - timer:84 - Starting: Processing test image block5
+2025-10-25 13:12:25,769 - src.data.preprocess - INFO - preprocess:140 - Starting preprocessing for image with shape: (3504, 3504, 3)
+2025-10-25 13:12:25,791 - src.data.preprocess - INFO - preprocess:153 - Initial resize from 3504x3504 to 512x512
+2025-10-25 13:12:27,113 - src.data.preprocess - INFO - preprocess:157 - Applied non-local means denoising with h=10
+2025-10-25 13:12:27,422 - src.data.preprocess - INFO - estimate_n_colors:64 - Estimated 307 unique colors, setting n_colors to 8 (max_colors=8)
+2025-10-25 13:12:27,839 - src.data.preprocess - INFO - quantize_image:106 - Quantized to 8 target colors. Final unique colors: 8
+2025-10-25 13:12:27,839 - src.data.preprocess - INFO - preprocess:176 - Resized to target size (128, 128)
+2025-10-25 13:12:27,839 - src.data.preprocess - INFO - preprocess:178 - Preprocessing completed
+2025-10-25 13:12:27,839 - src.utils.output_manager - INFO - save_preprocessed_image:75 - Saved preprocessed image to datasets\block\processed\preprocessed\block5_preprocessed.png
+2025-10-25 13:12:27,861 - root - INFO - process_single_test_image:359 - Preprocessing completed for block5 - unique colors: 133
+2025-10-25 13:12:27,861 - root - INFO - timer:84 - Starting: Segmentation (block5) with k_type: determined
+2025-10-25 13:12:27,861 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: determined
+2025-10-25 13:12:27,861 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: determined
+2025-10-25 13:12:27,861 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: determined
+2025-10-25 13:12:27,861 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='determined' with methods: ['kmeans_opt', 'som_opt', 'dbscan']
+2025-10-25 13:12:27,861 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_opt
+2025-10-25 13:12:27,861 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:12:28,000 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 49. Adjusted k-range: [2, 6]
+2025-10-25 13:12:28,000 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:12:28,000 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:12:29,915 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.977, CH=2414037.8
+2025-10-25 13:12:29,915 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:12:31,794 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.958, CH=2246162.8
+2025-10-25 13:12:31,794 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:12:33,629 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.862, CH=1941668.4
+2025-10-25 13:12:33,629 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:12:35,461 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.853, CH=1960086.9
+2025-10-25 13:12:35,461 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:12:37,275 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.810, CH=3263713.8
+2025-10-25 13:12:37,275 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 2 (score: 0.679)
+2025-10-25 13:12:37,275 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:12:37,290 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_opt completed in 9.42s with 2 clusters.
+2025-10-25 13:12:37,290 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_opt
+2025-10-25 13:12:37,290 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:12:37,422 - src.models.segmentation.segmentation - INFO - determine_k:105 - Unique colors: 49. Adjusted k-range: [2, 6]
+2025-10-25 13:12:37,422 - src.models.segmentation.segmentation - INFO - determine_k:111 - Subsampling pixels for cluster analysis efficiency
+2025-10-25 13:12:37,422 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=2
+2025-10-25 13:12:39,288 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=2: Sil=0.976, CH=2279323.0
+2025-10-25 13:12:39,289 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=3
+2025-10-25 13:12:41,151 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=3: Sil=0.957, CH=2202020.8
+2025-10-25 13:12:41,151 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=4
+2025-10-25 13:12:43,032 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=4: Sil=0.844, CH=1870257.5
+2025-10-25 13:12:43,033 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=5
+2025-10-25 13:12:44,898 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=5: Sil=0.842, CH=1845403.9
+2025-10-25 13:12:44,898 - src.models.segmentation.segmentation - INFO - determine_k:130 - Testing k=6
+2025-10-25 13:12:46,760 - src.models.segmentation.segmentation - INFO - determine_k:140 - Metrics for k=6: Sil=0.821, CH=1811316.8
+2025-10-25 13:12:46,760 - src.models.segmentation.segmentation - INFO - determine_k:156 - Optimal k determined: 2 (score: 1.000)
+2025-10-25 13:12:46,760 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:12:47,186 - src.models.segmentation.segmentation - INFO - process:496 - Method som_opt completed in 9.90s with 2 clusters.
+2025-10-25 13:12:47,186 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:12:47,186 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:12:47,293 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:295 - Finding optimal DBSCAN parameters...
+2025-10-25 13:13:30,777 - src.models.segmentation.segmentation - INFO - _find_optimal_dbscan_params:309 - Optimal DBSCAN parameters: eps=20, min=20
+2025-10-25 13:13:32,613 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 45.43s with 2 clusters.
+2025-10-25 13:13:32,613 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='determined'.
+2025-10-25 13:13:32,726 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_opt on block5: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:13:32,828 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_opt on block5: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:13:32,931 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block5: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:13:32,931 - root - INFO - timer:89 - Completed: Segmentation (block5) with k_type: determined in 65.07 seconds
+2025-10-25 13:13:32,931 - root - INFO - timer:84 - Starting: Segmentation (block5) with k_type: predefined
+2025-10-25 13:13:32,931 - src.models.segmentation.segmentation - INFO - __init__:222 - KMeansSegmenter initialized with k_type: predefined
+2025-10-25 13:13:32,931 - src.models.segmentation.segmentation - INFO - __init__:358 - SOMSegmenter initialized with k_type: predefined
+2025-10-25 13:13:32,931 - src.models.segmentation.segmentation - INFO - __init__:278 - DBSCANSegmenter initialized with k_type: predefined
+2025-10-25 13:13:32,931 - src.models.segmentation.segmentation - INFO - __init__:427 - Segmenter Facade initialized for k_type='predefined' with methods: ['kmeans_predef', 'som_predef', 'dbscan']
+2025-10-25 13:13:32,931 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: kmeans_predef
+2025-10-25 13:13:32,931 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:13:33,032 - src.models.segmentation.segmentation - INFO - segment:241 - KMeans: Using k = 2
+2025-10-25 13:13:33,040 - src.models.segmentation.segmentation - INFO - process:496 - Method kmeans_predef completed in 0.11s with 2 clusters.
+2025-10-25 13:13:33,040 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: som_predef
+2025-10-25 13:13:33,040 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:13:33,177 - src.models.segmentation.segmentation - INFO - segment:375 - Running SOM segmentation with k=2
+2025-10-25 13:13:33,609 - src.models.segmentation.segmentation - INFO - process:496 - Method som_predef completed in 0.57s with 2 clusters.
+2025-10-25 13:13:33,609 - src.models.segmentation.segmentation - INFO - process:492 - Running segmentation method: dbscan
+2025-10-25 13:13:33,609 - src.models.segmentation.segmentation - INFO - quantize_image:184 - Quantizing image (shape: (128, 128, 3)) to approx 50 colors
+2025-10-25 13:13:33,723 - src.models.segmentation.segmentation - INFO - segment:321 - Using predefined DBSCAN.
+2025-10-25 13:13:35,386 - src.models.segmentation.segmentation - INFO - process:496 - Method dbscan completed in 1.76s with 3 clusters.
+2025-10-25 13:13:35,386 - src.models.segmentation.segmentation - INFO - process:531 - Segmentation processing completed for k_type='predefined'.
+2025-10-25 13:13:35,515 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for kmeans_predef on block5: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:13:35,633 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for som_predef on block5: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:13:35,748 - root - ERROR - process_single_test_image:462 - Delta E calculation failed for dbscan on block5: name 'segmented_colors_lab' is not defined
+Traceback (most recent call last):
+  File "c:\Users\LENOVO\Desktop\prints\src\main.py", line 439, in process_single_test_image
+    delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
+  File "c:\Users\LENOVO\Desktop\prints\src\utils\color\color_analysis.py", line 134, in compute_all_delta_e
+    return self.compute_similarity(segmented_colors_lab)
+NameError: name 'segmented_colors_lab' is not defined
+2025-10-25 13:13:35,749 - root - INFO - timer:89 - Completed: Segmentation (block5) with k_type: predefined in 2.81 seconds
+2025-10-25 13:13:35,749 - root - INFO - timer:89 - Completed: Processing test image block5 in 69.98 seconds
+2025-10-25 13:13:35,749 - root - INFO - timer:84 - Starting: Results saving and summary
+2025-10-25 13:13:35,750 - root - WARNING - save_and_summarize_results:480 - No Delta E results were generated to save.
+2025-10-25 13:13:35,750 - root - INFO - timer:89 - Completed: Results saving and summary in 0.00 seconds
+2025-10-25 13:13:35,750 - root - INFO - main:604 - ================================================================================
+PROCESSING COMPLETED IN 571.86 SECONDS
+================================================================================
+2025-10-25 13:13:35,794 - root - INFO - main:611 - Profiling results saved to: C:\Users\LENOVO\Desktop\prints\output\profile_stats.txt
