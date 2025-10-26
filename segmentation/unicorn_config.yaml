@@ -1,7 +1,0 @@
-kmeans_clusters: 6
-predefined_k: 6
-distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/Thesis/zorlutekstil_1_2024-01-19_1042/2/orginal.95.jpg"
-test_images:
-  - "C:/Users/LENOVO/Desktop/Thesis/zorlutekstil_1_2024-01-19_1042/2/7-2.jpg"
-  - "C:/Users/LENOVO/Desktop/Thesis/zorlutekstil_1_2024-01-19_1042/2/60-1.jpg"

@@ -1,0 +1,57 @@
+# --- Preprocessing Parameters ---
+preprocess_params:
+  initial_resize: 512
+  target_size: [128, 128]
+  denoise_h: 10
+  # edge_enhance: false
+  unsharp_amount: 0.0
+  unsharp_threshold: 0
+  quantization_colors: 50 # Yeni eklendi
+  quantization_subsample: 20000 # Yeni eklendi
+  unsharp_blur_kernel_size: [5, 5] # Liste olarak YAML'de
+  unsharp_blur_sigma: 1.0
+
+# --- Segmentation Parameters ---
+segmentation_params:
+  distance_threshold: 0.7 # Kullanılmıyorsa kaldırılabilir
+  predefined_k: 2
+  k_values: [2, 3, 4, 5, 6, 7, 8] # Varsayılan aralığı güncelleyebiliriz
+  som_values: [2, 3, 4, 5, 6, 7, 8] # Varsayılan aralığı güncelleyebiliriz
+  # k_type: 'determined' # Bu genellikle komut satırından veya spesifik config'den gelir
+  methods:
+    - kmeans_opt
+    - kmeans_predef
+    - som_opt
+    - som_predef
+    - dbscan
+  dbscan_eps: 10.0
+  dbscan_min_samples: 5
+  # --- Yeni Eklenen Varsayılanlar ---
+  strategy_subsample: 10000
+  dbscan_eps_range: [10.0, 15.0, 20.0]
+  dbscan_min_samples_range: [5, 10, 20]
+  som_iterations: 100
+  som_sigma: 0.5
+  som_learning_rate: 0.25
+  # --- Bitti ---
+
+# --- Training Parameters ---
+training_params:
+  n_samples: 800
+  test_size: 0.2
+  pso_retries: 3
+  random_state: 42
+  min_samples_per_image: 50 # Yeni eklendi
+
+# --- Load Data Parameters ---
+load_data_resize: [100, 100] # Yeni eklendi (veya zaten varsa güncellendi)
+
+# --- DBN/PSO Parameters (Zaten muhtemelen vardı) ---
+dbn_params:
+  hidden_layers: [100, 50, 25]
+  dropout_rate: 0.1
+  # ... (diğer dbn parametreleri)
+pso_params:
+  swarmsize: 20
+  maxiter: 50
+  # ... (diğer pso parametreleri)

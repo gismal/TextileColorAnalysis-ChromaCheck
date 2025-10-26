@@ -1,0 +1,7 @@
+{
+  "python.pythonPath": "C:\\Users\\LENOVO\\Desktop\\prints\\.venv\\Scripts\\python.exe",
+  "python.analysis.extraPaths": ["C:\\Users\\LENOVO\\Desktop\\prints\\src"],
+  "python.analysis.disabled": ["unresolved-import"],
+  "python.languageServer": "Pylance",
+  "python-envs.pythonProjects": []
+}

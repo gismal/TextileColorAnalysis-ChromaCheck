@@ -1,0 +1,6 @@
+predefined_k: 6
+distance_threshold: 0.7
+reference_image_path: "dataset/unicorn/reference.jpg"
+test_images:
+  - "dataset/unicorn/unicorn1.jpg"
+  - "dataset/unicorn/unicorn2.jpg"

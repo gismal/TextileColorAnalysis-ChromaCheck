@@ -1,8 +1,0 @@
-# config.yaml
-kmeans_clusters: 5
-predefined_k: 5
-distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/Thesis/zorlutekstil_1_2024-01-19_1042/1/1/orginal.jpg"
-test_images:
-  - "C:/Users/LENOVO/Desktop/Thesis/zorlutekstil_1_2024-01-19_1042/1/1/1.jpg"
-  - "C:/Users/LENOVO/Desktop/Thesis/zorlutekstil_1_2024-01-19_1042/1/1/2.jpg"

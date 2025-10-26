@@ -1,0 +1,13 @@
+predefined_k: 2
+distance_threshold: 0.7
+reference_image_path: "dataset/block/reference.jpg"
+test_images:
+  - "dataset/block/block1.jpg"
+  - "dataset/block/block2.jpg"
+  - "dataset/block/block3.jpg"
+  - "dataset/block/block4.jpg"
+  - "dataset/block/block5.jpg"
+
+segmentation_params:
+  # Belki block deseni için daha dar bir k aralığı yeterlidir?
+  k_values: [2, 3]

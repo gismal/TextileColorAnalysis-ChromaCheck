@@ -1,0 +1,7 @@
+predefined_k: 3
+distance_threshold: 0.7
+reference_image_path: "dataset/stripes/reference.jpg"
+test_images:
+  - "dataset/stripes/stripes1.jpg"
+  - "dataset/stripes/stripes2.jpg"
+  - "dataset/stripes/stripes3.jpg"

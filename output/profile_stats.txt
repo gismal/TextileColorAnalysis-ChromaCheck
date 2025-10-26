@@ -1,0 +1,38 @@
+         65985619 function calls (62826555 primitive calls) in 571.724 seconds
+
+   Ordered by: cumulative time
+   List reduced from 2937 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        5    0.002    0.000  371.434   74.287 c:\Users\LENOVO\Desktop\prints\src\main.py:330(process_single_test_image)
+       10    0.001    0.000  357.505   35.751 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:466(process)
+4896/3873    0.015    0.000  266.536    0.069 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\utils\_param_validation.py:185(wrapper)
+       87    0.001    0.000  266.346    3.061 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\cluster\_unsupervised.py:42(silhouette_score)
+       87    0.020    0.000  266.339    3.061 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\cluster\_unsupervised.py:196(silhouette_samples)
+      206    5.160    0.025  266.203    1.292 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:2082(pairwise_distances_chunked)
+       10    0.180    0.018  255.753   25.575 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:312(segment)
+        5    0.001    0.000  237.534   47.507 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:294(_find_optimal_dbscan_params)
+     2001    0.098    0.000  197.040    0.098 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:391(_euclidean_distances)
+      118    0.001    0.000  194.013    1.644 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:2266(pairwise_distances)
+      118    0.001    0.000  194.012    1.644 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:1964(_parallel_pairwise)
+      118    0.001    0.000  194.006    1.644 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:273(euclidean_distances)
+     1953  123.207    0.063  183.546    0.094 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\pairwise.py:582(_euclidean_distances_upcast)
+        1    0.000    0.000  174.798  174.798 c:\Users\LENOVO\Desktop\prints\src\models\dbn_trainer.py:50(train)
+        1    0.000    0.000  174.362  174.362 c:\Users\LENOVO\Desktop\prints\src\models\dbn_trainer.py:132(_run_pso_with_retries)
+        1    0.001    0.001  174.362  174.362 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:245(optimize)
+        1    0.508    0.508  174.353  174.353 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:3(pso)
+     1020    0.008    0.000  173.814    0.170 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\pyswarm\pso.py:74(<lambda>)
+     1020    0.059    0.000  173.806    0.170 c:\Users\LENOVO\Desktop\prints\src\models\pso_dbn.py:259(objective_function)
+1229/1109    6.325    0.005  165.828    0.150 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\utils\traceback_utils.py:110(error_handler)
+     1052    0.428    0.000  159.107    0.151 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:500(predict)
+       11    0.013    0.001  108.975    9.907 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:88(determine_k)
+  208/153    6.299    0.030  101.012    0.660 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\base.py:1372(wrapper)
+       55    0.007    0.000   95.796    1.742 c:\Users\LENOVO\Desktop\prints\src\models\segmentation\segmentation.py:283(_run_dbscan)
+       55   38.688    0.703   89.466    1.627 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\cluster\_dbscan.py:362(fit)
+   103794   70.281    0.001   70.518    0.001 {built-in method tensorflow.python._pywrap_tfe.TFE_Py_FastPathExecute}
+      117   66.490    0.568   67.012    0.573 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\sklearn\metrics\cluster\_unsupervised.py:142(_silhouette_reduce)
+268162/142498    0.682    0.000   60.681    0.000 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\tensorflow\python\util\traceback_utils.py:138(error_handler)
+     1052    0.020    0.000   59.611    0.057 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\backend\tensorflow\trainer.py:723(__init__)
+     1052    0.051    0.000   59.403    0.056 C:\Users\LENOVO\Desktop\prints\.venv\lib\site-packages\keras\src\trainers\data_adapters\array_data_adapter.py:105(get_tf_dataset)
+
+
