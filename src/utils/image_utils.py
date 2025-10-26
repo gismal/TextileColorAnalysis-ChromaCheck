@@ -1,24 +1,11 @@
-# src/utils/image_utils.py (DEBUG PRINTS ADDED)
-
 import os
 import numpy as np
 import cv2
 import logging
-import pandas as pd
 from sklearn.metrics import pairwise_distances_chunked
 import time # Zamanlama için eklendi
 from pathlib import Path # Path objeleriyle çalışmak için eklendi
-from typing import Dict, Any, Tuple, Optional, List # Type hinting için eklendi
-
-# --- Gerekli Importlar ---
-from src.data.preprocess import Preprocessor, PreprocessingConfig
-from src.models.segmentation.segmentation import (
-    MetricBasedStrategy, KMeansSegmenter, SOMSegmenter, 
-    SegmentationConfig, ModelConfig, SegmentationResult # SegmentationResult da lazım
-)
-from src.models.pso_dbn import DBN
-from sklearn.preprocessing import MinMaxScaler
-from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
+from typing import Tuple, Optional, List # Type hinting için eklendi
 
 # Logging instance
 logger = logging.getLogger(__name__)
@@ -235,126 +222,3 @@ def optimal_clusters_dpc(pixels, min_k=2, max_k=10, subsample_threshold=1000, ba
     except Exception as e:
         logging.error(f"Error in calculating optimal clusters using DPC: {e}. Falling back to min_k={min_k}", exc_info=True)
         return min_k
-
-
-# --- process_reference_image Function (UPDATED with Debug Prints) ---
-
-# src/utils/image_utils.py İÇİNDE SADECE BU FONKSİYONU DEĞİŞTİR
-
-# src/utils/image_utils.py İÇİNDE SADECE BU FONKSİYONU DEĞİŞTİR
-
-def process_reference_image(
-    reference_image_path: str,
-    dbn: DBN,
-    scaler_x: MinMaxScaler,
-    scaler_y: MinMaxScaler,
-    scaler_y_ab: MinMaxScaler,
-    default_k: int,
-    preprocess_config: PreprocessingConfig
-# --- YENİ DÖNÜŞ TİPİ ---
-) -> Tuple[Optional[SegmentationResult], Optional[SegmentationResult], Optional[np.ndarray], Optional[int]]:
-    """
-    Processes reference image, returns RAW SegmentationResult objects.
-    """
-    logging.info(f"Processing reference image: {reference_image_path}")
-    start_time = time.perf_counter()
-
-    kmeans_result_obj: Optional[SegmentationResult] = None # Sonuç nesnesini tutacak
-    som_result_obj: Optional[SegmentationResult] = None    # Sonuç nesnesini tutacak
-    original_image_copy: Optional[np.ndarray] = None
-    dpc_k_result: Optional[int] = None
-
-    try:
-        # 1. Load Image
-        reference_image = cv2.imread(reference_image_path)
-        if reference_image is None: raise ValueError('Failed to load reference image')
-        original_image_copy = reference_image.copy()
-
-        # 2. Preprocess Image
-        logging.info("Starting preprocessing for reference image")
-        preprocessor = Preprocessor(config=preprocess_config)
-        preprocessed_image = preprocessor.preprocess(reference_image)
-        if preprocessed_image is None: raise ValueError("Preprocessing failed")
-        logging.info(f"Preprocessing completed, shape: {preprocessed_image.shape}")
-
-        image_to_segment = preprocessed_image
-        pixels_flat = image_to_segment.reshape(-1, 3).astype(np.float32)
-        num_pixels = pixels_flat.shape[0]
-        if num_pixels == 0: raise ValueError("Image has zero pixels after preprocessing.")
-
-        # 3. Determine Optimal K
-        logging.info("Determining optimal number of clusters for reference")
-        n_clusters = default_k
-        try:
-            fixed_k_range = list(range(2, 9))
-            temp_seg_config = SegmentationConfig(
-                target_colors=np.array([]), distance_threshold=0, predefined_k=default_k,
-                k_values=fixed_k_range, som_values=fixed_k_range
-            )
-            cluster_strategy = MetricBasedStrategy()
-            sample_size = min(10000, num_pixels)
-            pixels_subsample = pixels_flat[np.random.choice(num_pixels, sample_size, replace=False)]
-            determined_k = cluster_strategy.determine_k(pixels_subsample, temp_seg_config)
-            if determined_k >= 2: n_clusters = determined_k
-            logging.info(f"Optimal clusters determined: {n_clusters}")
-        except Exception as e:
-            logging.warning(f"Failed to determine optimal clusters: {e}. Falling back...", exc_info=True)
-            n_clusters = default_k
-
-        # 4. Determine DPC K
-        logging.info("Determining DPC clusters")
-        try:
-             dpc_k_result = optimal_clusters_dpc(pixels_subsample, min_k=2, max_k=10)
-        except Exception as e:
-             logging.warning(f"Failed to calculate DPC k: {e}. Setting to None.", exc_info=True)
-             dpc_k_result = None
-
-        # 5. Perform Segmentation (İç try bloğu KALDIRILDI, ana try yeterli)
-        logging.info(f"Performing reference segmentation with k={n_clusters}")
-        seg_config_ref = SegmentationConfig(
-            target_colors=np.array([]), distance_threshold=0, predefined_k=n_clusters,
-            k_values=[n_clusters], som_values=[n_clusters], k_type='predefined',
-            methods=['kmeans_predef', 'som_predef'], dbscan_eps=10.0, dbscan_min_samples=5
-        )
-        model_config_ref = ModelConfig(
-            dbn=dbn, scalers=[scaler_x, scaler_y, scaler_y_ab],
-            reference_kmeans_opt={}, reference_som_opt={}
-        )
-
-        # Run KMeans
-        kmeans_segmenter = KMeansSegmenter(image_to_segment, seg_config_ref, model_config_ref, cluster_strategy)
-        kmeans_result_obj = kmeans_segmenter.segment() # Dışarıdaki değişkene ata
-        print(f"DEBUG: [Ref Img] kmeans_result_obj.is_valid(): {kmeans_result_obj.is_valid() if kmeans_result_obj else 'Result is None'}")
-
-        # Run SOM
-        som_segmenter = SOMSegmenter(image_to_segment, seg_config_ref, model_config_ref, cluster_strategy)
-        som_result_obj = som_segmenter.segment() # Dışarıdaki değişkene ata
-        print(f"DEBUG: [Ref Img] som_result_obj.is_valid(): {som_result_obj.is_valid() if som_result_obj else 'Result is None'}")
-
-        # 6. Format Results - BU KISIM KALDIRILDI. Sözlük oluşturmuyoruz.
-
-    except Exception as e_outer:
-        logging.error(f"Critical error in process_reference_image: {e_outer}", exc_info=True)
-        # Hata durumunda sonuçları None yap (Zaten None olarak başlamışlardı)
-        kmeans_result_obj = None
-        som_result_obj = None
-        original_image_copy = None # Orijinal resim de kaybolmuş olabilir
-        dpc_k_result = None
-
-    # --- Fonksiyonun Sonu ---
-    duration = time.perf_counter() - start_time
-    logging.info(f"Reference image processing finished in {duration:.2f} seconds.")
-
-    # Final Check Prints (using the variables defined outside try)
-    print(f"DEBUG: [Ref Img] FINAL check before return:")
-    print(f"DEBUG: [Ref Img]   type(kmeans_result_obj): {type(kmeans_result_obj)}")
-    print(f"DEBUG: [Ref Img]   kmeans_result_obj is None: {kmeans_result_obj is None}")
-    print(f"DEBUG: [Ref Img]   type(som_result_obj): {type(som_result_obj)}")
-    print(f"DEBUG: [Ref Img]   type(original_image_copy): {type(original_image_copy)}")
-    print(f"DEBUG: [Ref Img]   dpc_k_result: {dpc_k_result}")
-
-    # Sözlük yerine doğrudan SegmentationResult nesnelerini döndür
-    return kmeans_result_obj, som_result_obj, original_image_copy, dpc_k_result
-
-# --- DPC Functions remain the same ---
-# ...
