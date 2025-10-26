@@ -109,7 +109,7 @@ class ColorMetricCalculator:
             # Check if the match is valid (target_idx != -1 and distance is not inf)
             if target_idx != -1 and distance != float('inf'):
                  # Optional additional check: ensure indices are within bounds
-                 if 0 <= seg_idx < len(segmented_colors_lab) and 0 <= target_idx < len(self.target_colors_lab):
+                 if 0 <= seg_idx < len(segmented_lab_colors) and 0 <= target_idx < len(self.target_colors_lab):
                      distances.append(distance)
                  else:
                       logger.warning(f"Match indices out of bounds: seg_idx={seg_idx}, target_idx={target_idx}. Skipping.")
@@ -131,4 +131,4 @@ class ColorMetricCalculator:
         """
         # This function essentially does the same as compute_similarity
         # We can just call compute_similarity for clarity and reuse
-        return self.compute_similarity(segmented_colors_lab)    
+        return self.compute_similarity(segmented_lab_colors)    
