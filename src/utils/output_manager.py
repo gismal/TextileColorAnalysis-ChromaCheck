@@ -1,5 +1,3 @@
-# src/utils/output_manager.py (TEMİZLENMİŞ SON HALİ)
-
 import logging
 import cv2
 import pandas as pd
@@ -8,7 +6,6 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
-
 class OutputManager:
     """Handles saving all output files in an organized structure."""
 
@@ -35,9 +32,20 @@ class OutputManager:
             (self.dataset_dir / "processed" / "segmented").mkdir(parents=True, exist_ok=True)
             (self.dataset_dir / "analysis").mkdir(parents=True, exist_ok=True)
             (self.dataset_dir / "summaries").mkdir(parents=True, exist_ok=True)
+            
+            segmented_base_dir = self.dataset_dir / "processed" / "segmented"
+            possible_methods = [
+                'kmeans_opt', 'kmeans_predef', 
+                'som_opt', 'som_predef', 
+                'dbscan'
+            ]
+            
+            for method in possible_methods:
+                (segmented_base_dir / method).mkdir(parents=True, exist_ok=True)
+            
         except Exception as e:
             logger.error(f"Failed to create output directories for {self.dataset_name}: {e}", exc_info=True)
-            raise
+            raise IOError(f"Could not create output directories: {e}")
 
     def _get_safe_filename(self, original_filename: str, suffix: str = ".png") -> str:
          """Sanitizes a filename and ensures it has the correct suffix."""
@@ -91,14 +99,57 @@ class OutputManager:
         except Exception as e:
             logger.error(f"Failed to save preprocessed image for {image_name_stem}: {e}", exc_info=True)
 
-    def save_segmentation_result(self, image: np.ndarray, method_name: str, k_type: str):
-        """Saves the segmented image output."""
+    def save_segmentation_result(self,
+                                 image: np.ndarray,
+                                 method_name: str,
+                                 k_type: str):
+        """
+        Saves the segmented image output into the subdirectory.
+        the filename will now typically be '{image_stem}_{k_type}.png'.
+        
+        Args:
+            image (np.ndarray): The segmented image array to save.
+            method_name (str): The key identifying the segmentation method 
+                               (used to determine the subdirectory).
+            k_type (str): The type of k determination used ('determined' or 'predefined').
+                          This becomes part of the filename.
+        """
+        if image is None:
+            logger.warning(f"Attempted to save None image for method {method_name}. Skipping")
+            return
+        
         try:
-            image_name_stem = self.get_current_image_name()
-            filename = f"{image_name_stem}_{method_name}_{k_type}.png"
-            save_path = self.dataset_dir / "processed" / "segmented" / filename
+            image_name_stem = self.get_current_image_name() 
+            if not image_name_stem or image_name_stem == "unknown_image":
+                logger.error(f"Cannot save segmentation result: current image stem is not set in OutputManager.")
+                # Geçici bir isimle kaydetmeyi deneyebilir veya atlayabiliriz. Şimdilik atlayalım.
+                return 
+
+            # 1. Doğru Alt Klasörü Belirle
+            # Neden? method_name'e göre sonuçları gruplamak için.
+            target_dir = self.dataset_dir / "processed" / "segmented" / method_name
+            # (Klasörün _create_directories'de oluşturulduğunu varsayıyoruz)
+            if not target_dir.exists():
+                 logger.warning(f"Directory {target_dir} does not exist. Attempting to create.")
+                 target_dir.mkdir(parents=True, exist_ok= True)
+                 target_dir = self.dataset_dir / "processed" / "segmented" / method_name
+            # (Klasörün _create_directories'de oluşturulduğunu varsayıyoruz)
+            if not target_dir.exists():
+                 logger.warning(f"Directory {target_dir} does not exist. Attempting to create.")
+                 target_dir.mkdir(parents=True, exist_ok=True) # Oluşturmayı dene
+
+            # 2. Yeni Dosya Adını Oluştur
+            # Neden? method_name artık klasör adında olduğu için dosya adında tekrarlamaya gerek yok.
+            # k_type'ı eklemek, aynı resmin farklı k belirleme sonuçlarını ayırt eder.
+            filename = f"{image_name_stem}_{k_type}.png"
+            save_path = target_dir / filename
+
+            # 3. Görüntüyü Kaydet
             cv2.imwrite(str(save_path), image)
-            logging.info(f"Saved segmented image to {save_path.relative_to(self.base_output_dir)}")
+            
+            relative_path = save_path.relative_to(self.base_output_dir)
+            logger.info(f"Saved segmented image ({method_name}) to: {relative_path}")
+            
         except Exception as e:
             logger.error(f"Failed to save segmented image for {method_name} ({k_type}): {e}", exc_info=True)
 

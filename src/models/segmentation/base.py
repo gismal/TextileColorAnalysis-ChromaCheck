@@ -58,6 +58,12 @@ class SegmentationConfig:
     methods: List[str] = field(default_factory=lambda: ['kmeans_opt', 'kmeans_predef', 'som_opt', 'som_predef', 'dbscan'])
     dbscan_eps: float = 10.0
     dbscan_min_samples: int = 5
+    strategy_subsample: int = 10000 # MetricBasedStrategy için alt örneklem
+    dbscan_eps_range: List[float] = field(default_factory=lambda: [10.0, 15.0, 20.0]) # DBSCAN 'determined' için
+    dbscan_min_samples_range: List[int] = field(default_factory=lambda: [5, 10, 20]) # DBSCAN 'determined' için
+    som_iterations: int = 100 # SOM eğitim iterasyonları
+    som_sigma: float = 0.5   # SOM sigma
+    som_learning_rate: float = 0.25 # SOM öğrenme oranı
     
 @dataclass
 class SegmentationResult:
@@ -184,6 +190,9 @@ class SegmenterBase(ABC):
         Raises:
             ValueError: If K-Means fails unexpectedly.
         """
+        n_colors = self.config.quantization_colors # <-- Config'den al
+        subsample_threshold = self.config.quantization_subsample # <-- Config'den al
+        
         if self.preprocessed_image is None or self.preprocessed_image.size == 0:
             logger.warning("Cannot quantize None or empty image.")
             return None
@@ -208,8 +217,8 @@ class SegmenterBase(ABC):
              return quantized
         
         # Subsample for efficiency if image is large
-        if n_pixels_total > 20000:
-            indices = np.random.choice(n_pixels_total, 20000, replace=False)
+        if n_pixels_total > subsample_threshold: 
+            indices = np.random.choice(n_pixels_total, subsample_threshold, replace=False)
             pixels_sample = pixels[indices]
         else:
             pixels_sample = pixels

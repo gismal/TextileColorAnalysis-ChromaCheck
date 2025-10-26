@@ -390,8 +390,8 @@ class ProcessingPipeline:
                                     'processing_time': result.processing_time
                                 })
                                 logger.info(f"-> {method_name} ({k_type}) on {image_name}: "
-                                           f"Avg ΔE Trad={avg_delta_e_traditional:.2f}, "
-                                           f"Avg ΔE DBN={avg_delta_e_dbn:.2f}, "
+                                           f"Avg Delta E Traditional={avg_delta_e_traditional:.2f}, "
+                                           f"Avg Delta E DBN={avg_delta_e_dbn:.2f}, "
                                            f"k={result.n_clusters}")
 
                             except Exception as e:

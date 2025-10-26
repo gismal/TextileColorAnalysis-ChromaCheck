@@ -1,29 +1,7 @@
-kmeans_clusters: 3
 predefined_k: 3
 distance_threshold: 0.7
-reference_image_path: "C:/Users/LENOVO/Desktop/prints/dataset/stripes/reference.jpg"
+reference_image_path: "dataset/stripes/reference.jpg"
 test_images:
-  - "C:/Users/LENOVO/Desktop/prints/dataset/stripes/stripes1.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/stripes/stripes2.jpg"
-  - "C:/Users/LENOVO/Desktop/prints/dataset/stripes/stripes3.jpg"
-
-# DBN Eğitim Parametreleri
-dbn_params:
-  hidden_layers: [100, 50, 25]
-  dropout_rate: 0.1
-  batch_normalization: true
-  activation: "relu"
-
-# PSO Eğitim Parametreleri
-pso_params:
-  swarmsize: 20
-  maxiter: 50 # Deneme için 50 iyidir, gerçek sonuç için 100+ yapabilirsiniz
-  w: 0.7
-  c1: 2.0
-  c2: 2.0
-
-# Genel Eğitim Parametreleri
-training_params:
-  n_samples: 800
-  test_size: 0.2
-  pso_retries: 3
+  - "dataset/stripes/stripes1.jpg"
+  - "dataset/stripes/stripes2.jpg"
+  - "dataset/stripes/stripes3.jpg"

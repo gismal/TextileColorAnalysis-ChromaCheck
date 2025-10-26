@@ -1,28 +1,16 @@
-# src/models/dbn_trainer.py (YENİ DOSYA)
-
 import logging
 import numpy as np
 from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-
+from src.config_types import TrainConfig
 # Proje içi importlar
 # pso_dbn'den DBN, DBNConfig, PSOConfig ve PSOOptimizer'ı import ediyoruz
 from src.models.pso_dbn import DBN, DBNConfig, PSOConfig, PSOOptimizer 
 # preprocess'ten efficient_data_sampling'i import ediyoruz
-from src.data.preprocess import efficient_data_sampling
+from src.data.sampling import efficient_data_sampling
 
 logger = logging.getLogger(__name__)
-
-@dataclass
-class TrainConfig:
-    """Training params"""
-    n_samples: int = 800
-    test_size: float = 0.2
-    pso_retries: int = 3
-    random_state: int = 42
-
 class DBNTrainer:
     """
     DBN modelini eğitmek ve PSO ile optimize etmek için
@@ -65,7 +53,7 @@ class DBNTrainer:
             
             # 1. Veri Örnekleme (main.py'den taşındı)
             rgb_samples, lab_samples = efficient_data_sampling(
-                rgb_data, lab_data, n_samples=self.train_config.n_samples
+                rgb_data, lab_data, train_config=self.train_config
             )
             
             # 2. Veriyi Bölme (main.py'den taşındı)

@@ -73,9 +73,15 @@ def setup_logging(output_dir: Path, log_level: str = 'INFO'):
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level) # Konsola sadece kullanıcı tarafından istenen seviyeyi yaz
     console_handler.setFormatter(simple_formatter)
-    logger_instance.addHandler(console_handler)
+    # use utf8 in console
+    try:
+        console_handler.setStream(open(sys.stdout.fileno(), mode='w', encoding='utf8', buffering=1))
+    except Exception as e:
+        logger.warning(f"Couldn't set console encoding to UTF-8: {e}. Using default")
 
     logging.info(f"Logging setup complete. Level: {log_level}. Log file: {log_file}")
+    
+    logger_instance.addHandler(console_handler)
 
 
 # --- KONFİGÜRASYON DOĞRULAMA ---

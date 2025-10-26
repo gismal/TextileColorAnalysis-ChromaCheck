@@ -54,12 +54,8 @@ class SOMSegmenter(SegmenterBase):
         method_name = "som_opt" if self.config.k_type == 'determined' else "som_predef"
         optimal_k = -1
         try:
-            quantized_img = self.quantize_image()
-            if quantized_img is None:
-                raise SegmentationError("Quantization failed.")
-            
             # normalize it before cuz MiniSom works with the normalized [0,1] values
-            pixels_normalized = quantized_img.reshape(-1, 3).astype(np.float32) / 255.0
+            pixels_normalized = self.pixels_flat.reshape(-1, 3).astype(np.float32) / 255.0
             if pixels_normalized.shape[0] == 0:
                 raise SegmentationError("Zero pixels.")
             
@@ -74,9 +70,12 @@ class SOMSegmenter(SegmenterBase):
             
             # train SOM, do the segmentation
             # x = 1 y= optimal_k values create a 1D vertical colour map similar to KMeans
-            som = MiniSom(x=1, y=optimal_k, input_len=3, sigma=0.5, learning_rate=0.25, random_seed=42)
+            som = MiniSom(x=1, y=optimal_k, input_len=3, 
+                                sigma=self.config.som_sigma, # <-- Config'den al
+                                learning_rate=self.config.som_learning_rate, # <-- Config'den al
+                                random_seed=42)            
             som.random_weights_init(pixels_normalized)
-            som.train_random(pixels_normalized, 100) 
+            som.train_random(pixels_normalized, self.config.som_iterations)
             
             # form the results
             # winner() finds the closest colur for each pixel
@@ -85,18 +84,6 @@ class SOMSegmenter(SegmenterBase):
             centers = np.uint8(np.clip(centers_normalized * 255.0, 0, 255))
             
             original_pixels_shape = self.preprocessed_image.shape
-            
-            # get the labels for quantize image but apply them to construct the image to the original
-            if len(labels_flat) != (original_pixels_shape[0] * original_pixels_shape[1]):
-                 logger.warning("Label mismatch. Re-predicting SOM on original.")
-                 pixels_orig_norm = self.preprocessed_image.reshape(-1, 3).astype(np.float32) / 255.0
-                 if pixels_orig_norm.shape[0] > 0:
-                    labels_flat = np.array([som.winner(pixel)[1] for pixel in pixels_orig_norm])
-                 else: 
-                     raise SegmentationError("Original image zero pixels.")
-            if len(labels_flat) != (original_pixels_shape[0] * original_pixels_shape[1]): 
-                raise SegmentationError("Label length mismatch after re-prediction.")
-            
             segmented_image = centers[labels_flat.flatten()].reshape(original_pixels_shape)
             labels_2d = labels_flat.reshape(original_pixels_shape[:2])
             

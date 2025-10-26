@@ -54,20 +54,18 @@ class KMeansSegmenter(SegmenterBase):
         method_name = "kmeans_opt" if self.config.k_type == 'determined' else "kmeans_predef"
         optimal_k = -1
         try:
-            # quantize speeds up the determination of k by reducing pixel numbers
-            quantized_img = self.quantize_image()
-            if quantized_img is None: raise SegmentationError("Quantization failed.")
-            quantized_pixels = quantized_img.reshape(-1, 3).astype(np.float32)
-            
+            pixels_for_k_determination = self.pixels_flat
+           
             # set the k value
             if self.config.k_type == 'determined':
                 logger.debug("KMeans: Determining optimal k...")
-                optimal_k = self.cluster_strategy.determine_k(quantized_pixels, self.config)
+                optimal_k = self.cluster_strategy.determine_k(pixels_for_k_determination, self.config)
             else:
                 optimal_k = self.config.predefined_k
             logger.info(f"KMeans: Using k = {optimal_k}")
             
-            if not isinstance(optimal_k, int) or optimal_k <= 0: raise SegmentationError(f"Invalid clusters: {optimal_k}")
+            if not isinstance(optimal_k, int) or optimal_k <= 0: 
+                raise SegmentationError(f"Invalid clusters: {optimal_k}")
             
             # initiates segmentation
             # to find the k, we use quantized image but we use original image for segmentation
@@ -75,7 +73,8 @@ class KMeansSegmenter(SegmenterBase):
             if pixels_for_segmentation.shape[0] < optimal_k:
                  logger.warning(f"Pixels ({pixels_for_segmentation.shape[0]}) < k ({optimal_k}). Adjusting k.")
                  optimal_k = max(1, pixels_for_segmentation.shape[0])
-            if optimal_k < 1: raise SegmentationError("Less than 1 cluster.")
+            if optimal_k < 1: 
+                raise SegmentationError("Less than 1 cluster.")
             
             # OpenCV KMeans
             criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
@@ -99,6 +98,7 @@ class KMeansSegmenter(SegmenterBase):
                          logger.warning(f"KMeans empty mask cluster {i} (k={optimal_k}).")
             
             duration = time.perf_counter() - start_time
+            
             return SegmentationResult(
                 method_name=method_name,
                 segmented_image=segmented_image,

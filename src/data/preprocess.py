@@ -1,21 +1,21 @@
-# src/data/preprocess.py (CORRECTED)
+# src/data/preprocess.py
+# SON VE TEMİZ HALİ
 
 import logging
 import cv2
 import numpy as np
-from sklearn.cluster import KMeans
-# --- FIX 1: Import dataclass ---
+from sklearn.cluster import KMeans # quantize_image için gerekli
 from dataclasses import dataclass, field
-from typing import Tuple,Optional
+from typing import Tuple, Optional
 
 logger = logging.getLogger(__name__)
 
+# Exception handler decorator (isteğe bağlı)
 def exception_handler(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            # Log full traceback for better debugging
             logger.error(f"Error in {func.__name__}: {e}", exc_info=True) 
             return None
     return wrapper
@@ -24,273 +24,245 @@ def exception_handler(func):
 class PreprocessingConfig:
     """Configuration settings for the Preprocessor."""
     initial_resize: int = 512
-    # Use field for default factory for mutable types like tuples/lists if needed
-    # but simple tuple default is fine here.
     target_size: Tuple[int, int] = (128, 128) 
     denoise_h: int = 10
-    max_colors: int = 8
-    edge_enhance: bool = False
+    # max_colors: int = 8 # <-- Bu artık gereksiz, quantization_colors kullanılıyor. Silebiliriz.
+    # edge_enhance: bool = False # Kullanılmıyorsa silebiliriz.
     unsharp_amount: float = 0.0
     unsharp_threshold: int = 0
+    quantization_colors: int = 50 # Hedef max renk sayısı (dinamik tahmin için üst limit)
+    quantization_subsample: int = 20000 
+    unsharp_blur_kernel_size: Tuple[int, int] = (5, 5)
+    unsharp_blur_sigma: float = 1.0
 
 class Preprocessor:
-    # --- FIX 2: Correct __init__ implementation ---
+    """
+    Applies a series of preprocessing steps to an input image based on configuration.
+
+    Steps include: initial resizing, denoising, optional unsharp masking,
+    color quantization, and final resizing.
+    """
+    
     def __init__(self, config: PreprocessingConfig):
-        """Initialize the preprocessor with a config object."""
-        # Assign attributes from the config object to the instance
-        self.initial_resize = config.initial_resize
-        self.target_size = config.target_size
-        self.denoise_h = config.denoise_h
-        self.max_colors = config.max_colors
-        self.edge_enhance = config.edge_enhance # Although not used in preprocess() currently
-        self.unsharp_amount = config.unsharp_amount
-        self.unsharp_threshold = config.unsharp_threshold
-        logger.debug(f"Preprocessor initialized with config: {config}")
+        """Initializes the preprocessor with a configuration object."""
+        if not isinstance(config, PreprocessingConfig):
+            raise TypeError(f"Preprocessor must be initialized with a PreprocessingConfig object, got {type(config)} instead.")
+        self.config = config 
+        logger.debug(f"Preprocessor initialized with config: {self.config}")
 
-    def estimate_n_colors(self, image):
-        """Estimate the number of colors based on unique pixel values."""
-        # Reshape defensively, handle potential empty image
-        pixels = image.reshape(-1, 3)
-        if pixels.size == 0:
-             logger.warning("Cannot estimate colors for empty image.")
-             return 2 # Default to minimum
-             
-        unique_colors = np.unique(pixels, axis=0)
-        n_unique = len(unique_colors)
+    def _estimate_n_colors(self, image: np.ndarray) -> int:
+        """
+        Estimates a reasonable number of colors for quantization based on unique colors.
+
+        Args:
+            image (np.ndarray): The image (H, W, 3) to analyze.
+
+        Returns:
+            int: The estimated number of colors, capped by config.quantization_colors.
+        """
+        # Config'den max hedef renk sayısını al
+        max_target_colors = self.config.quantization_colors 
         
-        # Calculate target number of colors, ensure it's at least 2
-        # Use max_colors directly from the instance attribute
-        n_colors = max(2, min(int(n_unique * 1.5), self.max_colors)) 
-        logger.info(f"Estimated {n_unique} unique colors, setting n_colors to {n_colors} (max_colors={self.max_colors})")
-        return n_colors
-
-    @exception_handler
-    def quantize_image(self, image):
-        """Quantize the image to a dynamically estimated number of colors using K-means."""
-        n_colors = self.estimate_n_colors(image)
-        pixels = image.reshape(-1, 3) 
-        if pixels.shape[0] == 0:
-             logger.warning("Cannot quantize empty image.")
-             return image # Return original empty image
-             
-        # Subsample if necessary
-        if pixels.shape[0] > 10000: 
-            indices = np.random.choice(pixels.shape[0], 10000, replace=False)
-            pixels_for_fit = pixels[indices]
-            logger.debug(f"Subsampled pixels for K-means fit: {pixels_for_fit.shape}")
-        else:
-            pixels_for_fit = pixels
+        pixels_est = image.reshape(-1, 3)
+        if pixels_est.size == 0: 
+            logger.warning("Cannot estimate colors for empty image. Defaulting to 2.")
+            return 2 
             
-        # Ensure pixels_for_fit is not empty before fitting
-        if pixels_for_fit.shape[0] < n_colors:
-             logger.warning(f"Number of pixels ({pixels_for_fit.shape[0]}) is less than n_colors ({n_colors}). Adjusting n_colors.")
-             n_colors = max(1, pixels_for_fit.shape[0]) # At least 1 cluster needed
-             if n_colors == 1:
-                  logger.warning("Only one cluster possible. Quantization might not be effective.")
+        try:
+            # Optimizasyon: Çok fazla piksel varsa alt örneklem al
+            subsample_estimate_threshold = 50000 # Bu da config'e eklenebilir
+            if pixels_est.shape[0] > subsample_estimate_threshold: 
+                 logger.debug(f"Subsampling pixels ({pixels_est.shape[0]}) for unique color estimation.")
+                 indices = np.random.choice(pixels_est.shape[0], subsample_estimate_threshold, replace=False)
+                 pixels_est = pixels_est[indices]
+                 
+            unique_colors_est = np.unique(pixels_est, axis=0)
+            n_unique_est = len(unique_colors_est)
+            
+            # Heuristic: Benzersiz renklerin ~1.5 katı kadar, ama config'deki max sınırı geçmeyecek şekilde. En az 2 renk.
+            estimated_colors = max(2, min(int(n_unique_est * 1.5), max_target_colors)) 
+            logger.info(f"Estimated {n_unique_est} unique colors. Target quantization colors: {estimated_colors} (Config limit: {max_target_colors})")
+            return estimated_colors
+            
+        except Exception as e:
+            logger.warning(f"Error during unique color estimation: {e}. Falling back to config limit ({max_target_colors}).")
+            return max_target_colors
 
-        if n_colors < 2 : # Kmeans requires at least 2 if possible, handle edge case n_colors=1
-             if n_colors == 1 and pixels_for_fit.shape[0]>0:
-                 center = np.mean(pixels_for_fit, axis=0)
-                 quantized = np.tile(center, (image.shape[0], image.shape[1], 1)).astype(np.uint8)
-                 labels = np.zeros(pixels.shape[0], dtype=int)
-             else:
-                 logger.error("Cannot perform K-means with less than 1 cluster or empty pixels.")
+    # @exception_handler 
+    # quantize_image artık dışarıdan n_colors almayacak
+    def quantize_image(self, image: np.ndarray) -> Optional[np.ndarray]: 
+        """
+        Reduces the number of unique colors in the input image using K-Means.
+        Determines the target number of colors dynamically using _estimate_n_colors.
+        Uses subsampling size from PreprocessingConfig.
+        
+        Args:
+            image (np.ndarray): The input image (H, W, 3) to quantize.
+
+        Returns:
+            Optional[np.ndarray]: The quantized image (H, W, 3) or None on failure.
+        """
+        subsample_threshold = self.config.quantization_subsample # Config'den al
+        
+        if image is None or image.size == 0:
+            logger.warning("Cannot quantize None or empty image.")
+            return None
+            
+        original_shape = image.shape # Orijinal şekli sakla
+
+        # 1. Hedef renk sayısını tahmin et
+        n_colors = self._estimate_n_colors(image) 
+        
+        logger.info(f"Quantizing image (shape: {original_shape}) to approx {n_colors} colors")
+        pixels = image.reshape(-1, 3).astype(np.float32)
+        n_pixels_total = pixels.shape[0]
+        
+        # Hedef renk sayısını piksel sayısına göre ayarla
+        actual_n_colors = max(1, min(n_colors, n_pixels_total))
+        if actual_n_colors != n_colors:
+            logger.warning(f"Adjusted quantization target colors to {actual_n_colors} (due to pixel count)")
+            
+        if actual_n_colors < 1:
+             logger.error("Cannot quantize to less than 1 color.")
+             return None
+             
+        if actual_n_colors == 1 and n_pixels_total > 0:
+             center = np.mean(pixels, axis=0)
+             quantized = np.tile(center, (original_shape[0], original_shape[1], 1)).astype(np.uint8)
+             logger.info("Quantized image to a single average color.")
+             return quantized
+        
+        # K-Means için alt örneklem al
+        if n_pixels_total > subsample_threshold:
+            logger.debug(f"Subsampling {n_pixels_total} pixels to {subsample_threshold} for K-Means fitting.")
+            indices = np.random.choice(n_pixels_total, subsample_threshold, replace=False)
+            pixels_sample = pixels[indices]
+        else:
+            pixels_sample = pixels
+            
+        if pixels_sample.shape[0] < actual_n_colors:
+             logger.warning(f"Sample size ({pixels_sample.shape[0]}) < target colors ({actual_n_colors}). Using sample size as n_colors.")
+             actual_n_colors = pixels_sample.shape[0]
+             if actual_n_colors < 1: 
+                 logger.error("Cannot quantize with zero samples.")
                  return None
-        else:
-             kmeans = KMeans(n_clusters=n_colors, n_init='auto', random_state=42).fit(pixels_for_fit) # Use 'auto' for n_init in newer sklearn
-             # Predict on the original full set of pixels
-             labels = kmeans.predict(pixels) 
-             quantized = kmeans.cluster_centers_[labels].reshape(image.shape).astype(np.uint8)
-        
-        n_final_colors = len(np.unique(quantized.reshape(-1, 3), axis=0))
-        logger.info(f"Quantized to {n_colors} target colors. Final unique colors: {n_final_colors}")
-        return quantized
+                 
+        # K-Means'i çalıştır
+        try:
+            kmeans = KMeans(n_clusters=actual_n_colors, n_init='auto', random_state=42).fit(pixels_sample)
+            labels = kmeans.predict(pixels) # Tüm piksellere uygula
+            quantized_pixels = kmeans.cluster_centers_[labels]
+            quantized_image = quantized_pixels.reshape(original_shape).astype(np.uint8) # Orijinal şekle döndür
+            n_final_colors = len(np.unique(quantized_image.reshape(-1, 3), axis=0))
+            logger.info(f"Quantization complete. Final unique colors: {n_final_colors} (target was {actual_n_colors})")
+            return quantized_image
+        except Exception as e:
+             logger.error(f"Error during quantization K-Means: {e}", exc_info=True)
+             return None # Hata durumunda None döndür
 
-    @exception_handler
-    def unsharp_mask(self, image):
-        """Apply unsharp masking to enhance image details."""
-        # Use instance attributes
-        if self.unsharp_amount > 0: 
-            blurred = cv2.GaussianBlur(image, (5, 5), 1.0)
-            # Ensure subtraction doesn't underflow (convert to signed int temporarily if needed)
-            mask = cv2.subtract(image.astype(np.int16), blurred.astype(np.int16))
+    # @exception_handler
+    # image argümanını ekle
+    def unsharp_mask(self, image: np.ndarray) -> np.ndarray:
+        """
+        Applies unsharp masking to enhance image details, using config parameters.
+
+        Args:
+            image (np.ndarray): Input image.
+
+        Returns:
+            np.ndarray: Sharpened image, or original if amount is zero.
+        """
+        # Config değerlerini self.config üzerinden al
+        amount = self.config.unsharp_amount
+        threshold = self.config.unsharp_threshold
+        # Tuple olduğundan emin ol ve config'den al
+        kernel_size = tuple(self.config.unsharp_blur_kernel_size) 
+        sigma = self.config.unsharp_blur_sigma
+        
+        if amount > 0: 
+            logger.debug(f"Applying unsharp mask: amount={amount}, threshold={threshold}, kernel={kernel_size}, sigma={sigma}")
+            # --- GÜNCELLENMİŞ KISIM ---
+            blurred = cv2.GaussianBlur(image, kernel_size, sigma) 
+            # --- BİTTİ ---
             
-            sharpened_float = cv2.addWeighted(image.astype(np.float32), 1.0 + self.unsharp_amount, mask.astype(np.float32), -self.unsharp_amount, 0)
-            # Clip back to uint8 range
+            mask = cv2.subtract(image.astype(np.int16), blurred.astype(np.int16))
+            sharpened_float = cv2.addWeighted(image.astype(np.float32), 1.0 + amount, mask.astype(np.float32), -amount, 0)
             sharpened = np.clip(sharpened_float, 0, 255).astype(np.uint8)
             
-            if self.unsharp_threshold > 0:
-                low_contrast_mask = np.absolute(mask) < self.unsharp_threshold
-                # Apply mask across all color channels if needed
-                if low_contrast_mask.ndim == 2: # If mask is grayscale, repeat for 3 channels
+            if threshold > 0:
+                low_contrast_mask = np.absolute(mask) < threshold
+                if low_contrast_mask.ndim == 2:
                      low_contrast_mask = np.repeat(low_contrast_mask[:, :, np.newaxis], 3, axis=2)
                 np.copyto(sharpened, image, where=low_contrast_mask)
                 
-            logger.info("Applied unsharp masking")
+            logger.info("Applied unsharp masking.")
             return sharpened
-        return image # Return original if amount is zero
+        else:
+            logger.debug("Unsharp mask amount is zero or less, skipping.")
+            return image 
 
-    @exception_handler
+    # @exception_handler # Buradaki decorator, içindeki hataları yakalar ve None döndürür
     def preprocess(self, img: np.ndarray) -> Optional[np.ndarray]:
-        """Preprocess the image with resizing, denoising, sharpening, and quantization."""
+        """
+        Applies the full preprocessing pipeline: resize, denoise, unsharp, quantize, final resize.
+
+        Args:
+            img (np.ndarray): The raw input image (BGR or RGB, assumed uint8).
+
+        Returns:
+            Optional[np.ndarray]: The fully preprocessed image, or None if any step fails.
+        """
         if img is None or img.size == 0:
              logger.error("Input image to preprocess is None or empty.")
              return None
              
-        logger.info(f"Starting preprocessing for image with shape: {img.shape}")
+        logger.info(f"Starting preprocessing pipeline for image with shape: {img.shape}")
         
-        # --- Initial resize ---
-        # Handle potential division by zero if image dimensions are 0
+        # --- Adım 1: İlk Yeniden Boyutlandırma ---
         h, w = img.shape[:2]
         if min(h, w) == 0:
              logger.error("Input image has zero height or width.")
              return None
-        scale_factor = self.initial_resize / min(h, w)
-        # Ensure dimensions are integers and positive
+        scale_factor = self.config.initial_resize / min(h, w) 
         new_w = max(1, int(w * scale_factor))
         new_h = max(1, int(h * scale_factor))
-        resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
-        logger.info(f"Initial resize from {w}x{h} to {new_w}x{new_h}")
+        try:
+             resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+             logger.info(f"Initial resize from {w}x{h} to {new_w}x{new_h}")
+        except cv2.error as e:
+             logger.error(f"Initial resize failed: {e}")
+             return None # Kritik hata, devam etme
 
-        # --- Denoise ---
-        denoised = cv2.fastNlMeansDenoisingColored(resized, None, h=self.denoise_h, templateWindowSize=7, searchWindowSize=21)
-        logger.info(f"Applied non-local means denoising with h={self.denoise_h}")
+        # --- Adım 2: Gürültü Azaltma ---
+        try:
+             denoised = cv2.fastNlMeansDenoisingColored(resized, None, h=self.config.denoise_h, templateWindowSize=7, searchWindowSize=21) 
+             logger.info(f"Applied non-local means denoising with h={self.config.denoise_h}")
+        except cv2.error as e:
+             logger.warning(f"Denoising failed: {e}. Continuing without denoising.")
+             denoised = resized # Hata olursa orijinal resized ile devam et
 
-        # --- Apply unsharp masking (optional) ---
-        sharpened_image = self.unsharp_mask(denoised)
+        # --- Adım 3: Keskinleştirme (Unsharp Mask) ---
+        sharpened_image = self.unsharp_mask(denoised) 
         
-        # --- Quantize colors ---
-        quantized_image = self.quantize_image(sharpened_image)
-        if quantized_image is None: # Handle potential failure in quantization
-             logger.error("Color quantization failed.")
-             return None
+        # --- Adım 4: Renk Niceleme (Quantization) ---
+        quantized_image = self.quantize_image(sharpened_image) 
+        if quantized_image is None: 
+             logger.error("Color quantization step failed during preprocessing.")
+             return None # Kritik hata, devam etme
         
-        # --- Final resize to target size ---
-        # Ensure target_size has positive integer values
-        target_w, target_h = self.target_size
-        if target_w <= 0 or target_h <= 0:
-             logger.error(f"Invalid target_size: {self.target_size}. Using original quantized size.")
-             final_image = quantized_image
-        else:
-             final_image = cv2.resize(quantized_image, self.target_size, interpolation=cv2.INTER_AREA)
-             logger.info(f"Resized to target size {self.target_size}")
+        # --- Adım 5: Son Yeniden Boyutlandırma ---
+        try:
+             target_w, target_h = self.config.target_size 
+             if target_w <= 0 or target_h <= 0:
+                  logger.error(f"Invalid target_size in config: {self.config.target_size}. Cannot perform final resize.")
+                  final_image = quantized_image 
+             else:
+                  # Quantize edilmiş görüntüyü son boyuta getir
+                  final_image = cv2.resize(quantized_image, self.config.target_size, interpolation=cv2.INTER_AREA) 
+                  logger.info(f"Final resize to target size {self.config.target_size}")
+        except cv2.error as e:
+             logger.error(f"Final resize failed: {e}")
+             return None # Kritik hata, devam etme
 
-        logger.info("Preprocessing completed")
+        logger.info("Preprocessing pipeline completed successfully.")
         return final_image
-
-# --- efficient_data_sampling function (Unchanged from previous version) ---
-# (Make sure List and Tuple are imported from typing if needed)
-from typing import List, Tuple 
-
-def efficient_data_sampling(rgb_data: np.ndarray, 
-                            lab_data: np.ndarray, 
-                            n_samples: int = 800, 
-                            max_per_image: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray]:
-    # ... (function implementation remains the same as your previous version) ...
-    # ... (Make sure it handles the expected input shapes from load_data correctly) ...
-    rgb_samples = []
-    lab_samples = []
-    
-    # Handle flattened data: shape (n_images, n_pixels*3)
-    if rgb_data.ndim == 2 and lab_data.ndim == 2 and rgb_data.shape[0] == lab_data.shape[0]:
-        n_images = rgb_data.shape[0]
-        if n_images == 0: raise ValueError("Input data arrays are empty.")
-        
-        # Check if n_pixels can be inferred
-        if rgb_data.shape[1] % 3 != 0:
-            raise ValueError(f"Flattened RGB data shape {rgb_data.shape} not divisible by 3.")
-        n_pixels_per_image = rgb_data.shape[1] // 3
-        
-        if max_per_image is None:
-            max_per_image = max(50, n_samples // n_images)
-        
-        logger.info(f"Sampling {n_samples} total samples from flattened data, max {max_per_image} per image")
-        
-        total_sampled_count = 0
-        indices_list = [] # Collect all indices first
-
-        for i in range(n_images):
-            # Calculate how many to sample from this image
-            remaining_samples = n_samples - total_sampled_count
-            n_this_image = min(max_per_image, n_pixels_per_image, remaining_samples)
-
-            if n_this_image <= 0 and total_sampled_count >= n_samples:
-                break # Stop if we have enough samples
-            if n_this_image <= 0:
-                 logger.debug(f"Skipping image {i+1}, no samples needed or possible.")
-                 continue
-
-            # Generate indices for sampling within this image's flattened pixel range
-            img_indices = np.random.choice(n_pixels_per_image, n_this_image, replace=False)
-            indices_list.append((i, img_indices)) # Store image index and pixel indices
-            total_sampled_count += n_this_image
-            logger.debug(f"Planning to sample {n_this_image} pixels from image {i+1}")
-
-        # Now extract samples efficiently using collected indices
-        if not indices_list:
-             raise ValueError("Could not plan any samples.")
-             
-        # Preallocate arrays for efficiency
-        rgb_result = np.zeros((total_sampled_count, 3), dtype=np.float32)
-        lab_result = np.zeros((total_sampled_count, 3), dtype=np.float32)
-        current_idx = 0
-
-        for img_idx, pixel_indices in indices_list:
-            try:
-                num_to_extract = len(pixel_indices)
-                # Reshape data for this image
-                rgb_flat_img = rgb_data[img_idx].reshape(-1, 3)
-                lab_flat_img = lab_data[img_idx].reshape(-1, 3)
-
-                # Extract RGB
-                rgb_sample = rgb_flat_img[pixel_indices].astype(np.float32)
-                # Ensure RGB is in 0-255 range (redundant if load_data guarantees it)
-                # if np.any(rgb_sample > 1.0): # Quick check if needed
-                #      rgb_sample = np.clip(rgb_sample, 0, 255)
-                # else:
-                #      rgb_sample *= 255.0 # Assume 0-1 if max is <= 1
-                # rgb_sample = np.clip(rgb_sample, 0, 255) # Final clip
-
-                # Extract LAB and convert ranges
-                lab_sample = lab_flat_img[pixel_indices].astype(np.float32).copy()
-                if np.any(lab_sample[:, 0] > 100): # Check if L needs conversion
-                    lab_sample[:, 0] = lab_sample[:, 0] / 255.0 * 100.0
-                if np.any(lab_sample[:, 1:] >= 0): # Check if a,b need conversion
-                    lab_sample[:, 1:] = lab_sample[:, 1:] - 128.0
-                    
-                # Place extracted samples into preallocated arrays
-                rgb_result[current_idx : current_idx + num_to_extract] = rgb_sample
-                lab_result[current_idx : current_idx + num_to_extract] = lab_sample
-                current_idx += num_to_extract
-            
-            except IndexError:
-                 logger.error(f"Index error sampling image {img_idx}. Indices: {pixel_indices.max()} vs shape {rgb_data[img_idx].shape}")
-                 continue # Skip this image
-            except Exception as e:
-                logger.error(f"Error extracting samples from image {img_idx}: {e}")
-                continue # Skip this image
-
-        # If errors occurred, the result arrays might be larger than needed
-        if current_idx < total_sampled_count:
-             logger.warning(f"Only extracted {current_idx}/{total_sampled_count} samples due to errors.")
-             rgb_result = rgb_result[:current_idx]
-             lab_result = lab_result[:current_idx]
-
-        if rgb_result.shape[0] == 0:
-            raise ValueError("No samples could be successfully extracted.")
-
-        logger.info(f"Sampling completed: {rgb_result.shape[0]} samples extracted.")
-        logger.info(f"RGB range: [{rgb_result.min():.2f}, {rgb_result.max():.2f}]")
-        logger.info(f"LAB ranges: L[{lab_result[:, 0].min():.2f}, {lab_result[:, 0].max():.2f}], "
-                    f"a[{lab_result[:, 1].min():.2f}, {lab_result[:, 1].max():.2f}], "
-                    f"b[{lab_result[:, 2].min():.2f}, {lab_result[:, 2].max():.2f}]")
-        
-        return rgb_result, lab_result
-        
-    else:
-         # Handle case where data might be a list of images (less efficient)
-         # This part needs adjustment if load_data always returns flattened arrays
-         logger.warning("efficient_data_sampling received data not in expected flattened format. Attempting list processing.")
-         # ... (Your previous list processing logic could go here as a fallback, 
-         #      but ensure load_data format is consistent first) ...
-         raise NotImplementedError("List-based sampling needs review based on load_data output format.")

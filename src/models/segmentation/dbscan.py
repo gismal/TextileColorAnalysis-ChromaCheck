@@ -65,8 +65,8 @@ class DBSCANSegmenter(SegmenterBase):
             Tuple[float, int]: the best (eps, min_samples) found
         """
         logger.info("Finding optimal DBSCAN parameters (heuristic)...")
-        eps_values = [10, 15, 20] 
-        min_samples_values = [5, 10, 20] 
+        eps_values = self.config.dbscan_eps_range # <-- Config'den al
+        min_samples_values = self.config.dbscan_min_samples_range
         best_silhouette = -1.1
         best_params = (self.config.dbscan_eps, self.config.dbscan_min_samples)
         
@@ -103,10 +103,7 @@ class DBSCANSegmenter(SegmenterBase):
         start_time = time.perf_counter()
         method_name = "dbscan"
         try:
-            quantized_img = self.quantize_image();
-            if quantized_img is None: 
-                raise SegmentationError("Quantization failed.")
-            pixels = quantized_img.reshape(-1, 3).astype(np.float32)
+            pixels = self.pixels_flat
             if pixels.shape[0] == 0: 
                 raise SegmentationError("Zero pixels.")
             
@@ -125,40 +122,30 @@ class DBSCANSegmenter(SegmenterBase):
                 logger.warning("No clusters.")
                 return SegmentationResult(method_name=method_name,
                                           processing_time=time.perf_counter()-start_time)
-            
-            original_pixels = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
-            
-            # check if labels and original_pixels has the same length cuz quantize_iamge won't change pixel number, just colour count
-            if len(labels) != original_pixels.shape[0]:
-                 logger.warning("Label mismatch after quantize. Re-running DBSCAN on original pixels (slower)...")
-                 labels, n_clusters = self._run_dbscan(original_pixels, eps, min_samples)
-                 if n_clusters == 0: 
-                     logger.error("DBSCAN failed on original pixels.")
-                     return SegmentationResult(method_name=method_name, processing_time=time.perf_counter()-start_time)
-            
             # construct the image 
             centers = []
             valid_labels = []
             unique_cluster_labels = np.unique(labels[labels >= 0]) # keep the noise off
+            original_pixels_for_color = self.pixels_flat
             
             for label_id in unique_cluster_labels:
                 
                 mask = (labels == label_id)
                 if np.sum(mask) > 0: 
-                    centers.append(np.mean(original_pixels[mask], axis=0))
+                    centers.append(np.mean(original_pixels_for_color[mask], axis=0))
                     valid_labels.append(label_id)
                 else: 
                     logger.warning(f"DBSCAN cluster {label_id} empty?")
                     
             if not centers: 
-                logger.error("DBSCAN failed centers.")
+                logger.error("DBSCAN failed to find any valid cluster centers.")
                 return SegmentationResult(method_name=method_name, processing_time=time.perf_counter()-start_time)
             
             centers = np.uint8(centers)
             actual_n_clusters = len(centers)
             
             # fill the new centeral colours based on the labels
-            segmented_flat = np.zeros_like(original_pixels, dtype=np.uint8)
+            segmented_flat = np.zeros_like(original_pixels_for_color, dtype=np.uint8)
             label_to_center_idx = {label_id: idx for idx, label_id in enumerate(valid_labels)}
             
             for i in range(len(labels)):

@@ -64,9 +64,10 @@ class MetricBasedStrategy(ClusterStrategy):
              return config.predefined_k
         # Neden: Çok fazla piksel üzerinde metrik hesaplamak yavaştır.
         # Rastgele bir alt örneklem (subsample) kullanmak yeterince iyi bir sonuç verir.
-        if pixels.shape[0] > 10000:
-            logger.info("Subsampling pixels for cluster analysis efficiency")
-            indices = np.random.choice(pixels.shape[0], 10000, replace=False)
+        subsample_threshold = config.strategy_subsample # <-- Config'den al
+        if pixels.shape[0] > subsample_threshold:
+            logger.info(f"Subsampling pixels to {subsample_threshold} for cluster analysis efficiency")
+            indices = np.random.choice(pixels.shape[0], subsample_threshold, replace=False)
             pixels = pixels[indices]
             
         if pixels.shape[0] < min_k:
