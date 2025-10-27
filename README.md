@@ -68,52 +68,49 @@ The execution flow managed by `src/main.py` and `src/pipeline.py`:
     - Calculates average Delta E 2000 between segmented colors and target colors using _both_ standard CIEL*a*b* and PSO-DBN CIEL*a*b* values.
 6.  **Save & Summarize Results:** Saves all Delta E results to a CSV file and prints summary tables to the console.
 
----
-
 ## 🌳 Directory Structure
 
-prints/
-├── .venv/                  # Virtual environment
-├── configurations/
-│   ├── defaults.yaml       # Default parameters for all pipelines
-│   └── pattern_configs/    # Specific configurations per dataset
-│       ├── block_config.yaml
-│       ├── flowers_config.yaml
-│       └── ...
-├── dataset/                # Raw image data
-│   ├── block/
-│   ├── flowers/
-│   └── ...
-├── notebooks/              # Jupyter notebooks for experimentation/analysis (optional)
-├── output/                 # Generated output files (created on run)
-│   └── datasets/
-│       └── [dataset_name]/ # e.g., block
-│           ├── analysis/       # CSV results (e.g., block_delta_e_results.csv)
-│           ├── inputs/
-│           │   ├── reference_image/ # Copy of the reference image used
-│           │   └── test_images/     # Copies of the test images used
-│           ├── processed/
-│           │   ├── preprocessed/    # Preprocessed test images (e.g., block1_preprocessed.png)
-│           │   └── segmented/       # Segmented test images, organized by method
-│           │       ├── kmeans_opt/      # e.g., block1_determined.png
-│           │       ├── kmeans_predef/   # e.g., block1_predefined.png
-│           │       ├── som_opt/
-│           │       ├── som_predef/
-│           │       └── dbscan/          # e.g., block1_determined.png, block1_predefined.png
-│           └── summaries/           # Summary plots/images (e.g., reference_summary.png)
-├── src/                    # Source code
-│   ├── __init__.py         # Makes 'src' a package
-│   ├── data/               # Data loading, preprocessing, sampling modules
-│   ├── models/             # ML models (DBN, PSO) and Segmentation logic (package)
-│   ├── utils/              # Helper modules (color, image, output, setup)
-│   ├── config_types.py     # Dataclasses for configuration objects
-│   ├── main.py             # Main script entry point (starts the application)
-│   └── pipeline.py         # Core processing workflow class (orchestrator)
-├── reports/                # Project reports, summaries (optional)
-├── requirements.txt        # Project dependencies
-├── README.md               # This file
-└── LICENSE                 # License file (e.g., MIT)
-
+* `prints/`
+    * `.venv/` - Virtual environment
+    * `configurations/`
+        * `defaults.yaml` - Default parameters for all pipelines
+        * `pattern_configs/` - Specific configurations per dataset
+            * `block_config.yaml`
+            * `flowers_config.yaml`
+            * `...`
+    * `dataset/` - Raw image data
+        * `block/`
+        * `flowers/`
+        * `...`
+    * `notebooks/` - Jupyter notebooks for experimentation/analysis (optional)
+    * `output/` - Generated output files (created on run)
+        * `datasets/`
+            * `[dataset_name]/` (e.g., `block`)
+                * `analysis/` - CSV results (e.g., `block_delta_e_results.csv`)
+                * `inputs/`
+                    * `reference_image/` - Copy of the reference image used
+                    * `test_images/` - Copies of the test images used
+                * `processed/`
+                    * `preprocessed/` - Preprocessed test images (e.g., `block1_preprocessed.png`)
+                    * `segmented/` - Segmented test images, organized by method
+                        * `kmeans_opt/` (e.g., `block1_determined.png`)
+                        * `kmeans_predef/` (e.g., `block1_predefined.png`)
+                        * `som_opt/`
+                        * `som_predef/`
+                        * `dbscan/` (e.g., `block1_determined.png`)
+                * `summaries/` - Summary plots/images (e.g., `reference_summary.png`)
+    * `src/` - Source code
+        * `__init__.py` - Makes 'src' a package
+        * `data/` - Data loading, preprocessing, sampling modules
+        * `models/` - ML models (DBN, PSO) and Segmentation logic (package)
+        * `utils/` - Helper modules (color, image, output, setup)
+        * `config_types.py` - Dataclasses for configuration objects
+        * `main.py` - Main script entry point (starts the application)
+        * `pipeline.py` - Core processing workflow class (orchestrator)
+    * `reports/` - Project reports, summaries (optional)
+    * `requirements.txt` - Project dependencies
+    * `README.md` - This file
+    * `LICENSE` - License file (e.g., MIT)
 ## Setup and Installation
 
 1.  **Clone the Repository:**
