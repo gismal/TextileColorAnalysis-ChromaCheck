@@ -72,9 +72,6 @@ The execution flow managed by `src/main.py` and `src/pipeline.py`:
 
 ## 🌳 Directory Structure
 
-## 🌳 Directory Structure
-
-```text
 prints/
 ├── .venv/                  # Virtual environment
 ├── configurations/
