@@ -6,8 +6,7 @@ import logging
 from typing import List, Tuple, Union, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    # Try importing the actual classes for runtime checks if possible,
-    # but primarily for type hinting.
+    # Try importing the actual classes for runtime checks if possible but primarily for type hinting.
     from src.models.pso_dbn import DBN
     from sklearn.preprocessing import MinMaxScaler
 else:
@@ -18,7 +17,8 @@ else:
 logger = logging.getLogger(__name__)
 
 def convert_colors_to_cielab(colors: Union[List, np.ndarray]) -> np.ndarray:
-    """Convert a list/array of RGB colors to CIELAB using skimage.
+    """
+    Convert a list/array of RGB colors to CIELAB using skimage.
     Handles input range conversion.
 
     Args:
@@ -28,7 +28,6 @@ def convert_colors_to_cielab(colors: Union[List, np.ndarray]) -> np.ndarray:
     Returns:
         np.ndarray: Array of LAB colors (standard CIELAB ranges). Returns empty array on error.
     """
-    # --- FIX 1: Use 'is None' ---
     if colors is None:
         logger.warning("Input colors for CIELAB conversion is None")
         return np.array([])
@@ -36,7 +35,6 @@ def convert_colors_to_cielab(colors: Union[List, np.ndarray]) -> np.ndarray:
     try:
         if not isinstance(colors, np.ndarray):
             try:
-                # --- FIX 2: Use colors_arr ---
                 colors_arr = np.array(colors, dtype = np.float32)
             except ValueError:
                 logger.error("Could not convert input list to NumPy array")
@@ -48,7 +46,7 @@ def convert_colors_to_cielab(colors: Union[List, np.ndarray]) -> np.ndarray:
         if colors_arr.ndim == 1 and colors_arr.size % 3 == 0:
             colors_arr = colors_arr.reshape(-1, 3)
         elif colors_arr.ndim != 2 or colors_arr.shape[1] != 3:
-            if colors_arr.size == 0: # Handle empty input gracefully
+            if colors_arr.size == 0:
                  return np.array([])
             logger.error(f"Input colors have unexpected shape: {colors_arr.shape}. Expected (n, 3).")
             return np.array([])
@@ -74,7 +72,9 @@ def convert_colors_to_cielab_dbn(dbn: DBN,
                                  scaler_y: MinMaxScaler,
                                  scaler_y_ab: MinMaxScaler,
                                  colors: Union[List, np.ndarray]) -> np.ndarray:
-    """Convert RGB colors to CIELAB using a DBN model with scaling.
+    """
+    Convert RGB colors to CIELAB using a DBN model with scaling.
+    
     Args:
         dbn: Trained Deep Belief Network model.
         scaler_x (MinMaxScaler): Scaler fitted on RGB data [0, 255] to range [0, 1].
@@ -99,8 +99,7 @@ def convert_colors_to_cielab_dbn(dbn: DBN,
                 return np.array([])
         else:
             colors_arr = colors.astype(np.float32)
-
-        # --- FIX 3: Use colors_arr ---
+            
         if colors_arr.ndim == 1 and colors_arr.size % 3 == 0:
             colors_arr = colors_arr.reshape(-1,3)
         elif colors_arr.ndim != 2 or colors_arr.shape[1] != 3:
@@ -151,11 +150,13 @@ def ciede2000_distance(lab1: Union[List, Tuple, np.ndarray],
         logger.error(f"Error calculating CIEDE2000 distance between {lab1} and {lab2}: {e}")
         return float('inf')
 
-# --- FIX 5: Updated docstring ---
 def bgr_to_rgb(color: Union[List, Tuple, np.ndarray]) -> np.ndarray:
-    """Convert a BGR color (OpenCV default) to RGB.
+    """
+    Convert a BGR color (OpenCV default) to RGB.
+    
     Args:
         color (Union[List, Tuple, np.ndarray]): BGR color in [B, G, R] format.
+    
     Returns:
         np.ndarray: RGB color in [R, G, B] format. Returns empty array on error.
     """
