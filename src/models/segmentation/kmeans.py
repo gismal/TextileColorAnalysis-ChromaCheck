@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class KMeansSegmenter(SegmenterBase):
     """
-    implements the segmetnation contract using OpenCV's KMeans algo 
+    Implements the segmetnation contract using OpenCV's KMeans algo 
     """
     def __init__(self, 
                  preprocessed_image: np.ndarray,
@@ -22,7 +22,7 @@ class KMeansSegmenter(SegmenterBase):
                  models: ModelConfig,
                  cluster_strategy: ClusterStrategy):
         """
-        initializes the KMeansSegmenter
+        Initializes the KMeansSegmenter
         
         Args: 
             preprocessed_image: The (H, W, 3) image to segment
@@ -40,8 +40,8 @@ class KMeansSegmenter(SegmenterBase):
 
     def segment(self) -> SegmentationResult:
         """
-        performs segmentation using cv2.kmeans
-        it determines the 'k' values based on the k_type ('determined' or 'predefined') and then applies KMeans clustering
+        Performs segmentation using cv2.kmeans
+        It determines the 'k' values based on the k_type ('determined' or 'predefined') and then applies KMeans clustering
         to the original preprocessed image pixels
         
         Returns
@@ -67,8 +67,7 @@ class KMeansSegmenter(SegmenterBase):
             if not isinstance(optimal_k, int) or optimal_k <= 0: 
                 raise SegmentationError(f"Invalid clusters: {optimal_k}")
             
-            # initiates segmentation
-            # to find the k, we use quantized image but we use original image for segmentation
+            # initiates segmentation to find the k, we use quantized image but we use original image for segmentation
             pixels_for_segmentation = self.preprocessed_image.reshape(-1, 3).astype(np.float32)
             if pixels_for_segmentation.shape[0] < optimal_k:
                  logger.warning(f"Pixels ({pixels_for_segmentation.shape[0]}) < k ({optimal_k}). Adjusting k.")

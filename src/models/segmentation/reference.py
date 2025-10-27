@@ -1,18 +1,15 @@
-# src/models/segmentation/reference.py
-# CORRECTED AND COMPLETED
-
 import logging
 import time
 import numpy as np
-from typing import Tuple, Optional, List # Added List
+from typing import Tuple, Optional, List 
 
 # Necessary base classes and data structures
 from .base import (
     SegmentationConfig, ModelConfig, SegmentationResult, SegmentationError, SegmenterBase
 )
-# Strategy class (for determining k)
+# Strategy class 
 from .strategy import MetricBasedStrategy, ClusterStrategy 
-# Concrete segmenter classes (can use directly within the same package)
+# Concrete segmenter classes 
 from .kmeans import KMeansSegmenter
 from .som import SOMSegmenter
 
@@ -21,14 +18,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.models.pso_dbn import DBN
     from sklearn.preprocessing import MinMaxScaler
-    # PreprocessingConfig is NOT needed here anymore
 
 # Context manager for timing
 from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
-# --- Timer (Copied from pipeline.py for self-containment if needed) ---
+# --- Timer  ---
 @contextmanager
 def timer(operation_name: str):
     """Logs the duration of a code block."""
@@ -41,29 +37,24 @@ def timer(operation_name: str):
         logger.info(f"Completed: {operation_name} in {duration:.2f} seconds")
 
 # --- Main Function ---
-
 def segment_reference_image(
     preprocessed_image: np.ndarray,
     dbn: 'DBN',
-    scalers: List['MinMaxScaler'], # Use List type hint
+    scalers: List['MinMaxScaler'], 
     default_k: int,
-    k_range: Optional[List[int]] = None # Use List type hint
+    k_range: Optional[List[int]] = None 
 ) -> Tuple[Optional[SegmentationResult], Optional[SegmentationResult], int]:
     """
-    Performs K-Means and SOM segmentation specifically for the reference image.
-
-    This function encapsulates the logic previously found in image_utils,
-    keeping segmentation logic within the segmentation package. It determines
-    the optimal 'k' using MetricBasedStrategy and runs both K-Means and SOM
-    with that 'k'.
+    Performs K-Means and SOM segmentation specifically for the reference image. This function encapsulates 
+    the logic previously found in image_utils, keeping segmentation logic within the segmentation package. 
+    It determines the optimal 'k' using MetricBasedStrategy and runs both K-Means and SOM with that 'k'.
 
     Args:
         preprocessed_image: The preprocessed reference image (already quantized).
         dbn: The trained DBN model.
         scalers: List containing [scaler_x, scaler_y, scaler_y_ab].
         default_k: The default 'k' value to use if determination fails.
-        k_range: The list of k values to test (e.g., [2, 3, 4, 5]).
-                 Defaults to range(2, 9).
+        k_range: The list of k values to test (e.g., [2, 3, 4, 5]). Defaults to range(2, 9).
 
     Returns:
         Tuple[Optional[SegmentationResult], Optional[SegmentationResult], int]:
@@ -106,7 +97,7 @@ def segment_reference_image(
         # Use the (already quantized) pixels for k determination
         pixels_for_k_determination = pixels_flat
         
-        # Subsample if necessary (logic copied from MetricBasedStrategy for clarity here)
+        # Subsample if necessary 
         # We could also get the subsample size from temp_seg_config if needed
         subsample_threshold_for_k = 10000 
         if pixels_for_k_determination.shape[0] > subsample_threshold_for_k:
@@ -178,5 +169,4 @@ def segment_reference_image(
         duration_total = time.perf_counter() - start_time_total
         logger.info(f"Reference segmentation (KMeans, SOM, k-determination) finished in {duration_total:.2f} seconds.")
 
-    # Return the results (even if one is None) and the k value used
     return kmeans_result, som_result, determined_k

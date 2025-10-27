@@ -10,8 +10,7 @@ from typing import Dict, Any, Optional, Tuple, List
 # Use getLogger to inherit logging config from main.py
 logger = logging.getLogger(__name__)
 
-# --- Configuration Loading (Updated for Defaults + Overrides) ---
-
+# --- Configuration Loading  ---
 def merge_dicts(base: Dict, overrides: Dict) -> Dict:
     """Recursively merges override dict into base dict."""
     for key, value in overrides.items():
@@ -23,21 +22,18 @@ def merge_dicts(base: Dict, overrides: Dict) -> Dict:
             base[key] = value
     return base
 
-# Removed @exception_handler for more specific error handling
 def load_config(specific_config_path: str) -> Optional[Dict[str, Any]]:
     """
-    Loads configuration, merging a specific config file over defaults.yaml.
+    Loads configuration, merging a specific config (one of the pattern configs) file over defaults.yaml.
 
     Args:
         specific_config_path (str): Path to the specific config file 
-                                     (e.g., 'pattern_configs/block_config.yaml').
 
     Returns:
         Optional[Dict[str, Any]]: The merged configuration dict, or None on failure.
     """
     try:
         specific_path_obj = Path(specific_config_path)
-        # config_base_dir = specific_path_obj.parent.parent / "configurations" # Old assumption?
         script_dir = Path(__file__).parent.absolute()
         project_root_guess = script_dir.parent.parent
         config_base_dir = project_root_guess / "configurations" # Assuming configurations dir is at src level
@@ -60,7 +56,7 @@ def load_config(specific_config_path: str) -> Optional[Dict[str, Any]]:
             specific_config = yaml.safe_load(f)
             logger.info(f"Loading specific configuration from {specific_path_obj}...")
 
-        # 3. Merge specific config onto defaults (only if specific_config is valid)
+        # 3. Merge specific config onto defaults 
         if specific_config:
              config = merge_dicts(config, specific_config)
              logger.info("Merged specific configuration over defaults.")
@@ -71,9 +67,6 @@ def load_config(specific_config_path: str) -> Optional[Dict[str, Any]]:
              else:
                  raise ValueError(f"Both default and specific configuration files are empty or invalid.")
 
-        # Optional: Resolve relative paths in config here if needed
-        # config = resolve_paths(config, base_dir=PROJECT_ROOT) 
-
         logger.info("Configuration loaded successfully.")
         return config
 
@@ -83,18 +76,14 @@ def load_config(specific_config_path: str) -> Optional[Dict[str, Any]]:
     except yaml.YAMLError as e:
         logger.error(f"Error parsing YAML file: {e}")
         return None
-    except ValueError as e: # Catch the specific ValueError raised
+    except ValueError as e: 
         logger.error(f"Configuration error: {e}")
         return None
     except Exception as e:
         logger.error(f"Failed to load configuration: {e}", exc_info=True)
         return None
 
-# REMOVED validate_config function - rely on more specific validation in main.py
-
 # --- Image Loading ---
-
-# Added basic try...except and logging
 def load_image(image_path: str) -> Optional[np.ndarray]:
     """
     Load an image using OpenCV with basic error handling.
@@ -103,7 +92,7 @@ def load_image(image_path: str) -> Optional[np.ndarray]:
         image_path (str): Path to the image file.
 
     Returns:
-        Optional[np.ndarray]: Loaded image (BGR format), or None if failed.
+        Optional[np.ndarray]: Loaded image (RGB format), or None if failed.
     """
     try:
         image_path_str = str(image_path) # Ensure it's a string
@@ -121,8 +110,6 @@ def load_image(image_path: str) -> Optional[np.ndarray]:
         return None
 
 # --- Data Loading for Training ---
-
-# Removed @exception_handler to let errors propagate if needed
 def load_data(image_paths: List[str], target_size: Optional[Tuple[int, int]] = (100, 100)) -> Tuple[np.ndarray, np.ndarray]:
     """
     Load images, convert to RGB and LAB, resize, and flatten for DBN training.
@@ -159,11 +146,8 @@ def load_data(image_paths: List[str], target_size: Optional[Tuple[int, int]] = (
                 # Resize if target_size is provided
                 if target_size:
                     rgb = cv2.resize(rgb, target_size, interpolation=cv2.INTER_AREA)
-
-                # CRITICAL FIX: DO NOT NORMALIZE RGB HERE. DBNTrainer expects [0, 255].
+                
                 rgb_flat = rgb.reshape(-1).astype(np.float32) 
-
-                # Convert RESIZED RGB to LAB (OpenCV range)
                 lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB)
                 lab_flat = lab.reshape(-1).astype(np.float32)
 
@@ -172,7 +156,6 @@ def load_data(image_paths: List[str], target_size: Optional[Tuple[int, int]] = (
                 loaded_count += 1
             except Exception as e:
                  logger.error(f"Error processing image {image_path} after loading: {e}")
-                 # Continue to next image
 
     if loaded_count == 0:
         raise ValueError("No valid images could be loaded or processed from the provided paths.")

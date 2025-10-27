@@ -10,7 +10,7 @@ def efficient_data_sampling(rgb_data: np.ndarray,
                             train_config: TrainConfig, 
                             max_per_image: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray]:
     """
-    efficiently samples a respresentative subset of pixel data for DBN training
+    Efficiently samples a respresentative subset of pixel data for DBN training
     Takes flattenedd RGB and LAB data output from load_data, determines how many samples to take per image based on the total target sample size (n_samples)
     and a minimum per image, randomly selects pixel indices and extracts the corresponding RGB and LAB values. Also ensures LAB values are converted to the 
     standard CIELAB ranges (L: 0-100, a/b: -128-127)  if they are detected in OpenCV's range
@@ -91,13 +91,7 @@ def efficient_data_sampling(rgb_data: np.ndarray,
 
                 # Extract RGB
                 rgb_sample = rgb_flat_img[pixel_indices].astype(np.float32)
-                # Ensure RGB is in 0-255 range (redundant if load_data guarantees it)
-                # if np.any(rgb_sample > 1.0): # Quick check if needed
-                #      rgb_sample = np.clip(rgb_sample, 0, 255)
-                # else:
-                #      rgb_sample *= 255.0 # Assume 0-1 if max is <= 1
-                # rgb_sample = np.clip(rgb_sample, 0, 255) # Final clip
-
+               
                 # Extract LAB and convert ranges
                 lab_sample = lab_flat_img[pixel_indices].astype(np.float32).copy()
                 if np.any(lab_sample[:, 0] > 100): # Check if L needs conversion
@@ -135,9 +129,5 @@ def efficient_data_sampling(rgb_data: np.ndarray,
         return rgb_result, lab_result
         
     else:
-         # Handle case where data might be a list of images (less efficient)
-         # This part needs adjustment if load_data always returns flattened arrays
          logger.warning("efficient_data_sampling received data not in expected flattened format. Attempting list processing.")
-         # ... (Your previous list processing logic could go here as a fallback, 
-         #      but ensure load_data format is consistent first) ...
          raise NotImplementedError("List-based sampling needs review based on load_data output format.")

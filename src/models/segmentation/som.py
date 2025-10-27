@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class SOMSegmenter(SegmenterBase):
     """
-    implements the segmentation contracts using Self-Organizing Maps (MiniSom).
+    Implements the segmentation contracts using Self-Organizing Maps (MiniSom).
     """
     def __init__(self, 
                  preprocessed_image,
@@ -25,7 +25,7 @@ class SOMSegmenter(SegmenterBase):
                  models: ModelConfig,
                  cluster_strategy: ClusterStrategy):
         """
-        initializes the SOMSegmenter
+        Initializes the SOMSegmenter
         
         Args: 
             preprocessed_image: the (H, W, 3) image to segment
@@ -42,9 +42,9 @@ class SOMSegmenter(SegmenterBase):
 
     def segment(self) -> SegmentationResult:
         """
-        performs segmentation using MiniSom
+        Performs segmentation using MiniSom
         
-        it determines the 'k' value based on the k type and then trains the SOM. it reconstructs the image
+        It determines the 'k' value based on the k type and then trains the SOM. it reconstructs the image
         using the SOM's learned weight as the new colour palette
         
         Returns:
@@ -54,7 +54,7 @@ class SOMSegmenter(SegmenterBase):
         method_name = "som_opt" if self.config.k_type == 'determined' else "som_predef"
         optimal_k = -1
         try:
-            # normalize it before cuz MiniSom works with the normalized [0,1] values
+            # Normalize it before cuz MiniSom works with the normalized [0,1] values
             pixels_normalized = self.pixels_flat.reshape(-1, 3).astype(np.float32) / 255.0
             if pixels_normalized.shape[0] == 0:
                 raise SegmentationError("Zero pixels.")
@@ -68,16 +68,16 @@ class SOMSegmenter(SegmenterBase):
                 raise SegmentationError(f"Invalid clusters for SOM: {optimal_k}")
             logger.info(f"Running SOM segmentation with k={optimal_k}")
             
-            # train SOM, do the segmentation
+            # Train SOM, do the segmentation
             # x = 1 y= optimal_k values create a 1D vertical colour map similar to KMeans
             som = MiniSom(x=1, y=optimal_k, input_len=3, 
-                                sigma=self.config.som_sigma, # <-- Config'den al
-                                learning_rate=self.config.som_learning_rate, # <-- Config'den al
+                                sigma=self.config.som_sigma,
+                                learning_rate=self.config.som_learning_rate,
                                 random_seed=42)            
             som.random_weights_init(pixels_normalized)
             som.train_random(pixels_normalized, self.config.som_iterations)
             
-            # form the results
+            # Form the results
             # winner() finds the closest colur for each pixel
             labels_flat = np.array([som.winner(pixel)[1] for pixel in pixels_normalized])
             centers_normalized = np.array([som.get_weights()[0, i] for i in range(optimal_k)])
@@ -87,7 +87,7 @@ class SOMSegmenter(SegmenterBase):
             segmented_image = centers[labels_flat.flatten()].reshape(original_pixels_shape)
             labels_2d = labels_flat.reshape(original_pixels_shape[:2])
             
-            # use SOM centers to calculate avg_colors but masking it to be relevant with KMeans 
+            # Use SOM centers to calculate avg_colors but masking it to be relevant with KMeans 
             avg_colors = []
             for i in range(optimal_k):
                 mask = (labels_2d == i).astype(np.uint8)

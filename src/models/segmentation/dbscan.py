@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class DBSCANSegmenter(SegmenterBase):
     """
-    implements the segmentation contract using sklearn's DBSCAN algorithm
+    Implements the segmentation contract using sklearn's DBSCAN algorithm
     """
     def __init__(self, 
                  preprocessed_image,
@@ -24,7 +24,7 @@ class DBSCANSegmenter(SegmenterBase):
                  models: ModelConfig,
                  cluster_strategy: ClusterStrategy):
         """
-        initialisez the DBNSCANSegmenter
+        Initialisez the DBNSCANSegmenter
         
         Args:
             preprocessed_image: the (H, W, 3) image to segment
@@ -54,15 +54,16 @@ class DBSCANSegmenter(SegmenterBase):
 
     def _find_optimal_dbscan_params(self, pixels: np.ndarray) -> Tuple[float, int]:
         """
-        a simple grid search to fin reasonable DBSCAN parameters ('eps' and 'min_samples' )
+        A simple grid search to fin reasonable DBSCAN parameters ('eps' and 'min_samples' )
+        
         Note:
             this a very basic heuristic. true DBSCAN parameter tuning is complex (like k-distance graph)
             
         Args:
-            pixels (np.ndarray): the pixel data (N,3) to analyze
+            pixels (np.ndarray): The pixel data (N,3) to analyze
             
         Returns:
-            Tuple[float, int]: the best (eps, min_samples) found
+            Tuple[float, int]: The best (eps, min_samples) found
         """
         logger.info("Finding optimal DBSCAN parameters (heuristic)...")
         eps_values = self.config.dbscan_eps_range # <-- Config'den al
@@ -91,13 +92,13 @@ class DBSCANSegmenter(SegmenterBase):
 
     def segment(self) -> SegmentationResult:
         """
-        performs segmentation using DBSCAN
+        Performs segmentation using DBSCAN
         
-        it determines parameters based on k_type ('determined' or 'predefined') and then applies DBSCAN.
-        it reconstructs the image using the mean colour of each found cluster
+        It determines parameters based on k_type ('determined' or 'predefined') and then applies DBSCAN.
+        It reconstructs the image using the mean colour of each found cluster
         
         Returns: 
-            SegmentationResult: a data object containing the segmented image, average colours, labels, cluster counts
+            SegmentationResult: A data object containing the segmented image, average colours, labels, cluster counts
         
         """
         start_time = time.perf_counter()

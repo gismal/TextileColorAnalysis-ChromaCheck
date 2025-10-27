@@ -14,13 +14,12 @@ class ClusterStrategy(ABC):
     """
     Abstract Base Class for defining a 'k' determination strategy
     
-    this ensures that any new strategy we create (e.g. ElbowMethodStrategy) will have
-    the same 'determine_k' method, making them interchangeable   
+    This ensures that any new strategy we create (e.g. ElbowMethodStrategy) will have the same 'determine_k' method, making them interchangeable   
     """
     @abstractmethod
     def determine_k(self, pixels: np.ndarray, config: SegmentationConfig) -> int:
         """
-        determines the optimal number of clusters (k) for the given pixels
+        Determines the optimal number of clusters (k) for the given pixels
         
         Args:
             pixels (np.ndarray): the pixel data (N,3) to analuze
@@ -33,7 +32,7 @@ class ClusterStrategy(ABC):
     
 class MetricBasedStrategy(ClusterStrategy):
     """
-    determines 'k' by testing multiple k-values and finding the best combined Silhouette and CH score
+    Determines 'k' by testing multiple k-values and finding the best combined Silhouette and CH score
     """
     
     def determine_k(self, pixels: np.ndarray, config: SegmentationConfig) -> int:
@@ -58,13 +57,11 @@ class MetricBasedStrategy(ClusterStrategy):
         
         logger.info(f"Unique colors: {n_unique}. Adjusted k-range: [{min_k}, {dynamic_max_k}]")
         
-        # --- Veri Kontrolleri ---
+        # --- Data Control ---
         if pixels.shape[0] == 0:
              logger.warning("Cannot determine k: empty pixel array. Falling back...")
              return config.predefined_k
-        # Neden: Çok fazla piksel üzerinde metrik hesaplamak yavaştır.
-        # Rastgele bir alt örneklem (subsample) kullanmak yeterince iyi bir sonuç verir.
-        subsample_threshold = config.strategy_subsample # <-- Config'den al
+        subsample_threshold = config.strategy_subsample 
         if pixels.shape[0] > subsample_threshold:
             logger.info(f"Subsampling pixels to {subsample_threshold} for cluster analysis efficiency")
             indices = np.random.choice(pixels.shape[0], subsample_threshold, replace=False)
@@ -79,7 +76,7 @@ class MetricBasedStrategy(ClusterStrategy):
             logger.warning(f"K-range is empty or invalid ({k_range}). Defaulting...")
             return config.predefined_k
         
-        # --- Metrik Hesaplama ---
+        # --- Calculating Metrics ---
         valid_k_scores = {}
         for k in k_range:
             if k > pixels.shape[0]:
@@ -91,7 +88,6 @@ class MetricBasedStrategy(ClusterStrategy):
                 kmeans = KMeans(n_clusters=k, n_init='auto', random_state=42).fit(pixels)
                 labels = kmeans.labels_
                 
-                # Neden: Metrikler (Silhouette, CH) en az 2 küme gerektirir.
                 if len(np.unique(labels)) < 2:
                     logger.warning(f"Only 1 cluster found for k={k}. Skipping metrics.")
                     continue
@@ -107,15 +103,15 @@ class MetricBasedStrategy(ClusterStrategy):
              logger.error("Could not calculate metrics for any k value. Falling back...")
              return config.predefined_k
         
-        # --- En İyi K'yı Bulma ---
-        # Neden: Silhouette ve CH skorları farklı ölçeklerdedir (biri [0,1], diğeri [0, +inf]).
-        # Onları 0-1 aralığına normalize edip ortalamasını almak,
-        # her iki metriği de hesaba katan adil bir "genel skor" verir.
+        # --- Finding the Optimal k ---
+        # Silhouette and CH scores have different ranges (respectively [0,1], [0, +inf]).
+        # Normalize them between 0-1 and calculate mean to get a "overall score"
+        # Open for experimenting!
         k_values_list = list(valid_k_scores.keys())
         sil_scores = np.array([valid_k_scores[k]['silhouette'] for k in k_values_list])
         ch_scores = np.array([valid_k_scores[k]['ch'] for k in k_values_list])
         
-        # Normalizasyon (Min-Max Scaling)
+        # Normalization (Min-Max Scaling)
         norm_sil = (sil_scores - np.min(sil_scores)) / (np.max(sil_scores) - np.min(sil_scores) + 1e-10)
         norm_ch = (ch_scores - np.min(ch_scores)) / (np.max(ch_scores) - np.min(ch_scores) + 1e-10)
         

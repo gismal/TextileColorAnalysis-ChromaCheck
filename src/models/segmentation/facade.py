@@ -24,14 +24,12 @@ class ProcessingResult:
     preprocessed_path: str
     results: Dict[str, SegmentationResult] = field(default_factory=dict)
 
-# ====================================================================
 # Main Segmenter (Facade Pattern)
-# ====================================================================
-
 class Segmenter:
-    """Facade class managing the segmentation workflow.
+    """
+    Facade class managing the segmentation workflow.
     
-    this facade class hides all the complexity of the KMeans DBSCAN, SOM, strategies
+    This facade class hides all the complexity of the KMeans DBSCAN, SOM, strategies
     
     'ProcessingPipeline' class should create this 'Segmenter' class and call .process()
     """
@@ -42,9 +40,9 @@ class Segmenter:
                  output_manager: OutputManager, 
                  cluster_strategy: Optional[ClusterStrategy] = None):
         """
-        initialize the Segmenter Facade
+        Initialize the Segmenter Facade
         
-        it creates instances of the specific segmentation algorithms that are requested in the SegmentationConfig
+        It creates instances of the specific segmentation algorithms that are requested in the SegmentationConfig
         
         Args:
             preprocessed_image: The (H, W, 3) image to segment
@@ -108,7 +106,7 @@ class Segmenter:
     def process(self) -> ProcessingResult:
         """
         Run all initialized segmentation methods and collect results.
-        this is the main entry point called by the pipeline. it iterates over all initialized segmetners and calls their .segment()
+        This is the main entry point called by the pipeline. it iterates over all initialized segmetners and calls their .segment()
         
         Returns:
             ProcessingResult: An object containing the path to the preprocessed image and a dictionary of all SegmentationResult objects
