@@ -1,6 +1,3 @@
-# src/utils/output_manager.py
-# FINALIZED WITH DOCSTRINGS
-
 import logging
 import cv2
 import pandas as pd

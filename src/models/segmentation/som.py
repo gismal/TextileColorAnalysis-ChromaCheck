@@ -88,22 +88,16 @@ class SOMSegmenter(SegmenterBase):
             labels_2d = labels_flat.reshape(original_pixels_shape[:2])
             
             # Use SOM centers to calculate avg_colors but masking it to be relevant with KMeans 
-            avg_colors = []
-            for i in range(optimal_k):
-                mask = (labels_2d == i).astype(np.uint8)
-                if np.sum(mask) > 0: 
-                    avg_colors.append(cv2.mean(self.preprocessed_image, mask=mask)[:3])
-                else: 
-                    logger.warning(f"SOM empty mask cluster {i} (k={optimal_k}).")
+            avg_colors = [tuple(c) for c in centers]
             
             duration = time.perf_counter() - start_time
             return SegmentationResult(
-                method_name=method_name,
-                segmented_image=segmented_image,
-                avg_colors=[tuple(c) for c in avg_colors],
-                labels=labels_flat, 
-                n_clusters=optimal_k,
-                processing_time=duration
+                method_name = method_name,
+                segmented_image = segmented_image,
+                avg_colors = avg_colors,
+                labels = labels_flat, 
+                n_clusters = len(avg_colors),
+                processing_time = duration
                 )
         
         except Exception as e:

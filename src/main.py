@@ -1,5 +1,6 @@
 # src/main.py
 # FINALIZED WITH DOCSTRINGS AND CLEANED COMMENTS
+# python src/main.py --config configurations/pattern_configs/block_config.yaml
 
 import sys
 import os

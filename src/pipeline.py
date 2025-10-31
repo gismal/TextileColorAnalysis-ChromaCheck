@@ -27,6 +27,12 @@ from src.models.segmentation.reference import segment_reference_image
 from src.utils.output_manager import OutputManager
 from src.utils.color.color_analysis import ColorMetricCalculator
 from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
+from src.utils.visualization import (
+    plot_reference_summary,
+    plot_segmentation_summary,
+    plot_delta_e_summary_bars,
+    plot_preprocessing_steps
+)
 # Setup utilities (validation, logging)
 from src.utils.setup import validate_processing_config # setup_logging is called from main.py
 
@@ -36,7 +42,13 @@ logger = logging.getLogger(__name__) # Get logger for this module
 # --- Timer Utility ---
 @contextmanager
 def timer(operation_name: str):
-    """Context manager to log the duration of code blocks."""
+    """
+    A single context manager to log the duration of code blocks.
+    Helps in performance monitoring by logging the start and completion time of key ops
+    
+    Args:
+        operation_name (str): A descriptive name for the operation being timed
+    """
     start_time = time.perf_counter()
     logger.info(f"Starting: {operation_name}...")
     try:
@@ -50,11 +62,10 @@ class ProcessingPipeline:
     """
     Orchestrates the entire textile color analysis workflow.
 
-    This class manages the sequence of operations: loading configuration,
-    training the DBN model (including data sampling, splitting, scaling, and PSO),
-    processing the reference image to establish target colors, analyzing each
-    test image (preprocessing, segmentation using multiple methods, Delta E calculation),
-    and finally saving and summarizing the results.
+    This class is the "brain" of the application. It's responsible for managing
+    the sequence of operations: loading configuration, training the DBN model,
+    processing the reference image to establish target colors, analyzing all
+    test images, and finally saving and summarizing the results.
     """
 
     def __init__(self,
@@ -275,21 +286,13 @@ class ProcessingPipeline:
             default_k=default_k,
             k_range=k_range_ref
         )
-
-        # --- Save Summary ---
-        # TODO: Update save_reference_summary (in OutputManager/Visualization) to create a
-        #       meaningful plot using kmeans_result, som_result, and determined_k.
-        # For now, it just saves the original image again.
-        if ref_image_bgr is not None:
-            self.output_manager.save_reference_summary(
-                Path(ref_image_path).name, ref_image_bgr
-            )
-
+        
         # 4. Extract Target Colors (using K-Means result as the reference palette)
         if not kmeans_result or not kmeans_result.is_valid():
              # segment_reference_image should ideally handle this, but double-check
              raise ValueError("Reference K-Means segmentation failed or was invalid, cannot extract target colors.")
-
+        
+        target_colors_lab = np.array([])
         try:
             # Convert the average RGB colors from the K-Means result to LAB
             avg_colors_rgb = [tuple(c) for c in kmeans_result.avg_colors]
@@ -300,12 +303,27 @@ class ProcessingPipeline:
             logger.error(f"Error extracting target LAB colors from reference K-Means result: {e}", exc_info=True)
             raise ValueError(f"Target color extraction failed: {e}")
 
+        # 5.Create and Save Summary Plot (visual 1)
+        try:
+            summary_filename = "reference_summary.png"
+            summary_output_path = self.output_manager.dataset_dir / "summaries" / summary_filename
+            
+            plot_reference_summary(
+                kmeans_result=kmeans_result,
+                som_result=som_result,
+                original_image=ref_image_bgr, # Pass the original BGR image
+                target_colors_lab=target_colors_lab, # Pass the extracted LAB colors
+                output_path=summary_output_path
+            )
+        except Exception as plot_err:
+             # A plotting error shouldn't stop the whole pipeline, just log it.
+             logger.error(f"Failed to generate reference summary plot: {plot_err}", exc_info=True)
+        
         logger.info(f"Reference image processed successfully. Determined k={determined_k}. "
                     f"Extracted {target_colors_lab.shape[0]} target LAB colors.")
 
         # Return the essential outputs for the next stage
         return target_colors_lab, kmeans_result, som_result
-
 
     def _run_test_image_analysis(
         self,
@@ -314,10 +332,7 @@ class ProcessingPipeline:
         ref_som_result: Optional[SegmentationResult]
     ) -> List[Dict[str, Any]]:
         """
-        Loads and processes each test image listed in the configuration.
-
-        For each image, it calls `_process_single_test_image` and collects
-        the resulting Delta E measurements.
+        Loads and processes each test image one by one 
 
         Args:
             target_colors_lab: The target LAB colors derived from the reference image.
@@ -351,7 +366,7 @@ class ProcessingPipeline:
                     image_path_str,
                     image_data,
                     target_colors_lab,
-                    ref_kmeans_result, # Pass the reference results through
+                    ref_kmeans_result, 
                     ref_som_result
                 )
                 all_delta_e_results.extend(results_for_image) # Add results to the main list
@@ -399,10 +414,17 @@ class ProcessingPipeline:
             preprocessor = Preprocessor(config=self.preprocess_config)
             try:
                 preprocessed_image = preprocessor.preprocess(image_data)
+
                 if preprocessed_image is None:
                     # Preprocessor logs the error
                     raise ValueError("Preprocessing returned None")
+                # Save the preprocessed image (e.g., block1_preprocessed.png)
                 self.output_manager.save_preprocessed_image(image_name, preprocessed_image)
+                
+                # Also save the side-by-side comparison plot (Original vs. Preprocessed)
+                plot_path = self.output_manager.dataset_dir / "processed" / "preprocessed" / f"{image_name}_preprocessing_steps.png"
+                plot_preprocessing_steps(image_data, preprocessed_image, output_path=plot_path)
+                
             except Exception as e:
                 logger.error(f"Preprocessing failed for test image '{image_name}': {e}", exc_info=True)
                 return [] # Cannot proceed without preprocessed image
@@ -413,28 +435,13 @@ class ProcessingPipeline:
             for k_type in ['determined', 'predefined']:
                 with timer(f"Segmentation loop ({image_name}, k_type: {k_type})"):
                     try:
-                        # --- Create Config Objects for this run ---
-                        # SegmentationConfig specific to this k_type
+                        # Create config objects for this specific run
                         seg_config = SegmentationConfig(
-                            target_colors=target_colors_lab, 
-                            distance_threshold=seg_params.get('distance_threshold', 0.7),
-                            predefined_k=seg_params.get('predefined_k', 2),
-                            k_values=seg_params.get('k_values', list(range(2,9))),
-                            som_values=seg_params.get('som_values', list(range(2,9))),
-                            k_type=k_type,
-                            methods=seg_params.get('methods', []), 
-                            dbscan_eps=seg_params.get('dbscan_eps', 10.0),
-                            dbscan_min_samples=seg_params.get('dbscan_min_samples', 5),
-                            # Add other new config fields here from seg_params if needed
-                            strategy_subsample=seg_params.get('strategy_subsample', 10000),
-                            dbscan_eps_range=seg_params.get('dbscan_eps_range', [10.0, 15.0, 20.0]),
-                            dbscan_min_samples_range=seg_params.get('dbscan_min_samples_range', [5, 10, 20]),
-                            som_iterations=seg_params.get('som_iterations', 100),
-                            som_sigma=seg_params.get('som_sigma', 0.5),
-                            som_learning_rate=seg_params.get('som_learning_rate', 0.25)
+                            target_colors=target_colors_lab,
+                            # Get all parameters from the loaded config
+                            **seg_params, # Unpack all seg_params
+                            k_type=k_type # Override/set the k_type
                         )
-
-                        # ModelConfig containing the trained model and reference results
                         model_config = ModelConfig(
                             dbn=self.dbn,
                             scalers=[self.scalers['scaler_x'], self.scalers['scaler_y'], self.scalers['scaler_y_ab']],
@@ -465,12 +472,14 @@ class ProcessingPipeline:
                                 continue
 
                             try:
-                                # Convert segmented RGB colors to LAB using both methods
-                                segmented_lab_traditional = convert_colors_to_cielab(segmented_rgb_colors)
-                                segmented_lab_dbn = convert_colors_to_cielab_dbn(
+                                # --- Delta E Calculation ---
+                                rgb_array = np.clip(np.array(segmented_rgb_colors, dtype=np.float32), 0, 255)
+                                segmented_lab_traditional = convert_colors_to_cielab(rgb_array)
+                                segmented_lab_dbn_list = convert_colors_to_cielab_dbn(
                                     self.dbn, self.scalers['scaler_x'], self.scalers['scaler_y'], self.scalers['scaler_y_ab'],
-                                    segmented_rgb_colors
+                                    rgb_array
                                 )
+                                segmented_lab_dbn = np.array(segmented_lab_dbn_list)
 
                                 # Check if conversions were successful
                                 if segmented_lab_traditional.size == 0 or segmented_lab_dbn.size == 0:
@@ -504,7 +513,25 @@ class ProcessingPipeline:
                                             f"Avg Delta E Traditional={avg_delta_e_traditional:.2f}, "
                                             f"Avg Delta E DBN={avg_delta_e_dbn:.2f}, "
                                             f"k={result.n_clusters}")
-
+                                
+                                # -- Create Individual Summary Plot (Visual 2) ---
+                                try:
+                                    plot_filename = f"{image_name}_{k_type}_summary.png"
+                                    plot_output_dir = self.output_manager.dataset_dir / "processed" / "segmented" / method_name
+                                    plot_output_path = plot_output_dir / plot_filename
+                                    
+                                    plot_segmentation_summary(
+                                        result = result,
+                                        original_preprocessed_image = preprocessed_image,
+                                        target_colors_lab = target_colors_lab,
+                                        dbn_model = self.dbn,
+                                        scalers = [self.scalers['scaler_x'], self.scalers['scaler_y'], self.scalers['scaler_y_ab']],
+                                        output_path = plot_output_path
+                                    )
+                                    
+                                except Exception as plot_err:
+                                    logger.error(f"Failed to generate segmentation summary plot for {method_name}: {plot_err}", exc_info=True)
+                                    
                             except Exception as e:
                                 logger.error(f"Delta E calculation failed unexpectedly for method '{method_name}' on '{image_name}': {e}", exc_info=True)
                                 continue # Skip to next method result
@@ -518,11 +545,10 @@ class ProcessingPipeline:
 
     def _save_and_summarize_results(self, all_delta_e: List[Dict[str, Any]]):
         """
-        Saves all collected Delta E results to a CSV file and prints summaries to the console.
+        Saves all collected Delta E results to a CSV file and prints summaries and generates a summary bar chart
 
         Args:
             all_delta_e: A list containing all Delta E result dictionaries
-                         from processing every test image and method.
         """
         if not all_delta_e:
             logger.warning("No Delta E results were generated to save or summarize.")
@@ -536,9 +562,12 @@ class ProcessingPipeline:
         try:
             import pandas as pd
             # Prevent potential SettingWithCopyWarning
-            pd.options.mode.chained_assignment = None # Default is 'warn'
-
+            pd.options.mode.chained_assignment = None 
             df = pd.DataFrame(all_delta_e)
+            
+            if df.empty:
+                logger.warning("Delta E results list was not empty, but DataFrame is. Cannot summarize.")
+                return
 
             # --- Overall Summary (Grouped only by method name) ---
             logger.info("--- Overall Results Summary (Averaged across images and k_types) ---")
@@ -562,6 +591,17 @@ class ProcessingPipeline:
             # Print the detailed summary table
             logger.info("\n" + detailed_summary.to_string(float_format="%.3f"))
             logger.info("--- End of Summary ---")
+            
+            try:
+                plot_filename = f"{self.output_manager.dataset_name}_delta_e_summary.png"
+                plot_output_path = self.output_manager.dataset_dir / "summaries" / plot_filename
+
+                plot_delta_e_summary_bars(
+                    results_df=df,
+                    output_path=plot_output_path
+                )
+            except Exception as plot_err:
+                logger.error(f"Failed to generate final Delta E summary plot: {plot_err}", exc_info=True)
 
         except ImportError:
             logger.warning("Pandas library is not installed. Skipping console summary generation. "

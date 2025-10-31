@@ -87,24 +87,19 @@ class KMeansSegmenter(SegmenterBase):
             labels_2d = labels_flat.reshape(self.preprocessed_image.shape[:2])
             
             avg_colors = []
-            if optimal_k > 0:
-                 for i in range(optimal_k):
-                     mask = (labels_2d == i).astype(np.uint8)
-                     # some clusters migth have 0 pixel
-                     if np.sum(mask) > 0: 
-                         avg_colors.append(cv2.mean(self.preprocessed_image, mask=mask)[:3])
-                     else: 
-                         logger.warning(f"KMeans empty mask cluster {i} (k={optimal_k}).")
+            avg_colors_bgr = [tuple(c) for c in centers]
+            # BGR -> RGB
+            avg_colors = [color[::-1] for color in avg_colors_bgr]
             
             duration = time.perf_counter() - start_time
             
             return SegmentationResult(
-                method_name=method_name,
-                segmented_image=segmented_image,
-                avg_colors=[tuple(c) for c in avg_colors],
-                labels=labels_flat,
-                n_clusters=optimal_k,
-                processing_time=duration
+                method_name = method_name,
+                segmented_image = segmented_image,
+                avg_colors = avg_colors,
+                labels = labels_flat,
+                n_clusters = optimal_k,
+                processing_time = duration
                 )
             
         except Exception as e:

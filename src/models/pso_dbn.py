@@ -437,8 +437,9 @@ class PSOOptimizer:
             # --- Run PSO ---
             optimized_flat_weights, final_fitness = pso(
                 objective_function,
-                lb=lb, ub=ub,
-                x0=flat_initial,
+                lb,
+                ub,
+                
                 swarmsize=self.config.swarmsize,
                 maxiter=self.config.maxiter,
                 minstep=self.config.minstep,
