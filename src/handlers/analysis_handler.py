@@ -65,7 +65,7 @@ class AnalysisHandler:
         # execute() will fill those
         self.dbn: Optional[DBN] = None
         self.scalers: Optional[Dict[str, MinMaxScaler]] = None
-        self.target_colors_lab = Optional[np.ndarray] = None
+        self.target_colors_lab : Optional[np.ndarray] = None
         self.ref_kmeans_result : Optional[SegmentationResult] = None
         self.ref_som_result: Optional[SegmentationResult] = None
         self.color_metric_calculator: Optional[ColorMetricCalculator] = None
@@ -77,7 +77,7 @@ class AnalysisHandler:
                 dbn: DBN,
                 scalers: Dict[str, MinMaxScaler],
                 target_colors_lab: np.ndarray,
-                ref_kmeans_results: Optional[SegmentationResult],
+                ref_kmeans_result: Optional[SegmentationResult],
                 ref_som_result: Optional[SegmentationResult]) -> List[Dict[str, Any]]:
         """
         Executes the analysis loop for all test images
@@ -89,7 +89,7 @@ class AnalysisHandler:
         self.dbn = dbn
         self.scalers = scalers
         self.target_colors_lab = target_colors_lab
-        self.ref_kmeans_result = ref_kmeans_results
+        self.ref_kmeans_result = ref_kmeans_result
         self.ref_som_result = ref_som_result
         self.color_metric_calculator = ColorMetricCalculator(target_colors_lab)
         
@@ -131,7 +131,10 @@ class AnalysisHandler:
         single_image_delta_e_results: List[Dict[str, Any]] = []
         
         # Gerekli verilerin varlığını kontrol et (execute() tarafından ayarlanmış olmalı)
-        if not all([self.dbn, self.scalers, self.target_colors_lab, self.color_metric_calculator]):
+        if (self.dbn is None or
+            self.scalers is None or
+            self.target_colors_lab is None or
+            self.color_metric_calculator is None):
             logger.error(f"AnalysisHandler state is not set. Cannot process image {image_name}.")
             return []
         
@@ -236,7 +239,7 @@ class AnalysisHandler:
                                     
                                     plot_segmentation_summary(
                                         result = result,
-                                        original_image = image_data, # Orijinal görüntüyü kullan
+                                        original_preprocessed_image = preprocessed_image, # Orijinal görüntüyü kullan
                                         target_colors_lab = target_colors_lab,
                                         dbn_model = dbn,
                                         scalers = [scalers['scaler_x'], scalers['scaler_y'], scalers['scaler_y_ab']],

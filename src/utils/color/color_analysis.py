@@ -74,7 +74,7 @@ class ColorMetricCalculator:
             return []
         
         best_matches = []
-        if self.target_colors_lab_shape[0] == 0:
+        if self.target_colors_lab.shape[0] == 0:
             logger.warning("No target colors available for matching")
             # return matches with -1 index and infinite distance
             return [(i, -1, float('inf')) for i in range(len(segmented_colors_lab))]

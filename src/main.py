@@ -125,6 +125,7 @@ def main(config: AppConfig):
 # --- Script Entry Point ---
 if __name__ == "__main__":
     app_config: Optional[AppConfig] = None
+    success = False
     try:
         # 1. Handle all application setup logic
         setup = AppSetup(PROJECT_ROOT)
@@ -136,21 +137,28 @@ if __name__ == "__main__":
         # 3. Call the main function
         main(app_config)
         
+        success = True
+        
         # 4. Print success message
-        print("\n" + "=" * 60)
-        print(f"✅ Processing completed successfully!")
-        try:
-            display_output = app_config.output_dir.relative_to(PROJECT_ROOT)
-        except ValueError:
-            display_output = app_config.output_dir
-        print(f"📁 Results saved relative to: {display_output}")
-        print("=" * 60)
-
     except Exception as e:
         # Catch any critical error during setup or the main() call itself.
         print(f"\n❌ A CRITICAL ERROR OCCURRED: {e}")
         traceback.print_exc()
         if app_config:
              print(f"\nCheck log file for details: {app_config.output_dir / 'processing.log'}")
-        sys.exit(1)
+        sys.exit(1) # Hata durumunda 1 ile çık
         
+    finally:
+        if success and app_config:
+            print("\n" + "=" * 60)
+            print(f"✅ Processing completed successfully!")
+            try:
+                display_output = app_config.output_dir.relative_to(PROJECT_ROOT)
+            except ValueError:
+                display_output = app_config.output_dir
+            print(f"📁 Results saved relative to: {display_output}")
+            print("=" * 60)
+        elif not success:
+            print("\n" + "=" * 60)
+            print("❌ Processing FAILED. Check logs for details.")
+            print("=" * 60)

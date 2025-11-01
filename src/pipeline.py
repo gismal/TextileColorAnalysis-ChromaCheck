@@ -13,14 +13,9 @@ from src.data.preprocess import Preprocessor, PreprocessingConfig
 from src.config_types import TrainConfig 
 
 # Models
-from src.models.dbn_trainer import DBNTrainer, DBNConfig, PSOConfig 
+from src.models.dbn_trainer import DBNConfig, PSOConfig 
 from src.models.pso_dbn import DBN
-from src.models.segmentation import ( 
-    Segmenter,
-    SegmentationConfig, ModelConfig, SegmentationResult
-)
-# Specific function for reference segmentation
-from src.models.segmentation.reference import segment_reference_image
+from src.models.segmentation import SegmentationResult
 
 # Handler
 from src.handlers.training_handler import TrainingHandler
@@ -30,14 +25,6 @@ from src.handlers.summary_handler import SummaryHandler
 
 # Utilities
 from src.utils.output_manager import OutputManager
-from src.utils.color.color_analysis import ColorMetricCalculator
-from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
-from src.utils.visualization import (
-    plot_reference_summary,
-    plot_segmentation_summary,
-    plot_delta_e_summary_bars,
-    plot_preprocessing_steps
-)
 from src.utils.setup import validate_processing_config # setup_logging is called from main.py
 
 # --- Logger ---
@@ -102,7 +89,7 @@ class ProcessingPipeline:
             dbn_config = DBNConfig(**self.config.get('dbn_params', {}))
             pso_config = PSOConfig(**self.config.get('pso_params', {}))
             train_config = TrainConfig(**self.config.get('training_params', {}))
-            preprocess_config = PreprocessingConfig(
+            self.preprocess_config = PreprocessingConfig(
                 **self.config.get('preprocess_params', {})
             )
             # get segmetnation_params as dictionary
@@ -128,7 +115,7 @@ class ProcessingPipeline:
         )
         
         self.analysis_handler = AnalysisHandler(
-            preprocess_config= preprocess_config,
+            preprocess_config= self.preprocess_config,
             seg_params= self.segmentation_params,
             output_manager= self.output_manager
         )
@@ -199,9 +186,9 @@ class ProcessingPipeline:
                 # --- Step 2: Reference Image Processing ---
                 with timer("Reference Image Processing"):
                     if self.dbn is None or self.scalers is None:
-                        raise RuntimeError/"DBN model or scalers not available"
+                        raise RuntimeError("DBN model or scalers not available")
                     
-                    target_colors_lab, ref_kmeans_result, ref_som_result = self.reference_handler.execute(
+                    self.target_colors_lab, self.ref_kmeans_result, self.ref_som_result = self.reference_handler.execute(
                         ref_image_path= self.config['reference_image_path'],
                         dbn = self.dbn,
                         scalers= self.scalers,
@@ -224,7 +211,7 @@ class ProcessingPipeline:
 
                 # --- Step 4: Save & Summarize Results ---
                 with timer("Saving Final Results"):
-                    self._save_and_summarize_results(self.all_delta_e_results)
+                    self.summary_handler.execute(self.all_delta_e_results)
 
             logger.info("="*50)
             logger.info(f"Processing Pipeline RUN completed successfully for: {self.output_manager.dataset_name}")
