@@ -1,4 +1,3 @@
-# src/utils/visualization.py
 # This module is responsible for creating all visual outputs (plots, charts)
 # for the analysis pipeline. It uses Matplotlib to generate summaries for
 # reference image processing, individual test image segmentation, 
@@ -450,7 +449,147 @@ def plot_delta_e_summary_bars(
         if 'fig' in locals(): # Check if fig was successfully created
             plt.close(fig) # Always close the figure
 
-
+def _create_segment_mask(
+    image : np.ndarray,
+    labels: np.ndarray,
+    segment_index: int
+) -> np.ndarray:
+    """
+    Creates a masked image showing only the pixels belonging to a specific segment
+    
+    Args:
+        image: The original (perprocessed) BGR image (H, W, 3)
+        labels: The flattened array of labels (size H*W) from SegmentationResult
+        segment_index: The specific cluster index (e.g. 0, 1, 2 ...) to isolate
+        
+    Returns:
+        A BGR image where only the pixels matching the segmetn_index are visible (all others are black) 
+    """
+    try:
+        if labels is None:
+            raise ValueError("Labels are None, can't create mask")
+        
+        mask = labels.reshape(image.shape[:2])
+        
+        segment_mask = (mask == segment_index)
+        
+        mask_3d = np.zeros_like(image, dtype=np.uint8)
+        mask_3d[segment_mask] = 255
+        
+        black_bg = np.zeros_like(image, dtype= np.uint8)
+        masked_image = np.where(mask_3d == 255, image, black_bg)
+        
+        return masked_image
+    
+    except Exception as e:
+        logger.error(f"Failed to create segment mask for index {segment_index}: {e}", exc_info=True)
+        # return full black if error occurs
+        return np.zeros_like(image, dtype=np.uint8)
+    
+def plot_segment_palette(
+    result: SegmentationResult, 
+    preprocessed_image: np.ndarray,
+    dbn_model: Optional['DBN'],
+    scalers: Optional[List['MinMaxScaler']],
+    segment_stats: Dict[int, Dict[str, Any]],
+    target_colors_lab: np.ndarray,
+    output_path: Path
+):
+    """"
+    Creates a plot showing each segment of a test image side-by-side
+    
+    For each cluster (segment) found, this plot shows the isolated pixels
+    of that segment on a black background, along with its extracted color palette
+    and RGB/LAB/DBN values
+    
+    Args:
+        result: The SegmentationResult object to visualize.
+        preprocessed_image: The BGR input image that was segmented.
+        dbn_model: The trained DBN model (for DBN LAB conversion).
+        scalers: The list of scalers [x, y_l, y_ab] (for DBN LAB conversion).
+        output_path: The full file path to save the plot.
+    """    
+    if not result or not result.is_valid():
+        logger.warning(f"Cannot plot segment palette for invalid result({result.method_name}). Skipping")
+        return
+    
+    num_colors = result.n_clusters
+    if num_colors == 0:
+        logger.warning(f"No clusters found for {result.method_name}. Skipping segment palette plot.")
+        return
+    
+    # For each segment one column
+    fig, axes = plt.subplots(2, num_colors, 
+                             figsize= (max(10, 4 * num_colors), 8),
+                             gridspec_kw={'height_ratios': [3,1]}
+                             )
+    if num_colors == 1:
+        axes = np.array(axes).reshape(2, 1)
+        
+    fig.suptitle(f"Segment Palette Breakdown: {result.method_name} (k= {num_colors})", fontsize= 16, y= 1)
+    
+    avg_rgb_colors = result.avg_colors # (R, G, B) tuple list
+    
+    for i in range(num_colors):
+        ax_img = axes[0, i]
+        ax_patch = axes[1, i]
+        
+        # --- 1. Plot the masked segmentation ---
+        try:
+            segment_image = _create_segment_mask(preprocessed_image, result.labels, i)
+            ax_img.imshow(cv2.cvtColor(segment_image, cv2.COLOR_BGR2RGB))
+            ax_img.set_title(f"Segment {i+1}")
+            
+        except Exception as e:
+            logger.error(f"Error displaying segment mask {i}: {e}")
+            ax_img.text(0.5, 0.5, 'Error Mask', ha= 'center', va= 'center')
+        
+        ax_img.axis('off')
+        
+        # --- 2. Plot the Color Palette and the Values ---
+        try:
+            color_rgb = avg_rgb_colors[i]
+            
+            # calculate the color values
+            lab_trad_str, lab_dbn_str = _get_lab_strings_for_plot(
+                [color_rgb], dbn_model, scalers
+            )
+            stats = segment_stats.get(i)
+            if stats:
+                match_idx = stats['best_match_idx_trad']
+                match_str = f"Ref {match_idx+1}" if match_idx != -1 else "No Match"
+                
+                patch_title = (
+                    f'RGB: ({int(color_rgb[0])},{int(color_rgb[1])},{int(color_rgb[2])})\n'
+                    f'LAB: {lab_trad_str} | DBN: {lab_dbn_str}\n'
+                    f'Area: {stats["percentage"]:.1f}% ({stats["pixel_count"]} px)\n'
+                    f'Match: {match_str} (ΔE: {stats["best_match_de_trad"]:.2f})'
+                )
+            else:
+                # İstatistik bulunamazsa (bir hata oluştuysa)
+                patch_title = (
+                    f'RGB: ({int(color_rgb[0])},{int(color_rgb[1])},{int(color_rgb[2])})\n'
+                    f'LAB: {lab_trad_str} | DBN: {lab_dbn_str}\n'
+                    f'Stats: Not Available'
+                )
+                    
+            _plot_color_patch(ax_patch, color_rgb, patch_title, fontsize=8)
+        except Exception as e:
+            logger.error(f"Error plotting color patch for segment {i}: {e}")
+        
+        ax_patch.axis('off')
+    
+    # --- 3. Save --- (DÖNGÜNÃœN DIŞINDA!)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(str(output_path), dpi=250, bbox_inches='tight')
+        logger.info(f"Segment palette plot saved to: {output_path}")
+    except Exception as e:
+        logger.error(f"Failed to save segment palette plot to {output_path}: {e}", exc_info=True)
+    finally:
+        plt.close(fig)
+        
 # --- Private Helper functions for plotting ---
 
 def _calculate_delta_e_for_plot(
@@ -560,3 +699,4 @@ def _get_lab_strings_for_plot(
          pass # Return "N/A"
          
     return lab_trad_str, lab_dbn_str
+

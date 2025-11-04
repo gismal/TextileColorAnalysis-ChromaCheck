@@ -16,7 +16,7 @@ from src.models.segmentation import (
 from src.utils.output_manager import OutputManager
 from src.utils.color.color_analysis import ColorMetricCalculator
 from src.utils.color.color_conversion import convert_colors_to_cielab, convert_colors_to_cielab_dbn
-from src.utils.visualization import plot_segmentation_summary, plot_preprocessing_steps
+from src.utils.visualization import plot_segmentation_summary, plot_preprocessing_steps, plot_segment_palette
 
 # Scaler tipi için type hinting
 from sklearn.preprocessing import MinMaxScaler
@@ -205,16 +205,37 @@ class AnalysisHandler:
                                 if segmented_lab_traditional.size == 0 or segmented_lab_dbn.size == 0:
                                      logger.warning(f"Color conversion to LAB failed for {method_name} on {image_name}. Skipping Delta E.")
                                      continue
+                                
+                                # Find the best matches for the traditional LAB
+                                matches_trad = color_metric_calculator.find_best_matches(segmented_lab_traditional)
+                                
+                                # now for the DBN LAB
+                                matches_dbn = color_metric_calculator.find_best_matches(segmented_lab_dbn)
+                                
+                                # Calculate the avg scores
+                                valid_de_trad = [m[2] for m in matches_trad if m[2] != float('inf')]
+                                valid_de_dbn = [m[2] for m in matches_dbn if m[2] != float('inf')]
+                                
+                                avg_delta_e_traditional = np.mean(valid_de_trad) if valid_de_trad else float('inf')
+                                avg_delta_e_dbn = np.mean(valid_de_dbn) if valid_de_dbn else float('inf')
+                                
+                                #segment stats
+                                total_pixels = result.labels.size
+                                unique_labels, counts = np.unique(result.labels[result.labels >= 0], return_counts=True) # Gürültüyü (-1) hariç tut
 
-                                delta_e_traditional_list = color_metric_calculator.compute_all_delta_e(segmented_lab_traditional)
-                                delta_e_dbn_list = color_metric_calculator.compute_all_delta_e(segmented_lab_dbn)
-
-                                avg_delta_e_traditional = np.mean([d for d in delta_e_traditional_list if d != float('inf')])
-                                avg_delta_e_dbn = np.mean([d for d in delta_e_dbn_list if d != float('inf')])
-
-                                if np.isnan(avg_delta_e_traditional): avg_delta_e_traditional = float('inf')
-                                if np.isnan(avg_delta_e_dbn): avg_delta_e_dbn = float('inf')
-
+                                # save all the stats in this dictionary
+                                segment_stats = {}
+                                for label, count in zip(unique_labels, counts):
+                                    if label < len(matches_trad) and label < len(matches_dbn):
+                                        segment_stats[label] = {
+                                            "pixel_count": int(count),
+                                            "percentage": (count / total_pixels) * 100.0,
+                                            "best_match_idx_trad": matches_trad[label][1],
+                                            "best_match_de_trad": matches_trad[label][2],
+                                            "best_match_idx_dbn": matches_dbn[label][1],
+                                            "best_match_de_dbn": matches_dbn[label][2]
+                                        }
+                                
                                 single_image_delta_e_results.append({
                                     'dataset': self.output_manager.dataset_name,
                                     'image': image_name,
@@ -223,15 +244,16 @@ class AnalysisHandler:
                                     'n_clusters': result.n_clusters,
                                     'traditional_avg_delta_e': avg_delta_e_traditional,
                                     'pso_dbn_avg_delta_e': avg_delta_e_dbn,
-                                    'processing_time': result.processing_time
+                                    'processing_time': result.processing_time,
+                                    'segment_stats': segment_stats
                                 })
+                                
                                 logger.info(f"-> Result {method_name} ({k_type}) on {image_name}: "
                                             f"Avg Delta E Traditional={avg_delta_e_traditional:.2f}, "
                                             f"Avg Delta E DBN={avg_delta_e_dbn:.2f}, "
                                             f"k={result.n_clusters}")
                                 
                                 # -- Create Individual Summary Plot (Visual 2) ---
-                                # (Gelecekteki daha anlamlı görseller bu sınıfın içinden çağrılacak)
                                 try:
                                     plot_filename = f"{image_name}_{method_name}_summary.png" 
                                     plot_output_dir = self.output_manager.dataset_dir / "processed" / "segmented" / method_name
@@ -239,15 +261,31 @@ class AnalysisHandler:
                                     
                                     plot_segmentation_summary(
                                         result = result,
-                                        original_preprocessed_image = preprocessed_image, # Orijinal görüntüyü kullan
+                                        original_preprocessed_image = preprocessed_image, 
                                         target_colors_lab = target_colors_lab,
                                         dbn_model = dbn,
                                         scalers = [scalers['scaler_x'], scalers['scaler_y'], scalers['scaler_y_ab']],
                                         output_path = plot_output_path
                                     )
-                                    
                                 except Exception as plot_err:
                                     logger.error(f"Failed to generate segmentation summary plot for {method_name}: {plot_err}", exc_info=True)
+                                
+                                try:     
+                                    plot_palette_filename = f"{image_name}_{method_name}_palette.png"
+                                    plot_palette_path = plot_output_dir / plot_palette_filename
+                                    
+                                    plot_segment_palette(
+                                        result= result,
+                                        preprocessed_image= preprocessed_image,
+                                        dbn_model= dbn,
+                                        scalers= [scalers['scaler_x'], scalers['scaler_y'], scalers['scaler_y_ab']],
+                                        segment_stats=segment_stats,        
+                                        target_colors_lab=target_colors_lab,
+                                        output_path = plot_palette_path
+                                    )
+                                    
+                                except Exception as palette_err:
+                                    logger.error(f"Failed to generate SEGMENT PALETTE plot for {method_name}: {palette_err}", exc_info=True)
                                     
                             except Exception as e:
                                 logger.error(f"Delta E calculation failed unexpectedly for {method_name} on {image_name}': {e}", exc_info=True)
