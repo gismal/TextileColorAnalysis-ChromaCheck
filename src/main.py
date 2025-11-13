@@ -1,21 +1,15 @@
-# src/main.py
-# FINALIZED WITH DOCSTRINGS AND CLEANED COMMENTS
-
+# python src/main.py --config configurations/pattern_configs/block_config.yaml
 import sys
 import os
-import argparse
-import logging # For logging critical errors before full setup
-import cProfile # For performance profiling
-import pstats   # For saving profiling results
+import logging 
+import cProfile 
+import pstats   
 import time
-import traceback # For printing detailed error information
+import traceback 
 from pathlib import Path
 from typing import Optional
 
 # --- Step 1: Add Project Root to Python Path ---
-# Why? This allows Python to find our 'src' module (and submodules like
-# 'src.pipeline', 'src.utils') correctly, regardless of where the
-# script is run from, as long as the directory structure is maintained.
 try:
     SCRIPT_DIR = Path(__file__).parent.absolute()
     # Assume main.py is in 'src', so parent is the project root ('prints/')
@@ -33,9 +27,11 @@ except Exception as e:
 try:
     from src.pipeline import ProcessingPipeline # The main class orchestrating the workflow
     from src.utils.setup import setup_logging   # Function to configure logging
+    from src.utils.app_setup import AppSetup, AppConfig
+    from src.utils.setup import setup_logging, setup_mathplotlib_style
 except ImportError as e:
     print(f"FATAL ERROR: Could not import core modules (ProcessingPipeline or setup_logging).")
-    print("Please ensure 'src/pipeline.py' and 'src/utils/setup.py' exist and are correct.")
+    print("Please ensure 'src/pipeline.py', 'src/utils/app_setup.py' and 'src/utils/setup.py' exist and are correct.")
     traceback.print_exc() # Print detailed import error traceback
     sys.exit(1)
 except Exception as e:
@@ -46,31 +42,22 @@ except Exception as e:
 
 
 # --- Environment Settings (e.g., TensorFlow) ---
-# Why? These often need to be set *before* TensorFlow is heavily used.
-# Force TensorFlow to use CPU only (no GPU). Remove '-1' to enable GPU if available.
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 # Reduce TensorFlow's informational messages (1=INFO, 2=WARNING, 3=ERROR).
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 # --- Main Application Function ---
-
-def main(config_path: str, log_level: str, output_dir: Path, profile: bool):
+def main(config: AppConfig):
     """
     Sets up logging, initializes and runs the main processing pipeline.
-
-    This function acts as the primary controller after command-line arguments
-    are parsed. It handles the overall execution flow, including optional
-    performance profiling and top-level error catching.
-
+    This function is the primary controller. It assumes all setup (paths, args)
+    
     Args:
-        config_path: Absolute path to the configuration YAML file.
-        log_level: The desired logging level string (e.g., 'INFO', 'DEBUG').
-        output_dir: The absolute path to the base directory for saving outputs.
-        profile: Boolean flag indicating whether to enable cProfile for performance analysis.
+        config: An AppConfig object containing all startup settings
     """
     profiler: Optional[cProfile.Profile] = None
-    if profile:
+    if config.profile:
         print("INFO: Performance profiling enabled.") # Simple print as logging might not be fully set yet
         profiler = cProfile.Profile()
         profiler.enable() # Start profiling
@@ -79,22 +66,23 @@ def main(config_path: str, log_level: str, output_dir: Path, profile: bool):
 
     try:
         # 1. Setup Logging: Initialize file and console logging.
-        #    This should be one of the first steps so subsequent messages are captured.
-        setup_logging(output_dir, log_level)
-        logger = logging.getLogger(__name__) # Get logger instance *after* setup
+        setup_logging(config.output_dir, config.log_level)
+    
+        # Setup Mathplotlib Style
+        setup_mathplotlib_style(config.project_root)
+        
+        logger = logging.getLogger(__name__) # Get logger instance after setup
 
         logger.info("Main function started. Initializing processing pipeline...")
 
-        # 2. Create Pipeline Instance: Pass necessary configurations.
-        #    All the complex logic is encapsulated within this class.
+        # 2. Create Pipeline Instance: Passing into from AppConfig
         pipeline = ProcessingPipeline(
-            config_path=config_path,
-            output_dir=output_dir,
-            project_root=PROJECT_ROOT # Pass the determined project root
-        )
+            config_path = str(config.config_path),
+            output_dir = config.output_dir,
+            project_root = config.project_root)
 
         # 3. Run Pipeline: Execute the main workflow.
-        logger.info(f"Starting pipeline run for dataset specified in: {Path(config_path).name}")
+        logger.info(f"Starting pipeline run for dataset specified in: {Path(config.config_path).name}")
         pipeline.run()
 
         logger.info("Main execution finished successfully.")
@@ -108,24 +96,24 @@ def main(config_path: str, log_level: str, output_dir: Path, profile: bool):
         except Exception as log_e: # If logging itself fails
              print(f"CRITICAL ERROR (Logging failed): {e}")
              print(f"Logging Error: {log_e}")
-             traceback.print_exc() # Print traceback directly if logging fails
-
+             traceback.print_exc() 
+        raise e
+             
     finally:
         # This block always runs, even if errors occurred.
         total_time = time.perf_counter() - start_time
         completion_message = "=" * 80 + f"\nPROCESSING COMPLETED IN {total_time:.2f} SECONDS\n" + "=" * 80
-        # Try logging the final message, but fall back to print if logging failed.
         try:
              logging.getLogger(__name__).info(completion_message)
         except:
              print(completion_message)
 
         # Save profiling results if enabled.
-        if profile and profiler:
+        if config.profile and profiler:
             profiler.disable() # Stop profiling
             try:
                 stats = pstats.Stats(profiler).sort_stats('cumtime') # Sort by cumulative time
-                profile_path = output_dir / 'profile_stats.txt'
+                profile_path = config.output_dir / 'profile_stats.txt'
                 with open(profile_path, 'w', encoding='utf-8') as f: # Specify encoding
                     stats.stream = f # Redirect output to file
                     stats.print_stats(30) # Print top 30 functions by cumulative time
@@ -135,108 +123,42 @@ def main(config_path: str, log_level: str, output_dir: Path, profile: bool):
 
 
 # --- Script Entry Point ---
-# Why `if __name__ == "__main__":`?
-# This standard Python construct ensures that the code inside this block
-# only runs when the script is executed directly (e.g., `python src/main.py`),
-# and *not* when the script is imported as a module into another script.
-# Its primary responsibilities here are:
-# 1. Parsing command-line arguments.
-# 2. Setting up essential paths (like OUTPUT_DIR).
-# 3. Calling the main() function with the parsed arguments.
-# 4. Handling critical errors that might occur *before* logging is set up.
 if __name__ == "__main__":
-
-    # Use argparse to define and parse command-line arguments.
-    parser = argparse.ArgumentParser(
-        description="Textile Color Analysis System using PSO-optimized DBN"
-        # Add epilog for examples if desired
-        # epilog="""Example:\n python src/main.py --config configs/block_config.yaml --log-level DEBUG"""
-    )
-    # Configuration file path (now required)
-    parser.add_argument(
-        '--config',
-        type=str,
-        required=True, # Make it mandatory to provide a config file
-        help='Path to the specific pattern configuration YAML file (relative to project root or absolute).'
-    )
-    # Logging level (optional, defaults to INFO)
-    parser.add_argument(
-        '--log-level',
-        type=str,
-        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
-        default='INFO',
-        help='Set the minimum logging level for console output.'
-    )
-    # Output directory override (optional)
-    parser.add_argument(
-        '--output-dir',
-        type=str,
-        default=None, # Default is handled below based on PROJECT_ROOT
-        help='Override the default output directory (which is PROJECT_ROOT/output).'
-    )
-    # Profiling flag (optional)
-    parser.add_argument(
-        '--profile',
-        action='store_true', # Makes it a flag: presence means True
-        help='Enable detailed performance profiling using cProfile.'
-    )
-
-    args = parser.parse_args() # Parse the arguments provided by the user
-
-    # Determine the final output directory.
-    if args.output_dir:
-        # Use the user-provided directory. Resolve makes it absolute.
-        OUTPUT_DIR = Path(args.output_dir).resolve()
-    else:
-        # Default to 'output' directory inside the project root.
-        OUTPUT_DIR = (PROJECT_ROOT / "output").resolve()
-    # Ensure the output directory exists.
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Resolve the configuration file path (handles relative paths).
-    config_path = Path(args.config)
-    if not config_path.is_absolute():
-        config_path = (PROJECT_ROOT / config_path).resolve()
-
-    # Check if the configuration file actually exists before proceeding.
-    if not config_path.exists():
-         # Use print here because logging isn't set up yet.
-         print(f"❌ CRITICAL ERROR: Configuration file not found at the resolved path: {config_path}")
-         sys.exit(1) # Exit immediately if config is missing
-
-    # --- Run the main application ---
+    app_config: Optional[AppConfig] = None
+    success = False
     try:
-        # Print initial startup messages (before logging takes over).
-        print(f"Starting Textile Color Analysis System...")
-        try: # Display relative paths if possible, looks cleaner
-             display_config = config_path.relative_to(PROJECT_ROOT)
-             display_output = OUTPUT_DIR.relative_to(PROJECT_ROOT)
-        except ValueError: # Handle if paths are on different drives etc.
-             display_config = config_path
-             display_output = OUTPUT_DIR
-        print(f"Using Config : {display_config}")
-        print(f"Output Dir   : {display_output}")
-        print(f"Log Level    : {args.log_level}")
-        print(f"Profiling    : {'Enabled' if args.profile else 'Disabled'}")
-        print("-" * 60)
-
-        # Call the main function with resolved paths and arguments.
-        main(
-            config_path=str(config_path),
-            log_level=args.log_level,
-            output_dir=OUTPUT_DIR,
-            profile=args.profile
-        )
-
-        print("\n" + "=" * 60)
-        print(f"✅ Processing completed successfully!")
-        print(f"📁 Results saved relative to: {display_output}")
-        print("=" * 60)
-
+        # 1. Handle all application setup logic
+        setup = AppSetup(PROJECT_ROOT)
+        app_config = setup.parse_args()
+        
+        # 2. Print startup info
+        setup.print_startup_info(app_config)
+        
+        # 3. Call the main function
+        main(app_config)
+        
+        success = True
+        
+        # 4. Print success message
     except Exception as e:
         # Catch any critical error during setup or the main() call itself.
         print(f"\n❌ A CRITICAL ERROR OCCURRED: {e}")
-        # Print detailed traceback for debugging.
         traceback.print_exc()
-        # Exit with a non-zero code to indicate failure.
-        sys.exit(1)
+        if app_config:
+             print(f"\nCheck log file for details: {app_config.output_dir / 'processing.log'}")
+        sys.exit(1) # Hata durumunda 1 ile çık
+        
+    finally:
+        if success and app_config:
+            print("\n" + "=" * 60)
+            print(f"✅ Processing completed successfully!")
+            try:
+                display_output = app_config.output_dir.relative_to(PROJECT_ROOT)
+            except ValueError:
+                display_output = app_config.output_dir
+            print(f"📁 Results saved relative to: {display_output}")
+            print("=" * 60)
+        elif not success:
+            print("\n" + "=" * 60)
+            print("❌ Processing FAILED. Check logs for details.")
+            print("=" * 60)

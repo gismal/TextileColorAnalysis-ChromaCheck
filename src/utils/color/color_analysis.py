@@ -6,6 +6,13 @@ from typing import List, Tuple, Union
 logger = logging.getLogger(__name__)
 
 class ColorMetricCalculator:
+    """
+    Calculates color differences (Delta E 2000) against a set target palette.
+
+    This class is initialized with a "ground truth" list of CIELAB colors
+    (the target palette, usually from the reference image). It then provides
+    methods to compare new lists of segmented colors against this target palette.
+    """
     def __init__(self, target_colors_lab: np.ndarray):
         """
         Initializes the calculator with target colors in LAB format
@@ -67,21 +74,22 @@ class ColorMetricCalculator:
             return []
         
         best_matches = []
-        if self.target_color_lab_shape[0] == 0:
+        if self.target_colors_lab.shape[0] == 0:
             logger.warning("No target colors available for matching")
             # return matches with -1 index and infinite distance
             return [(i, -1, float('inf')) for i in range(len(segmented_colors_lab))]
         
         for i, color_lab in enumerate(segmented_colors_lab):
             min_distance = float('inf')
-            beset_target_idx = -1
+            best_target_idx = -1 # default to -1 means no match
             try:
                 for j, target_lab in enumerate(self.target_colors_lab):
                     distance = ciede2000_distance(color_lab, target_lab)
                     if distance < min_distance:
                         min_distance = distance
                         best_target_idx = j
-                    best_matches.append((i, best_target_idx, min_distance))
+                
+                best_matches.append((i, best_target_idx, min_distance))
             except Exception as e:
                  logger.error(f"Error finding best match for segmented color index {i} ({color_lab}): {e}")
                  best_matches.append((i, -1, float('inf'))) # Append error state
