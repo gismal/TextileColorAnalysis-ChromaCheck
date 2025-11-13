@@ -44,6 +44,8 @@ class ReferenceHandler:
         self.preprocess_config = preprocess_config
         self.output_manager = output_manager
         self.ref_preprocessor = Preprocessor(config=self.preprocess_config)
+        self.original_ref_image: Optional[np.ndarray] = None # Orijinal görüntüyü saklamak için
+        
         logger.debug("ReferenceHandler initialized.")
 
     def execute(self,
@@ -78,6 +80,9 @@ class ReferenceHandler:
         ref_image_bgr = load_image(ref_image_path)
         if ref_image_bgr is None:
             raise ValueError(f"Failed to load reference image: {ref_image_path}")
+        
+        self.original_ref_image = ref_image_bgr
+        
         self.output_manager.save_reference_image(Path(ref_image_path).name, ref_image_bgr)
 
         # 2. Preprocess the reference image
@@ -145,3 +150,9 @@ class ReferenceHandler:
                     f"Extracted {target_colors_lab.shape[0]} target LAB colors.")
 
         return target_colors_lab, kmeans_result, som_result
+    
+    def get_original_image(self) -> Optional[np.ndarray]:
+        """
+        Getter method for AnalysisHandler
+        """
+        return self.original_ref_image

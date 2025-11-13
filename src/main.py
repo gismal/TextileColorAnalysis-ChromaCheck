@@ -1,19 +1,15 @@
 # python src/main.py --config configurations/pattern_configs/block_config.yaml
 import sys
 import os
-import argparse
-import logging # For logging critical errors before full setup
-import cProfile # For performance profiling
-import pstats   # For saving profiling results
+import logging 
+import cProfile 
+import pstats   
 import time
-import traceback # For printing detailed error information
+import traceback 
 from pathlib import Path
 from typing import Optional
 
 # --- Step 1: Add Project Root to Python Path ---
-# Why? This allows Python to find our 'src' module (and submodules like
-# 'src.pipeline', 'src.utils') correctly, regardless of where the
-# script is run from, as long as the directory structure is maintained.
 try:
     SCRIPT_DIR = Path(__file__).parent.absolute()
     # Assume main.py is in 'src', so parent is the project root ('prints/')
@@ -32,6 +28,7 @@ try:
     from src.pipeline import ProcessingPipeline # The main class orchestrating the workflow
     from src.utils.setup import setup_logging   # Function to configure logging
     from src.utils.app_setup import AppSetup, AppConfig
+    from src.utils.setup import setup_logging, setup_mathplotlib_style
 except ImportError as e:
     print(f"FATAL ERROR: Could not import core modules (ProcessingPipeline or setup_logging).")
     print("Please ensure 'src/pipeline.py', 'src/utils/app_setup.py' and 'src/utils/setup.py' exist and are correct.")
@@ -45,8 +42,6 @@ except Exception as e:
 
 
 # --- Environment Settings (e.g., TensorFlow) ---
-# Why? These often need to be set *before* TensorFlow is heavily used.
-# Force TensorFlow to use CPU only (no GPU). Remove '-1' to enable GPU if available.
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 # Reduce TensorFlow's informational messages (1=INFO, 2=WARNING, 3=ERROR).
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -72,7 +67,11 @@ def main(config: AppConfig):
     try:
         # 1. Setup Logging: Initialize file and console logging.
         setup_logging(config.output_dir, config.log_level)
-        logger = logging.getLogger(__name__) # Get logger instance *after* setup
+    
+        # Setup Mathplotlib Style
+        setup_mathplotlib_style(config.project_root)
+        
+        logger = logging.getLogger(__name__) # Get logger instance after setup
 
         logger.info("Main function started. Initializing processing pipeline...")
 
@@ -98,6 +97,7 @@ def main(config: AppConfig):
              print(f"CRITICAL ERROR (Logging failed): {e}")
              print(f"Logging Error: {log_e}")
              traceback.print_exc() 
+        raise e
              
     finally:
         # This block always runs, even if errors occurred.

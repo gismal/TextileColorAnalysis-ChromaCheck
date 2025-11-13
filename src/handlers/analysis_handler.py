@@ -5,6 +5,8 @@ from typing import Dict, Any, Tuple, List, Optional
 from pathlib import Path
 from contextlib import contextmanager
 
+from src.handlers.reference_handler import ReferenceHandler
+
 # Gerekli proje içi importlar
 from src.data.load_data import load_image
 from src.data.preprocess import Preprocessor, PreprocessingConfig
@@ -48,7 +50,8 @@ class AnalysisHandler:
     def __init__(self,
                  preprocess_config: PreprocessingConfig,
                  seg_params: Dict[str, Any],
-                 output_manager: OutputManager):
+                 output_manager: OutputManager,
+                 reference_handler: ReferenceHandler):
         """
         Initializes the AnalysisHandler
         
@@ -61,6 +64,7 @@ class AnalysisHandler:
         self.seg_params = seg_params
         self.output_manager = output_manager
         self.preprocessor = Preprocessor(config= self.preprocess_config)
+        self.reference_handler = reference_handler
         
         # execute() will fill those
         self.dbn: Optional[DBN] = None
@@ -159,12 +163,14 @@ class AnalysisHandler:
                 return [] 
 
             # 2. Perform Segmentation for both k_types
+            image_all_results = {}
+        
             for k_type in ['determined', 'predefined']:
                 with timer(f"Segmentation loop ({image_name}, k_type: {k_type})"):
                     try:
                         seg_config = SegmentationConfig(
                             target_colors=target_colors_lab,
-                            **self.seg_params, # Ana config'den gelen seg_params'ı kullan
+                            **self.seg_params,
                             k_type=k_type 
                         )
                         model_config = ModelConfig(
@@ -187,6 +193,10 @@ class AnalysisHandler:
                                 logger.warning(f"Skipping Delta E for invalid/missing result from {method_name} on {image_name}.")
                                 continue
 
+                            # Sonuçları sakla (karşılaştırma için)
+                            result_key = f"{method_name}_{k_type}"
+                            image_all_results[result_key] = result
+
                             segmented_rgb_colors = result.avg_colors
                             if not segmented_rgb_colors:
                                 logger.warning(f"No average RGB colors found for {method_name} on {image_name}. Skipping Delta E.")
@@ -203,8 +213,8 @@ class AnalysisHandler:
                                 segmented_lab_dbn = np.array(segmented_lab_dbn_list)
 
                                 if segmented_lab_traditional.size == 0 or segmented_lab_dbn.size == 0:
-                                     logger.warning(f"Color conversion to LAB failed for {method_name} on {image_name}. Skipping Delta E.")
-                                     continue
+                                    logger.warning(f"Color conversion to LAB failed for {method_name} on {image_name}. Skipping Delta E.")
+                                    continue
                                 
                                 # Find the best matches for the traditional LAB
                                 matches_trad = color_metric_calculator.find_best_matches(segmented_lab_traditional)
@@ -219,9 +229,9 @@ class AnalysisHandler:
                                 avg_delta_e_traditional = np.mean(valid_de_trad) if valid_de_trad else float('inf')
                                 avg_delta_e_dbn = np.mean(valid_de_dbn) if valid_de_dbn else float('inf')
                                 
-                                #segment stats
+                                # segment stats
                                 total_pixels = result.labels.size
-                                unique_labels, counts = np.unique(result.labels[result.labels >= 0], return_counts=True) # Gürültüyü (-1) hariç tut
+                                unique_labels, counts = np.unique(result.labels[result.labels >= 0], return_counts=True)
 
                                 # save all the stats in this dictionary
                                 segment_stats = {}
@@ -279,20 +289,46 @@ class AnalysisHandler:
                                         preprocessed_image= preprocessed_image,
                                         dbn_model= dbn,
                                         scalers= [scalers['scaler_x'], scalers['scaler_y'], scalers['scaler_y_ab']],
-                                        segment_stats=segment_stats,        
-                                        target_colors_lab=target_colors_lab,
                                         output_path = plot_palette_path
                                     )
-                                    
                                 except Exception as palette_err:
                                     logger.error(f"Failed to generate SEGMENT PALETTE plot for {method_name}: {palette_err}", exc_info=True)
+                                
+                                try:
+                                    plot_overlay_filename = f"{image_name}_{method_name}_overlay.png"
+                                    plot_overlay_path = plot_output_dir / plot_overlay_filename
                                     
+                                    from src.utils.visualization import plot_segmentation_overlay
+                                    plot_segmentation_overlay(
+                                        result=result,
+                                        original_image=preprocessed_image,
+                                        output_path=plot_overlay_path
+                                    )
+                                except Exception as overlay_err:
+                                    logger.error(f"Failed to generate overlay plot: {overlay_err}", exc_info=True)
+
                             except Exception as e:
-                                logger.error(f"Delta E calculation failed unexpectedly for {method_name} on {image_name}': {e}", exc_info=True)
-                                continue 
-
+                                logger.error(f"Error calculating Delta E for {method_name} on {image_name} (k_type: {k_type}): {e}", exc_info=True)
+                                continue
+                                
                     except Exception as e:
-                        logger.error(f"Error during segmentation loop for {image_name} (k_type: {k_type}): {e}", exc_info=True)
-                        continue 
+                        logger.error(f"Error in segmentation loop for {image_name} (k_type: {k_type}): {e}", exc_info=True)
+                        continue
 
-        return single_image_delta_e_results
+            # Her iki k_type tamamlandıktan SONRA karşılaştırma grafiğini oluştur
+            try:
+                if image_all_results:  # Sonuç varsa
+                    comparison_filename = f"{image_name}_all_methods_comparison.png"
+                    comparison_path = self.output_manager.dataset_dir / "processed" / "comparisons" / comparison_filename
+                    
+                    from src.utils.visualization import plot_all_methods_comparison
+                    plot_all_methods_comparison(
+                        image_name, 
+                        image_all_results, 
+                        preprocessed_image, 
+                        comparison_path
+                    )
+            except Exception as comp_err:
+                logger.error(f"Failed to generate comparison plot for {image_name}: {comp_err}", exc_info=True)
+
+            return single_image_delta_e_results

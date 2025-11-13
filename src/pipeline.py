@@ -117,7 +117,8 @@ class ProcessingPipeline:
         self.analysis_handler = AnalysisHandler(
             preprocess_config= self.preprocess_config,
             seg_params= self.segmentation_params,
-            output_manager= self.output_manager
+            output_manager= self.output_manager,
+            reference_handler = self.reference_handler
         )
         
         self.summary_handler = SummaryHandler(

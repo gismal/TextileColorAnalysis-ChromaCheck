@@ -303,7 +303,7 @@ class DBN:
         try:
             self.model.set_weights(weights)
             self._weights_are_set = True
-            logger.info("Successfully set weights in the DBN model.")
+            
         except ValueError as e:
              logger.error(f"Failed to set weights: {e}. Check weight shapes.")
              self._weights_are_set = False # Mark as unset if failed
@@ -312,9 +312,10 @@ class DBN:
              logger.error(f"An unexpected error occurred while setting weights: {e}")
              self._weights_are_set = False
              raise
-
+        
+        # logger.info("Successfully set weights in the DBN model.")
+        
 # --- PSO Optimizer Class ---
-
 class PSOOptimizer:
     """
     Optimizes the weights of a DBN model using the Particle Swarm Optimization algorithm.

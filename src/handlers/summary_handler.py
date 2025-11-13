@@ -99,12 +99,39 @@ class SummaryHandler:
                 plot_filename = f"{self.output_manager.dataset_name}_delta_e_summary.png"
                 plot_output_path = self.output_manager.dataset_dir / "summaries" / plot_filename
 
+                from src.utils.visualization import plot_delta_e_summary_bars
                 plot_delta_e_summary_bars(
                     results_df=df,
                     output_path=plot_output_path
                 )
             except Exception as plot_err:
-                logger.error(f"Failed to generate final Delta E summary plot: {plot_err}", exc_info=True)
+                logger.error(f"Failed to generate Delta E summary plot: {plot_err}", exc_info=True)
+            
+            # 4. NEW: Heatmap Visualization
+            try:
+                heatmap_filename = f"{self.output_manager.dataset_name}_delta_e_heatmap.png"
+                heatmap_path = self.output_manager.dataset_dir / "summaries" / heatmap_filename
+                
+                from src.utils.visualization import plot_delta_e_heatmap
+                plot_delta_e_heatmap(
+                    results_df=df,
+                    output_path=heatmap_path
+                )
+            except Exception as heatmap_err:
+                logger.error(f"Failed to generate heatmap: {heatmap_err}", exc_info=True)
+            
+            # 5. NEW: Improvement Chart
+            try:
+                improvement_filename = f"{self.output_manager.dataset_name}_improvement_chart.png"
+                improvement_path = self.output_manager.dataset_dir / "summaries" / improvement_filename
+                
+                from src.utils.visualization import plot_improvement_chart
+                plot_improvement_chart(
+                    results_df=df,
+                    output_path=improvement_path
+                )
+            except Exception as imp_err:
+                logger.error(f"Failed to generate improvement chart: {imp_err}", exc_info=True)
 
         except Exception as e:
-            logger.error(f"Failed to generate console summary or plot from results: {e}", exc_info=True)
+            logger.error(f"Failed to generate summaries: {e}", exc_info=True)

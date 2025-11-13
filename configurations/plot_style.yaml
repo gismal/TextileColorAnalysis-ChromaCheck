@@ -1,0 +1,25 @@
+# Configuration for syting of the visualization.py
+
+# 1. Kullanılacak temel Matplotlib stili (örn: 'seaborn-v0_8-darkgrid', 'ggplot', 'classic')
+style_sheet: "seaborn-v0_8-darkgrid"
+
+# 2. plt.rcParams için üzerine yazılacak (override) detaylı ayarlar
+# (Anahtarlar Matplotlib rcParams isimleriyle eşleşmelidir)
+rcParams:
+  font:
+    family: "sans-serif"
+    sans-serif: ["Arial", "DejaVu Sans"]
+    size: 10
+
+  axes:
+    titlesize: 14
+    titleweight: "bold"
+    labelsize: 12
+    labelweight: "bold"
+    facecolor: "#f8f9fa" # Plot içi arka plan rengi
+
+  figure:
+    facecolor: "white" # Plot dışı arka plan rengi
+
+  grid:
+    alpha: 0.3 # Izgara çizgisi şeffaflığı

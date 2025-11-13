@@ -1,6 +1,6 @@
 import logging
 import sys
-import os
+import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -226,9 +226,55 @@ def validate_processing_config(config: Dict[str, Any], project_root: Path) -> bo
          logger.error(f"Unexpected error during configuration validation: {e}", exc_info=True)
          return False
 
-# --- Other Helper Functions (Not included here) ---
-# Functions like 'safe_image_load', 'create_lab_converters', 'setup_pipeline_configs'
-# were originally in main.py but have been integrated elsewhere (load_data.py, pipeline.py)
-# or are no longer needed due to the refactoring (setup_pipeline_configs replaced by direct
-# dataclass initialization in ProcessingPipeline.__init__). Keeping them out of this 'setup'
-# module maintains its focus on initial setup tasks (logging, config validation).
+def setup_mathplotlib_style(project_root: Path):
+    """
+    Loads mathplotlib style settings from 'plot_style.yaml' and 
+    applies globally 
+    """
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        logging.getLogger(__name__).warning(
+            "Matplotlib not found. Plot styling will be skipped. "
+            "Install with 'pip install matplotlib'"
+        )
+        return
+
+    style_config_path = project_root / "configurations" / "plot_style.yaml"
+    
+    if not style_config_path.exists():
+        logger.warning(f"Plot style config not found at {style_config_path}. Using matplotlib defaults.")
+        return
+    
+    try:
+        with open(style_config_path, 'r', encoding='utf-8') as f:
+            style_config = yaml.safe_load(f)
+        
+        if not style_config:
+            logger.warning("Plot style config is empty.")
+            return
+
+        # 1. Apply the main styling
+        base_style = style_config.get('style_sheet')
+        if base_style:
+            plt.style.use(base_style)
+            logger.debug(f"Applied base plot style: {base_style}")
+
+        # 2. Apply the details
+        rcParams = style_config.get('rcParams')
+        if rcParams and isinstance(rcParams, dict):
+            flat_params = {}
+            for main_key, sub_dict in rcParams.items():
+                for sub_key, value in sub_dict.items():
+                    flat_params[f"{main_key}.{sub_key}"] = value
+            
+            plt.rcParams.update(flat_params)
+            logger.debug(f"Applied {len(flat_params)} rcParams overrides from plot_style.yaml.")
+        
+        logger.info("Matplotlib style configured successfully from plot_style.yaml.")
+
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing plot_style.yaml: {e}")
+    except Exception as e:
+        logger.error(f"Failed to apply matplotlib style: {e}", exc_info=True)
+    
